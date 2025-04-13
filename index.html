@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pak Hacker Pro - Search Tool</title>
+    <style>
+        :root {
+            --bg-color: #f3f3f3;
+            --card-bg: #ffffff;
+            --primary-color: #0078d4;
+            --text-color: #323130;
+            --border-color: #edebe9;
+            --error-color: #a4262c;
+            --success-color: #107c10;
+            --loading-color: #797775;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .page-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .input-container {
+            margin-bottom: 24px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: var(--card-bg);
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+        }
+
+        .result-container {
+            margin-top: 24px;
+        }
+
+        .server-result {
+            margin-bottom: 24px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--card-bg);
+            box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.1), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.07);
+        }
+
+        .server-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .footer {
+            text-align: right;
+            margin-top: 32px;
+            color: var(--primary-color);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 10px;
+            border-top: 2px solid var(--primary-color);
+        }
+
+        /* Rest of the CSS remains same as previous version */
+        .loading {
+            color: var(--loading-color);
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .loading::after {
+            content: "";
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--loading-color);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: var(--error-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .error::before {
+            content: "⚠️";
+        }
+
+        .success {
+            color: var(--success-color);
+        }
+
+        .data-line {
+            margin: 8px 0;
+        }
+
+        .retry-btn {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 8px;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .retry-btn:hover {
+            background-color: #106ebe;
+        }
+
+        .sim-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            margin: 12px 0;
+            box-shadow: 0 0.8px 2.4px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .connection-status {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .online {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .offline {
+            background-color: var(--error-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1 style="color: white; margin: 0;">Pak Hacker Pro</h1>
+    </div>
+
+    <h1>Number/CNIC Search</h1>
+    
+    <div class="input-container">
+        <label for="searchInput">Enter Number or CNIC:</label>
+        <input type="tel" id="searchInput" 
+               placeholder="e.g., 03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)" 
+               maxlength="13" 
+               inputmode="numeric"
+               pattern="\d*">
+        <div class="instructions">
+        </div>
+    </div>
+    
+    <div class="result-container" id="result"></div>
+
+    <div class="footer">
+        Created By Awais Narowaliya
+    </div>
+
+    <div id="connectionStatus" class="connection-status"></div>
+
+    <!-- JavaScript remains exactly the same as previous version -->
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const resultDiv = document.getElementById('result');
+        const connectionStatus = document.getElementById('connectionStatus');
+        
+        const SERVER_1_URL = "https://findsiminfo.com/rana/index.php?search_term=";
+        const SERVER_2_URL = "https://www.appelevates.com/siminfo/rehmanbackupapi.php?search=";
+        
+        function updateConnectionStatus() {
+            if (navigator.onLine) {
+                connectionStatus.textContent = "Online";
+                connectionStatus.className = "connection-status online";
+                connectionStatus.style.display = "block";
+                setTimeout(() => connectionStatus.style.display = "none", 3000);
+            } else {
+                connectionStatus.textContent = "Offline - No Internet Connection";
+                connectionStatus.className = "connection-status offline";
+                connectionStatus.style.display = "block";
+            }
+        }
+
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+        updateConnectionStatus();
+        
+        let debounceTimer;
+        let currentSearchTerm = "";
+
+        searchInput.addEventListener('input', function(e) {
+            clearTimeout(debounceTimer);
+            const input = e.target.value.trim();
+            currentSearchTerm = input;
+
+            const isValidNumber = /^0\d{10}$/.test(input);
+            const isValidCNIC = /^[1-9]\d{12}$/.test(input);
+            const isPartialValid = /^(0\d{0,10}|[1-9]\d{0,12})$/.test(input);
+
+            if (!isPartialValid) {
+                resultDiv.innerHTML = '<p class="error">Invalid input format</p>';
+                e.target.value = input.replace(/[^\d]/g, '').substring(0, 13);
+                return;
+            }
+
+            if (isValidNumber || isValidCNIC) {
+                searchInput.blur();
+                resultDiv.innerHTML = `
+                    <div class="server-result" id="server1">
+                        <div class="server-title">Server 1 Results</div>
+                        <p class="loading">Searching...</p>
+                    </div>
+                    <div class="server-result" id="server2">
+                        <div class="server-title">Server 2 Results</div>
+                        <p class="loading">Searching...</p>
+                    </div>
+                `;
+                
+                debounceTimer = setTimeout(() => searchBothServers(input), 300);
+            }
+        });
+
+        async function searchBothServers(searchTerm) {
+            if (!navigator.onLine) {
+                showOfflineError();
+                return;
+            }
+
+            try {
+                try {
+                    const response = await fetchWithTimeout(SERVER_1_URL + searchTerm, {}, 5000);
+                    const data = await response.json();
+                    displayResults(data, 1, searchTerm.startsWith('0'));
+                } catch (error) {
+                    const proxyResponse = await fetchWithTimeout(
+                        `https://api.allorigins.win/get?url=${encodeURIComponent(SERVER_1_URL + searchTerm)}`,
+                        {},
+                        5000
+                    );
+                    const proxyData = await proxyResponse.json();
+                    const parsedData = JSON.parse(proxyData.contents);
+                    displayResults(parsedData, 1, searchTerm.startsWith('0'));
+                }
+            } catch (server1Error) {
+                showServerError(1, "Server 1 connection failed");
+            }
+
+            try {
+                const response = await fetchWithTimeout(SERVER_2_URL + searchTerm, {}, 5000);
+                const data = await response.json();
+                displayResults(data, 2, searchTerm.startsWith('0'));
+            } catch (server2Error) {
+                showServerError(2, "Server 2 connection failed");
+            }
+        }
+
+        function fetchWithTimeout(url, options, timeout) {
+            return Promise.race([
+                fetch(url, options),
+                new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Timeout')), timeout)
+                )
+            ]);
+        }
+
+        function displayResults(data, serverNumber, isNumberSearch) {
+            const serverDiv = document.getElementById(`server${serverNumber}`);
+            if (!serverDiv) return;
+
+            serverDiv.innerHTML = `
+                <div class="server-title">Server ${serverNumber} Results</div>
+                <div class="search-type">Search Type: ${isNumberSearch ? 'Number' : 'CNIC'}</div>
+            `;
+
+            if (data?.length > 0) {
+                serverDiv.innerHTML += `<p class="success">Found ${data.length} record(s)</p>`;
+                data.forEach((record, index) => {
+                    serverDiv.innerHTML += `
+                        <div class="sim-card">
+                            <div class="sim-title">Record ${index + 1}</div>
+                            <div class="data-line"><strong>Name:</strong> ${record.Name || 'N/A'}</div>
+                            ${!isNumberSearch ? `<div class="data-line"><strong>Mobile:</strong> ${record.Mobile || 'N/A'}</div>` : ''}
+                            <div class="data-line"><strong>CNIC:</strong> ${record.CNIC || 'N/A'}</div>
+                            <div class="data-line"><strong>Address:</strong> ${record.ADDRESS || 'N/A'}</div>
+                        </div>
+                    `;
+                });
+            } else {
+                serverDiv.innerHTML += `<p class="error">No records found</p>`;
+            }
+        }
+
+        function showOfflineError() {
+            resultDiv.innerHTML = `
+                <div class="server-result">
+                    <div class="server-title">Connection Error</div>
+                    <p class="error">Please check your internet connection</p>
+                </div>
+            `;
+        }
+
+        function showServerError(serverNumber, message) {
+            const serverDiv = document.getElementById(`server${serverNumber}`);
+            if (!serverDiv) return;
+            
+            serverDiv.innerHTML += `
+                <p class="error">${message}</p>
+                <button class="retry-btn" onclick="retryServer(${serverNumber})">Retry</button>
+            `;
+        }
+
+        window.retryServer = async function(serverNumber) {
+            if (!currentSearchTerm) return;
+            
+            const serverDiv = document.getElementById(`server${serverNumber}`);
+            serverDiv.innerHTML = `
+                <div class="server-title">Server ${serverNumber} Results</div>
+                <p class="loading">Retrying...</p>
+            `;
+
+            try {
+                const url = serverNumber === 1 
+                    ? SERVER_1_URL + currentSearchTerm 
+                    : SERVER_2_URL + currentSearchTerm;
+                
+                const response = await fetchWithTimeout(url, {}, 5000);
+                const data = await response.json();
+                displayResults(data, serverNumber, currentSearchTerm.startsWith('0'));
+            } catch (error) {
+                showServerError(serverNumber, "Retry failed");
+            }
+        };
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (!/\d/.test(e.key)) e.preventDefault();
+        });
+
+        searchInput.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text');
+            e.target.value = text.replace(/\D/g, '').substring(0, 13);
+        });
+    </script>
+</body>
+</html>
