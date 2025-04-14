@@ -5,7 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pak Hacker Pro - Search Tool</title>
     <style>
-        :root {
+        /* Hacker Theme (now default) */
+        :root, .theme-hacker {
+            --bg-color: #000000;
+            --card-bg: #111111;
+            --primary-color: #00ff00;
+            --text-color: #00ff00;
+            --border-color: #003300;
+            --error-color: #ff3333;
+            --success-color: #00ff00;
+            --loading-color: #00aa00;
+            --font-family: 'Courier New', monospace;
+            --scan-effect: linear-gradient(rgba(0, 255, 0, 0.05) 2px, transparent 2px);
+            --header-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+            --input-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            --card-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+            --sim-card-shadow: 0 0 8px rgba(0, 255, 0, 0.2);
+            --header-bg: var(--card-bg);
+            --header-color: var(--primary-color);
+            --text-shadow: 0 0 5px var(--primary-color);
+            --glitch-effect: glitch-effect 3s infinite;
+        }
+
+        /* Normal Theme (previously default) */
+        .theme-normal {
             --bg-color: #f3f3f3;
             --card-bg: #ffffff;
             --primary-color: #0078d4;
@@ -14,32 +37,75 @@
             --error-color: #a4262c;
             --success-color: #107c10;
             --loading-color: #797775;
+            --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --scan-effect: none;
+            --header-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --input-shadow: none;
+            --card-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.1), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.07);
+            --sim-card-shadow: 0 0.8px 2.4px 0 rgba(0, 0, 0, 0.05);
+            --header-bg: var(--primary-color);
+            --header-color: white;
+            --text-shadow: none;
+            --glitch-effect: none;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: var(--font-family);
             background-color: var(--bg-color);
             color: var(--text-color);
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
             line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--scan-effect);
+            background-size: 100% 4px;
+            z-index: -1;
+            animation: scan 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { background-position: 0 -100px; }
+            100% { background-position: 0 100px; }
+        }
+
+        @keyframes glitch-effect {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
         }
 
         .page-header {
-            background-color: var(--primary-color);
-            color: white;
+            background-color: var(--header-bg);
+            color: var(--header-color);
             padding: 15px 20px;
             text-align: center;
             border-radius: 4px;
             margin-bottom: 30px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--header-shadow);
+            border: 1px solid var(--primary-color);
+            text-shadow: var(--text-shadow);
         }
 
         h1 {
             color: var(--primary-color);
             font-weight: 600;
             margin-bottom: 24px;
+            text-shadow: var(--text-shadow);
         }
 
         .input-container {
@@ -55,12 +121,14 @@
             box-sizing: border-box;
             background-color: var(--card-bg);
             transition: border-color 0.2s;
+            color: var(--text-color);
+            font-family: var(--font-family);
         }
 
         input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+            box-shadow: var(--input-shadow);
         }
 
         .result-container {
@@ -73,7 +141,7 @@
             border: 1px solid var(--border-color);
             border-radius: 6px;
             background-color: var(--card-bg);
-            box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.1), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.07);
+            box-shadow: var(--card-shadow);
         }
 
         .server-title {
@@ -81,6 +149,7 @@
             color: var(--primary-color);
             margin-bottom: 12px;
             font-size: 16px;
+            text-shadow: var(--text-shadow);
         }
 
         .footer {
@@ -91,15 +160,16 @@
             font-weight: 600;
             padding: 10px;
             border-top: 2px solid var(--primary-color);
+            text-shadow: var(--text-shadow);
         }
 
-        /* Rest of the CSS remains same as previous version */
         .loading {
             color: var(--loading-color);
             font-style: italic;
             display: flex;
             align-items: center;
             gap: 8px;
+            text-shadow: var(--text-shadow);
         }
 
         .loading::after {
@@ -122,6 +192,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            text-shadow: var(--text-shadow);
         }
 
         .error::before {
@@ -130,6 +201,7 @@
 
         .success {
             color: var(--success-color);
+            text-shadow: var(--text-shadow);
         }
 
         .data-line {
@@ -137,19 +209,23 @@
         }
 
         .retry-btn {
-            background-color: var(--primary-color);
-            border: none;
-            color: white;
+            background-color: var(--card-bg);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
             padding: 6px 12px;
             border-radius: 4px;
             cursor: pointer;
             margin-top: 8px;
             font-size: 14px;
-            transition: background-color 0.2s;
+            transition: all 0.2s;
+            font-family: var(--font-family);
+            text-shadow: var(--text-shadow);
         }
 
         .retry-btn:hover {
-            background-color: #106ebe;
+            background-color: var(--primary-color);
+            color: black;
+            box-shadow: 0 0 10px var(--primary-color);
         }
 
         .sim-card {
@@ -158,7 +234,7 @@
             border-radius: 6px;
             padding: 12px;
             margin: 12px 0;
-            box-shadow: 0 0.8px 2.4px 0 rgba(0, 0, 0, 0.05);
+            box-shadow: var(--sim-card-shadow);
         }
 
         .connection-status {
@@ -169,22 +245,119 @@
             border-radius: 4px;
             font-size: 13px;
             display: none;
+            font-family: var(--font-family);
+            border: 1px solid;
         }
 
         .online {
-            background-color: var(--success-color);
-            color: white;
+            background-color: var(--card-bg);
+            color: var(--success-color);
+            border-color: var(--success-color);
+            text-shadow: var(--text-shadow);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
         }
 
         .offline {
-            background-color: var(--error-color);
-            color: white;
+            background-color: var(--card-bg);
+            color: var(--error-color);
+            border-color: var(--error-color);
+            text-shadow: var(--text-shadow);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        }
+
+        .glitch {
+            position: relative;
+        }
+
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+
+        .glitch::before {
+            color: #0ff;
+            z-index: -1;
+            animation: var(--glitch-effect);
+        }
+
+        .glitch::after {
+            color: #f0f;
+            z-index: -2;
+            animation: var(--glitch-effect);
+        }
+
+        /* Theme selector styles */
+        .theme-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .theme-btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: var(--font-family);
+            text-shadow: var(--text-shadow);
+            transition: all 0.2s;
+        }
+
+        .theme-btn:hover {
+            background-color: var(--primary-color);
+            color: var(--card-bg);
+        }
+
+        .theme-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: var(--card-bg);
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            min-width: 160px;
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+            z-index: 1;
+            margin-top: 5px;
+        }
+
+        .theme-dropdown a {
+            color: var(--text-color);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s;
+        }
+
+        .theme-dropdown a:hover {
+            background-color: var(--primary-color);
+            color: var(--card-bg);
+        }
+
+        .show {
+            display: block;
         }
     </style>
 </head>
-<body>
-    <div class="page-header">
-        <h1 style="color: white; margin: 0;">Pak Hacker Pro</h1>
+<body class="theme-hacker">
+    <div class="theme-selector">
+        <button onclick="toggleThemeDropdown()" class="theme-btn">Themes ▼</button>
+        <div id="themeDropdown" class="theme-dropdown">
+            <a href="#" onclick="setTheme('hacker')">Hacker Theme</a>
+            <a href="#" onclick="setTheme('normal')">Normal Theme</a>
+        </div>
+    </div>
+
+    <div class="page-header glitch" data-text="Pak Hacker Pro">
+        <h1 style="color: var(--header-color); margin: 0; text-shadow: var(--text-shadow);">Pak Hacker Pro</h1>
     </div>
 
     <h1>Number/CNIC Search</h1>
@@ -192,7 +365,7 @@
     <div class="input-container">
         <label for="searchInput">Enter Number or CNIC:</label>
         <input type="tel" id="searchInput" 
-               placeholder="(11digit number) or (13-digit CNIC)" 
+               placeholder="e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)" 
                maxlength="13" 
                inputmode="numeric"
                pattern="\d*">
@@ -208,7 +381,6 @@
 
     <div id="connectionStatus" class="connection-status"></div>
 
-    <!-- JavaScript remains exactly the same as previous version -->
     <script>
         const searchInput = document.getElementById('searchInput');
         const resultDiv = document.getElementById('result');
@@ -389,6 +561,72 @@
             const text = (e.clipboardData || window.clipboardData).getData('text');
             e.target.value = text.replace(/\D/g, '').substring(0, 13);
         });
+
+        // Theme switching functionality
+        function toggleThemeDropdown() {
+            document.getElementById("themeDropdown").classList.toggle("show");
+        }
+
+        function setTheme(themeName) {
+            document.body.className = `theme-${themeName}`;
+            localStorage.setItem('selectedTheme', themeName);
+            document.getElementById("themeDropdown").classList.remove("show");
+            
+            // Update the placeholder animation based on theme
+            if (themeName === 'hacker') {
+                startTypingEffect();
+            } else {
+                searchInput.setAttribute('placeholder', 
+                    "e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)");
+                clearInterval(window.typingInterval);
+            }
+        }
+
+        // Close the dropdown if clicked outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.theme-btn')) {
+                const dropdowns = document.getElementsByClassName("theme-dropdown");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
+        // Load saved theme from localStorage
+        const savedTheme = localStorage.getItem('selectedTheme') || 'hacker';
+        setTheme(savedTheme);
+
+        // Typing effect for hacker theme
+        function startTypingEffect() {
+            const placeholderText = "e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)";
+            let i = 0;
+            
+            function type() {
+                if (i < placeholderText.length) {
+                    searchInput.setAttribute('placeholder', placeholderText.substring(0, i+1));
+                    i++;
+                    window.typingTimeout = setTimeout(type, Math.random() * 100 + 50);
+                } else {
+                    window.typingTimeout = setTimeout(() => {
+                        i = 0;
+                        searchInput.setAttribute('placeholder', '');
+                        window.typingTimeout = setTimeout(type, 1000);
+                    }, 2000);
+                }
+            }
+            
+            // Clear any existing timeout
+            clearTimeout(window.typingTimeout);
+            type();
+        }
+
+        // Start typing effect if hacker theme is selected on load
+        if (savedTheme === 'hacker') {
+            startTypingEffect();
+        }
     </script>
 </body>
 </html>
