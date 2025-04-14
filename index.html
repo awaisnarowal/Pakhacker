@@ -365,7 +365,7 @@
     <div class="input-container">
         <label for="searchInput">Enter Number or CNIC:</label>
         <input type="tel" id="searchInput" 
-               placeholder="e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)" 
+               placeholder="(11-digit number) or (13-digit CNIC)" 
                maxlength="13" 
                inputmode="numeric"
                pattern="\d*">
@@ -577,7 +577,7 @@
                 startTypingEffect();
             } else {
                 searchInput.setAttribute('placeholder', 
-                    "e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)");
+                    "(11-digit number) or (13-digit CNIC)");
                 clearInterval(window.typingInterval);
             }
         }
