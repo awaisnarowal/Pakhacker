@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pak Hacker Pro - Search Tool</title>
     <style>
-        /* Hacker Theme (now default) */
+        /* Hacker Theme (always default) */
         :root, .theme-hacker {
             --bg-color: #000000;
             --card-bg: #111111;
@@ -27,7 +27,7 @@
             --glitch-effect: glitch-effect 3s infinite;
         }
 
-        /* Normal Theme (previously default) */
+        /* Normal Theme (alternative) */
         .theme-normal {
             --bg-color: #f3f3f3;
             --card-bg: #ffffff;
@@ -365,7 +365,7 @@
     <div class="input-container">
         <label for="searchInput">Enter Number or CNIC:</label>
         <input type="tel" id="searchInput" 
-               placeholder="(11-digit number) or (13-digit CNIC)" 
+               placeholder="e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)" 
                maxlength="13" 
                inputmode="numeric"
                pattern="\d*">
@@ -577,7 +577,7 @@
                 startTypingEffect();
             } else {
                 searchInput.setAttribute('placeholder', 
-                    "(11-digit number) or (13-digit CNIC)");
+                    "e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)");
                 clearInterval(window.typingInterval);
             }
         }
@@ -595,9 +595,8 @@
             }
         }
 
-        // Load saved theme from localStorage
-        const savedTheme = localStorage.getItem('selectedTheme') || 'hacker';
-        setTheme(savedTheme);
+        // Always load hacker theme, ignore system preferences
+        setTheme('hacker');
 
         // Typing effect for hacker theme
         function startTypingEffect() {
@@ -623,10 +622,8 @@
             type();
         }
 
-        // Start typing effect if hacker theme is selected on load
-        if (savedTheme === 'hacker') {
-            startTypingEffect();
-        }
+        // Start typing effect immediately
+        startTypingEffect();
     </script>
 </body>
 </html>
