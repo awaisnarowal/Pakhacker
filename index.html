@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pak Hacker Pro - Search Tool</title>
     <style>
-        /* Hacker Theme (always default) */
+        /* Hacker Theme (always default) - FONT CHANGED HERE */
         :root, .theme-hacker {
             --bg-color: #000000;
             --card-bg: #111111;
@@ -15,7 +15,9 @@
             --error-color: #ff3333;
             --success-color: #00ff00;
             --loading-color: #00aa00;
-            --font-family: 'Courier New', monospace;
+            /* --- YEH LINE BADLI GAYI HAI --- */
+            --font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            /* -------------------------------- */
             --scan-effect: linear-gradient(rgba(0, 255, 0, 0.05) 2px, transparent 2px);
             --header-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
             --input-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
@@ -37,7 +39,7 @@
             --error-color: #a4262c;
             --success-color: #107c10;
             --loading-color: #797775;
-            --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; /* Uses similar font */
             --scan-effect: none;
             --header-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             --input-shadow: none;
@@ -50,7 +52,7 @@
         }
 
         body {
-            font-family: var(--font-family);
+            font-family: var(--font-family); /* Uses the font defined in the theme */
             background-color: var(--bg-color);
             color: var(--text-color);
             max-width: 800px;
@@ -122,7 +124,7 @@
             background-color: var(--card-bg);
             transition: border-color 0.2s;
             color: var(--text-color);
-            font-family: var(--font-family);
+            font-family: var(--font-family); /* Uses the theme font */
         }
 
         input:focus {
@@ -218,7 +220,7 @@
             margin-top: 8px;
             font-size: 14px;
             transition: all 0.2s;
-            font-family: var(--font-family);
+            font-family: var(--font-family); /* Uses the theme font */
             text-shadow: var(--text-shadow);
         }
 
@@ -245,7 +247,7 @@
             border-radius: 4px;
             font-size: 13px;
             display: none;
-            font-family: var(--font-family);
+            font-family: var(--font-family); /* Uses the theme font */
             border: 1px solid;
         }
 
@@ -291,9 +293,9 @@
             animation: var(--glitch-effect);
         }
 
-        /* Theme selector styles */
+        /* Theme selector styles - Already fixed */
         .theme-selector {
-            position: fixed;
+            position: fixed; /* Keeps the button fixed */
             top: 20px;
             right: 20px;
             z-index: 1000;
@@ -306,7 +308,7 @@
             padding: 8px 16px;
             border-radius: 4px;
             cursor: pointer;
-            font-family: var(--font-family);
+            font-family: var(--font-family); /* Uses the theme font */
             text-shadow: var(--text-shadow);
             transition: all 0.2s;
         }
@@ -335,6 +337,7 @@
             text-decoration: none;
             display: block;
             transition: background-color 0.3s;
+            font-family: var(--font-family); /* Use theme font for dropdown items */
         }
 
         .theme-dropdown a:hover {
@@ -347,7 +350,7 @@
         }
     </style>
 </head>
-<body class="theme-hacker">
+<body class="theme-hacker"> <!-- Starts with Hacker theme -->
     <div class="theme-selector">
         <button onclick="toggleThemeDropdown()" class="theme-btn">Themes ▼</button>
         <div id="themeDropdown" class="theme-dropdown">
@@ -364,9 +367,9 @@
     
     <div class="input-container">
         <label for="searchInput">Enter Number or CNIC:</label>
-        <input type="tel" id="searchInput" 
-               placeholder="e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)" 
-               maxlength="13" 
+        <input type="tel" id="searchInput"
+               placeholder="e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)"
+               maxlength="13"
                inputmode="numeric"
                pattern="\d*">
         <div class="instructions">
@@ -418,14 +421,19 @@
             const isValidCNIC = /^[1-9]\d{12}$/.test(input);
             const isPartialValid = /^(0\d{0,10}|[1-9]\d{0,12})$/.test(input);
 
-            if (!isPartialValid) {
+            if (!isPartialValid && input.length > 0) { // Only show error if input is non-empty and invalid
                 resultDiv.innerHTML = '<p class="error">Invalid input format</p>';
-                e.target.value = input.replace(/[^\d]/g, '').substring(0, 13);
+                // Optionally correct the value if needed, or just let the user fix it.
+                // e.target.value = input.replace(/[^\d]/g, '').substring(0, 13);
                 return;
+            } else if (input.length === 0) {
+                 resultDiv.innerHTML = ''; // Clear results if input is empty
+                 return;
             }
 
+
             if (isValidNumber || isValidCNIC) {
-                searchInput.blur();
+                searchInput.blur(); // Optionally remove focus
                 resultDiv.innerHTML = `
                     <div class="server-result" id="server1">
                         <div class="server-title">Server 1 Results</div>
@@ -438,6 +446,11 @@
                 `;
                 
                 debounceTimer = setTimeout(() => searchBothServers(input), 300);
+            } else {
+                 // If input is partial but not yet valid, clear previous error/results
+                 if (isPartialValid) {
+                    resultDiv.innerHTML = '';
+                 }
             }
         });
 
@@ -446,39 +459,69 @@
                 showOfflineError();
                 return;
             }
+            
+            // Clear previous results before new search starts
+             resultDiv.innerHTML = `
+                <div class="server-result" id="server1">
+                    <div class="server-title">Server 1 Results</div>
+                    <p class="loading">Searching...</p>
+                </div>
+                <div class="server-result" id="server2">
+                    <div class="server-title">Server 2 Results</div>
+                    <p class="loading">Searching...</p>
+                </div>
+            `;
 
+            let server1Success = false;
+            let server2Success = false;
+
+            // Server 1 attempt
             try {
                 try {
                     const response = await fetchWithTimeout(SERVER_1_URL + searchTerm, {}, 5000);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     const data = await response.json();
                     displayResults(data, 1, searchTerm.startsWith('0'));
+                    server1Success = true;
                 } catch (error) {
+                    console.warn("Server 1 direct fetch failed, trying proxy:", error);
                     const proxyResponse = await fetchWithTimeout(
                         `https://api.allorigins.win/get?url=${encodeURIComponent(SERVER_1_URL + searchTerm)}`,
                         {},
                         5000
                     );
+                     if (!proxyResponse.ok) throw new Error(`Proxy HTTP error! status: ${proxyResponse.status}`);
                     const proxyData = await proxyResponse.json();
-                    const parsedData = JSON.parse(proxyData.contents);
-                    displayResults(parsedData, 1, searchTerm.startsWith('0'));
+                    if (proxyData.contents) {
+                       const parsedData = JSON.parse(proxyData.contents);
+                       displayResults(parsedData, 1, searchTerm.startsWith('0'));
+                       server1Success = true;
+                    } else {
+                       throw new Error("Proxy returned empty contents");
+                    }
                 }
             } catch (server1Error) {
-                showServerError(1, "Server 1 connection failed");
+                 console.error("Server 1 Final Error:", server1Error);
+                 showServerError(1, `Server 1 Failed: ${server1Error.message}`);
             }
 
+            // Server 2 attempt
             try {
                 const response = await fetchWithTimeout(SERVER_2_URL + searchTerm, {}, 5000);
+                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
                 displayResults(data, 2, searchTerm.startsWith('0'));
+                server2Success = true;
             } catch (server2Error) {
-                showServerError(2, "Server 2 connection failed");
+                 console.error("Server 2 Error:", server2Error);
+                 showServerError(2, `Server 2 Failed: ${server2Error.message}`);
             }
         }
 
         function fetchWithTimeout(url, options, timeout) {
             return Promise.race([
                 fetch(url, options),
-                new Promise((_, reject) => 
+                new Promise((_, reject) =>
                     setTimeout(() => reject(new Error('Timeout')), timeout)
                 )
             ]);
@@ -488,142 +531,26 @@
             const serverDiv = document.getElementById(`server${serverNumber}`);
             if (!serverDiv) return;
 
+            // Clear previous content (like loading/error message)
             serverDiv.innerHTML = `
                 <div class="server-title">Server ${serverNumber} Results</div>
-                <div class="search-type">Search Type: ${isNumberSearch ? 'Number' : 'CNIC'}</div>
+                <div class="search-type" style="font-size: 0.9em; opacity: 0.8; margin-bottom: 10px;">Search Type: ${isNumberSearch ? 'Number' : 'CNIC'}</div>
             `;
 
-            if (data?.length > 0) {
+            if (data && data.length > 0) {
+                // --- YEH LINE WOHI HAI JISKO PEHLE BADALNE KA KAHA THA, AB ORIGINAL HAI ---
                 serverDiv.innerHTML += `<p class="success">Found ${data.length} record(s)</p>`;
+                // ----------------------------------------------------------------------------
                 data.forEach((record, index) => {
+                    // Basic sanitation / N/A handling
+                    const name = record.Name || 'N/A';
+                    const mobile = record.Mobile || 'N/A';
+                    const cnic = record.CNIC || 'N/A';
+                    const address = record.ADDRESS || 'N/A';
+
                     serverDiv.innerHTML += `
                         <div class="sim-card">
-                            <div class="sim-title">Record ${index + 1}</div>
-                            <div class="data-line"><strong>Name:</strong> ${record.Name || 'N/A'}</div>
-                            ${!isNumberSearch ? `<div class="data-line"><strong>Mobile:</strong> ${record.Mobile || 'N/A'}</div>` : ''}
-                            <div class="data-line"><strong>CNIC:</strong> ${record.CNIC || 'N/A'}</div>
-                            <div class="data-line"><strong>Address:</strong> ${record.ADDRESS || 'N/A'}</div>
-                        </div>
-                    `;
-                });
-            } else {
-                serverDiv.innerHTML += `<p class="error">No records found</p>`;
-            }
-        }
-
-        function showOfflineError() {
-            resultDiv.innerHTML = `
-                <div class="server-result">
-                    <div class="server-title">Connection Error</div>
-                    <p class="error">Please check your internet connection</p>
-                </div>
-            `;
-        }
-
-        function showServerError(serverNumber, message) {
-            const serverDiv = document.getElementById(`server${serverNumber}`);
-            if (!serverDiv) return;
-            
-            serverDiv.innerHTML += `
-                <p class="error">${message}</p>
-                <button class="retry-btn" onclick="retryServer(${serverNumber})">Retry</button>
-            `;
-        }
-
-        window.retryServer = async function(serverNumber) {
-            if (!currentSearchTerm) return;
-            
-            const serverDiv = document.getElementById(`server${serverNumber}`);
-            serverDiv.innerHTML = `
-                <div class="server-title">Server ${serverNumber} Results</div>
-                <p class="loading">Retrying...</p>
-            `;
-
-            try {
-                const url = serverNumber === 1 
-                    ? SERVER_1_URL + currentSearchTerm 
-                    : SERVER_2_URL + currentSearchTerm;
-                
-                const response = await fetchWithTimeout(url, {}, 5000);
-                const data = await response.json();
-                displayResults(data, serverNumber, currentSearchTerm.startsWith('0'));
-            } catch (error) {
-                showServerError(serverNumber, "Retry failed");
-            }
-        };
-
-        searchInput.addEventListener('keypress', (e) => {
-            if (!/\d/.test(e.key)) e.preventDefault();
-        });
-
-        searchInput.addEventListener('paste', (e) => {
-            e.preventDefault();
-            const text = (e.clipboardData || window.clipboardData).getData('text');
-            e.target.value = text.replace(/\D/g, '').substring(0, 13);
-        });
-
-        // Theme switching functionality
-        function toggleThemeDropdown() {
-            document.getElementById("themeDropdown").classList.toggle("show");
-        }
-
-        function setTheme(themeName) {
-            document.body.className = `theme-${themeName}`;
-            localStorage.setItem('selectedTheme', themeName);
-            document.getElementById("themeDropdown").classList.remove("show");
-            
-            // Update the placeholder animation based on theme
-            if (themeName === 'hacker') {
-                startTypingEffect();
-            } else {
-                searchInput.setAttribute('placeholder', 
-                    "e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)");
-                clearInterval(window.typingInterval);
-            }
-        }
-
-        // Close the dropdown if clicked outside
-        window.onclick = function(event) {
-            if (!event.target.matches('.theme-btn')) {
-                const dropdowns = document.getElementsByClassName("theme-dropdown");
-                for (let i = 0; i < dropdowns.length; i++) {
-                    const openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
-                }
-            }
-        }
-
-        // Always load hacker theme, ignore system preferences
-        setTheme('hacker');
-
-        // Typing effect for hacker theme
-        function startTypingEffect() {
-            const placeholderText = "e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)";
-            let i = 0;
-            
-            function type() {
-                if (i < placeholderText.length) {
-                    searchInput.setAttribute('placeholder', placeholderText.substring(0, i+1));
-                    i++;
-                    window.typingTimeout = setTimeout(type, Math.random() * 100 + 50);
-                } else {
-                    window.typingTimeout = setTimeout(() => {
-                        i = 0;
-                        searchInput.setAttribute('placeholder', '');
-                        window.typingTimeout = setTimeout(type, 1000);
-                    }, 2000);
-                }
-            }
-            
-            // Clear any existing timeout
-            clearTimeout(window.typingTimeout);
-            type();
-        }
-
-        // Start typing effect immediately
-        startTypingEffect();
-    </script>
-</body>
-</html>
+                            <div class="sim-title" style="font-weight: bold; margin-bottom: 5px; color: var(--primary-color);">Record ${index + 1}</div>
+                            <div class="data-line"><strong>Name:</strong> ${name}</div>
+                            ${!isNumberSearch ? `<div class="data-line"><strong>Mobile:</strong> ${mobile}</div>` : ''}
+                            <div class="data-line"><strong>CNIC:</strong> ${cnic}</
