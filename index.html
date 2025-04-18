@@ -553,4 +553,219 @@
                             <div class="sim-title" style="font-weight: bold; margin-bottom: 5px; color: var(--primary-color);">Record ${index + 1}</div>
                             <div class="data-line"><strong>Name:</strong> ${name}</div>
                             ${!isNumberSearch ? `<div class="data-line"><strong>Mobile:</strong> ${mobile}</div>` : ''}
-                            <div class="data-line"><strong>CNIC:</strong> ${cnic}</
+                            <div class="data-line"><strong>CNIC:</strong> ${cnic}</div>
+                            <div class="data-line"><strong>Address:</strong> ${address}</div>
+                        </div>
+                    `;
+                });
+            } else if (data && data.message && data.message.includes("No record found")) {
+                 serverDiv.innerHTML += `<p class="error">No records found on Server ${serverNumber}</p>`;
+            }
+             else {
+                // Handle cases where data might be null, undefined, or empty array
+                serverDiv.innerHTML += `<p class="error">No records found or unexpected response on Server ${serverNumber}</p>`;
+            }
+        }
+
+
+        function showOfflineError() {
+            resultDiv.innerHTML = `
+                <div class="server-result">
+                    <div class="server-title">Connection Error</div>
+                    <p class="error">Please check your internet connection</p>
+                </div>
+            `;
+        }
+
+        function showServerError(serverNumber, message) {
+            const serverDiv = document.getElementById(`server${serverNumber}`);
+            if (!serverDiv) return;
+
+            // Ensure the title remains if the div was already there
+            const titleHTML = `<div class="server-title">Server ${serverNumber} Results</div>`;
+            serverDiv.innerHTML = titleHTML + `
+                <p class="error">${message}</p>
+                <button class="retry-btn" onclick="retryServer(${serverNumber})">Retry Server ${serverNumber}</button>
+            `;
+        }
+
+        window.retryServer = async function(serverNumber) {
+            if (!currentSearchTerm) return;
+            if (!navigator.onLine) {
+                 showOfflineError(); // Check connection before retry
+                 return;
+            }
+
+            const serverDiv = document.getElementById(`server${serverNumber}`);
+            serverDiv.innerHTML = `
+                <div class="server-title">Server ${serverNumber} Results</div>
+                <p class="loading">Retrying...</p>
+            `;
+
+            const isNumberSearch = currentSearchTerm.startsWith('0');
+
+            try {
+                let url;
+                let response;
+                let data;
+
+                if (serverNumber === 1) {
+                     url = SERVER_1_URL + currentSearchTerm;
+                     try {
+                        response = await fetchWithTimeout(url, {}, 5000);
+                         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                         data = await response.json();
+                     } catch (error) {
+                         console.warn("Server 1 direct retry failed, trying proxy:", error);
+                         const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+                         response = await fetchWithTimeout(proxyUrl, {}, 5000);
+                         if (!response.ok) throw new Error(`Proxy HTTP error! status: ${response.status}`);
+                         const proxyData = await response.json();
+                         if (proxyData.contents) {
+                             data = JSON.parse(proxyData.contents);
+                         } else {
+                            throw new Error("Proxy returned empty contents on retry");
+                         }
+                     }
+                } else { // Server 2
+                    url = SERVER_2_URL + currentSearchTerm;
+                    response = await fetchWithTimeout(url, {}, 5000);
+                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                     data = await response.json();
+                }
+
+                displayResults(data, serverNumber, isNumberSearch);
+            } catch (error) {
+                 console.error(`Retry Server ${serverNumber} Error:`, error);
+                 showServerError(serverNumber, `Retry failed: ${error.message}`);
+            }
+        };
+
+
+        searchInput.addEventListener('keypress', (e) => {
+             // Allow only digits
+            if (!/\d/.test(e.key)) {
+                 e.preventDefault();
+            }
+        });
+
+        searchInput.addEventListener('paste', (e) => {
+             e.preventDefault();
+             const text = (e.clipboardData || window.clipboardData).getData('text');
+             const cleanedText = text.replace(/\D/g, ''); // Remove non-digits
+             // Insert cleaned text, respecting maxlength
+             const currentVal = e.target.value;
+             const selectionStart = e.target.selectionStart;
+             const selectionEnd = e.target.selectionEnd;
+             const newVal = currentVal.slice(0, selectionStart) + cleanedText + currentVal.slice(selectionEnd);
+             e.target.value = newVal.substring(0, 13); // Apply maxlength
+             // Trigger input event to re-validate and potentially search
+             searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+
+
+        // Theme switching functionality
+        function toggleThemeDropdown() {
+            document.getElementById("themeDropdown").classList.toggle("show");
+        }
+
+        function setTheme(themeName) {
+            document.body.className = `theme-${themeName}`;
+            localStorage.setItem('selectedTheme', themeName); // Save preference
+            document.getElementById("themeDropdown").classList.remove("show");
+
+            // Restart or stop typing effect based on theme
+            clearTimeout(window.typingTimeout); // Clear any existing typing timeout
+             if (themeName === 'hacker') {
+                 // Only apply typing effect if input is currently empty
+                 if (searchInput.value === '') {
+                    startTypingEffect();
+                 } else {
+                     // Keep the original placeholder if there's user input
+                     searchInput.setAttribute('placeholder',
+                        "e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)");
+                 }
+             } else {
+                 // Normal theme always gets the static placeholder
+                 searchInput.setAttribute('placeholder',
+                    "e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)");
+             }
+        }
+
+        // Close the dropdown if clicked outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.theme-btn')) {
+                const dropdowns = document.getElementsByClassName("theme-dropdown");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
+        // Typing effect function
+        function startTypingEffect() {
+            // Only run if the body has the hacker theme class
+             if (!document.body.classList.contains('theme-hacker')) {
+                return;
+             }
+             // Also check if the input field is empty before starting
+             if (searchInput.value !== '') {
+                searchInput.setAttribute('placeholder',
+                        "e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)");
+                return; // Don't start if user has typed something
+             }
+
+            const placeholderText = "e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)";
+            let i = 0;
+            searchInput.setAttribute('placeholder', ''); // Clear initially
+
+            function type() {
+                 // Check again inside timeout in case theme changed or user typed
+                 if (!document.body.classList.contains('theme-hacker') || searchInput.value !== '') {
+                     searchInput.setAttribute('placeholder', placeholderText); // Restore static placeholder
+                     return;
+                 }
+
+                if (i < placeholderText.length) {
+                    searchInput.setAttribute('placeholder', placeholderText.substring(0, i + 1) + '|'); // Add cursor
+                    i++;
+                    window.typingTimeout = setTimeout(type, Math.random() * 80 + 40); // Typing speed
+                } else {
+                     searchInput.setAttribute('placeholder', placeholderText); // Remove cursor at end
+                    window.typingTimeout = setTimeout(() => {
+                        // Restart effect only if still hacker theme and input is empty
+                        if (document.body.classList.contains('theme-hacker') && searchInput.value === '') {
+                            i = 0;
+                            searchInput.setAttribute('placeholder', '');
+                            window.typingTimeout = setTimeout(type, 1000); // Pause before restart
+                        } else {
+                             searchInput.setAttribute('placeholder', placeholderText); // Set static if condition changed
+                        }
+                    }, 2500); // Pause at end
+                }
+            }
+
+            clearTimeout(window.typingTimeout); // Clear previous before starting
+            type();
+        }
+        
+         // Stop typing effect if user starts typing
+        searchInput.addEventListener('input', () => {
+             clearTimeout(window.typingTimeout);
+              // Restore static placeholder if typing effect was running
+             if (document.body.classList.contains('theme-hacker')) {
+                 searchInput.setAttribute('placeholder',
+                        "e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)");
+             }
+        });
+
+        // Load saved theme or default to hacker
+        const savedTheme = localStorage.getItem('selectedTheme');
+        setTheme(savedTheme || 'hacker'); // Apply saved or default theme on load
+
+    </script>
+</body>
+</html>
