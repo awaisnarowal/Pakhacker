@@ -1,771 +1,152 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pak Hacker Pro - Search Tool</title>
+    <title>updating</title>
     <style>
-        /* Hacker Theme (always default) - FONT CHANGED HERE */
-        :root, .theme-hacker {
-            --bg-color: #000000;
-            --card-bg: #111111;
-            --primary-color: #00ff00;
-            --text-color: #00ff00;
-            --border-color: #003300;
-            --error-color: #ff3333;
-            --success-color: #00ff00;
-            --loading-color: #00aa00;
-            /* --- YEH LINE BADLI GAYI HAI --- */
-            --font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-            /* -------------------------------- */
-            --scan-effect: linear-gradient(rgba(0, 255, 0, 0.05) 2px, transparent 2px);
-            --header-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-            --input-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-            --card-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
-            --sim-card-shadow: 0 0 8px rgba(0, 255, 0, 0.2);
-            --header-bg: var(--card-bg);
-            --header-color: var(--primary-color);
-            --text-shadow: 0 0 5px var(--primary-color);
-            --glitch-effect: glitch-effect 3s infinite;
-        }
-
-        /* Normal Theme (alternative) */
-        .theme-normal {
-            --bg-color: #f3f3f3;
-            --card-bg: #ffffff;
-            --primary-color: #0078d4;
-            --text-color: #323130;
-            --border-color: #edebe9;
-            --error-color: #a4262c;
-            --success-color: #107c10;
-            --loading-color: #797775;
-            --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; /* Uses similar font */
-            --scan-effect: none;
-            --header-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            --input-shadow: none;
-            --card-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.1), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.07);
-            --sim-card-shadow: 0 0.8px 2.4px 0 rgba(0, 0, 0, 0.05);
-            --header-bg: var(--primary-color);
-            --header-color: white;
-            --text-shadow: none;
-            --glitch-effect: none;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: var(--font-family); /* Uses the font defined in the theme */
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            line-height: 1.6;
-            position: relative;
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
             overflow-x: hidden;
         }
 
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--scan-effect);
-            background-size: 100% 4px;
-            z-index: -1;
-            animation: scan 8s linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes scan {
-            0% { background-position: 0 -100px; }
-            100% { background-position: 0 100px; }
-        }
-
-        @keyframes glitch-effect {
-            0% { transform: translate(0); }
-            20% { transform: translate(-3px, 3px); }
-            40% { transform: translate(-3px, -3px); }
-            60% { transform: translate(3px, 3px); }
-            80% { transform: translate(3px, -3px); }
-            100% { transform: translate(0); }
-        }
-
-        .page-header {
-            background-color: var(--header-bg);
-            color: var(--header-color);
-            padding: 15px 20px;
-            text-align: center;
-            border-radius: 4px;
-            margin-bottom: 30px;
-            box-shadow: var(--header-shadow);
-            border: 1px solid var(--primary-color);
-            text-shadow: var(--text-shadow);
-        }
-
-        h1 {
-            color: var(--primary-color);
-            font-weight: 600;
-            margin-bottom: 24px;
-            text-shadow: var(--text-shadow);
-        }
-
-        .input-container {
-            margin-bottom: 24px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            font-size: 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            box-sizing: border-box;
-            background-color: var(--card-bg);
-            transition: border-color 0.2s;
-            color: var(--text-color);
-            font-family: var(--font-family); /* Uses the theme font */
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: var(--input-shadow);
-        }
-
-        .result-container {
-            margin-top: 24px;
-        }
-
-        .server-result {
-            margin-bottom: 24px;
-            padding: 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background-color: var(--card-bg);
-            box-shadow: var(--card-shadow);
-        }
-
-        .server-title {
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 12px;
-            font-size: 16px;
-            text-shadow: var(--text-shadow);
-        }
-
-        .footer {
-            text-align: right;
-            margin-top: 32px;
-            color: var(--primary-color);
-            font-size: 13px;
-            font-weight: 600;
-            padding: 10px;
-            border-top: 2px solid var(--primary-color);
-            text-shadow: var(--text-shadow);
-        }
-
-        .loading {
-            color: var(--loading-color);
-            font-style: italic;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-shadow: var(--text-shadow);
-        }
-
-        .loading::after {
-            content: "";
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid var(--loading-color);
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .error {
-            color: var(--error-color);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-shadow: var(--text-shadow);
-        }
-
-        .error::before {
-            content: "⚠️";
-        }
-
-        .success {
-            color: var(--success-color);
-            text-shadow: var(--text-shadow);
-        }
-
-        .data-line {
-            margin: 8px 0;
-        }
-
-        .retry-btn {
-            background-color: var(--card-bg);
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 8px;
-            font-size: 14px;
-            transition: all 0.2s;
-            font-family: var(--font-family); /* Uses the theme font */
-            text-shadow: var(--text-shadow);
-        }
-
-        .retry-btn:hover {
-            background-color: var(--primary-color);
-            color: black;
-            box-shadow: 0 0 10px var(--primary-color);
-        }
-
-        .sim-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 12px;
-            margin: 12px 0;
-            box-shadow: var(--sim-card-shadow);
-        }
-
-        .connection-status {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 13px;
-            display: none;
-            font-family: var(--font-family); /* Uses the theme font */
-            border: 1px solid;
-        }
-
-        .online {
-            background-color: var(--card-bg);
-            color: var(--success-color);
-            border-color: var(--success-color);
-            text-shadow: var(--text-shadow);
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-        }
-
-        .offline {
-            background-color: var(--card-bg);
-            color: var(--error-color);
-            border-color: var(--error-color);
-            text-shadow: var(--text-shadow);
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
-        }
-
-        .glitch {
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
             position: relative;
         }
 
-        .glitch::before, .glitch::after {
-            content: attr(data-text);
+        .terminal {
+            border: 2px solid #0f0;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scan-line {
             position: absolute;
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 255, 0, 0.3);
+            animation: scan 3s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: -2px; }
+            100% { top: 100%; }
+        }
+
+        .code-text {
+            white-space: pre-wrap;
+            line-height: 1.5;
+            animation: typing 4s steps(40) infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        .glow {
+            text-shadow: 0 0 10px #0f0;
+        }
+
+        .matrix-effect {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            opacity: 0.8;
-        }
-
-        .glitch::before {
-            color: #0ff;
+            pointer-events: none;
             z-index: -1;
-            animation: var(--glitch-effect);
         }
 
-        .glitch::after {
-            color: #f0f;
-            z-index: -2;
-            animation: var(--glitch-effect);
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #0f0;
         }
 
-        /* Theme selector styles - Already fixed */
-        .theme-selector {
-            position: fixed; /* Keeps the button fixed */
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-
-        .theme-btn {
-            background-color: var(--card-bg);
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: var(--font-family); /* Uses the theme font */
-            text-shadow: var(--text-shadow);
-            transition: all 0.2s;
-        }
-
-        .theme-btn:hover {
-            background-color: var(--primary-color);
-            color: var(--card-bg);
-        }
-
-        .theme-dropdown {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: var(--card-bg);
-            border: 1px solid var(--primary-color);
-            border-radius: 4px;
-            min-width: 160px;
-            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-            z-index: 1;
-            margin-top: 5px;
-        }
-
-        .theme-dropdown a {
-            color: var(--text-color);
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            transition: background-color 0.3s;
-            font-family: var(--font-family); /* Use theme font for dropdown items */
-        }
-
-        .theme-dropdown a:hover {
-            background-color: var(--primary-color);
-            color: var(--card-bg);
-        }
-
-        .show {
-            display: block;
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .terminal {
+                margin-top: 20px;
+                padding: 10px;
+            }
+            
+            body {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
-<body class="theme-hacker"> <!-- Starts with Hacker theme -->
-    <div class="theme-selector">
-        <button onclick="toggleThemeDropdown()" class="theme-btn">Themes ▼</button>
-        <div id="themeDropdown" class="theme-dropdown">
-            <a href="#" onclick="setTheme('hacker')">Hacker Theme</a>
-            <a href="#" onclick="setTheme('normal')">Normal Theme</a>
+<body>
+    <div class="matrix-effect" id="matrix"></div>
+    
+    <div class="container">
+        <div class="terminal">
+            <div class="scan-line"></div>
+            <h1 class="glow" style="text-align: center; margin-bottom: 20px;">website ko update kiya ja Raha</h1>
+            <div class="code-text">
+                > Please Wait 
+                ███████████████] 100%
+                > Database Updating....
+                > Data Loading....
+                > .....
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div>Awais Narowaliya</div>
+         
         </div>
     </div>
-
-    <div class="page-header glitch" data-text="Pak Hacker Pro">
-        <h1 style="color: var(--header-color); margin: 0; text-shadow: var(--text-shadow);">Pak Hacker Pro</h1>
-    </div>
-
-    <h1>Number/CNIC Search</h1>
-    
-    <div class="input-container">
-        <label for="searchInput">Enter Number or CNIC:</label>
-        <input type="tel" id="searchInput"
-               placeholder="e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)"
-               maxlength="13"
-               inputmode="numeric"
-               pattern="\d*">
-        <div class="instructions">
-        </div>
-    </div>
-    
-    <div class="result-container" id="result"></div>
-
-    <div class="footer">
-        Created By Awais Narowaliya
-    </div>
-
-    <div id="connectionStatus" class="connection-status"></div>
 
     <script>
-        const searchInput = document.getElementById('searchInput');
-        const resultDiv = document.getElementById('result');
-        const connectionStatus = document.getElementById('connectionStatus');
-        
-        const SERVER_1_URL = "https://findsiminfo.com/rana/index.php?search_term=";
-        const SERVER_2_URL = "https://www.appelevates.com/siminfo/rehmanbackupapi.php?search=";
-        
-        function updateConnectionStatus() {
-            if (navigator.onLine) {
-                connectionStatus.textContent = "Online";
-                connectionStatus.className = "connection-status online";
-                connectionStatus.style.display = "block";
-                setTimeout(() => connectionStatus.style.display = "none", 3000);
-            } else {
-                connectionStatus.textContent = "Offline - No Internet Connection";
-                connectionStatus.className = "connection-status offline";
-                connectionStatus.style.display = "block";
-            }
+        function createMatrix() {
+            const characters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ%&*@#";
+            const matrix = document.getElementById('matrix');
+
+            setInterval(() => {
+                const span = document.createElement('span');
+                span.style.position = 'absolute';
+                span.style.left = Math.random() * 100 + '%';
+                span.style.animation = 'fall ' + (Math.random() * 3 + 2) + 's linear';
+                span.textContent = characters.charAt(Math.floor(Math.random() * characters.length));
+                matrix.appendChild(span);
+
+                setTimeout(() => span.remove(), 5000);
+            }, 100);
         }
 
-        window.addEventListener('online', updateConnectionStatus);
-        window.addEventListener('offline', updateConnectionStatus);
-        updateConnectionStatus();
-        
-        let debounceTimer;
-        let currentSearchTerm = "";
-
-        searchInput.addEventListener('input', function(e) {
-            clearTimeout(debounceTimer);
-            const input = e.target.value.trim();
-            currentSearchTerm = input;
-
-            const isValidNumber = /^0\d{10}$/.test(input);
-            const isValidCNIC = /^[1-9]\d{12}$/.test(input);
-            const isPartialValid = /^(0\d{0,10}|[1-9]\d{0,12})$/.test(input);
-
-            if (!isPartialValid && input.length > 0) { // Only show error if input is non-empty and invalid
-                resultDiv.innerHTML = '<p class="error">Invalid input format</p>';
-                // Optionally correct the value if needed, or just let the user fix it.
-                // e.target.value = input.replace(/[^\d]/g, '').substring(0, 13);
-                return;
-            } else if (input.length === 0) {
-                 resultDiv.innerHTML = ''; // Clear results if input is empty
-                 return;
+        // Add falling animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fall {
+                from { transform: translateY(-100%); opacity: 1; }
+                to { transform: translateY(100vh); opacity: 0; }
             }
+        `;
+        document.head.appendChild(style);
 
-
-            if (isValidNumber || isValidCNIC) {
-                searchInput.blur(); // Optionally remove focus
-                resultDiv.innerHTML = `
-                    <div class="server-result" id="server1">
-                        <div class="server-title">Server 1 Results</div>
-                        <p class="loading">Searching...</p>
-                    </div>
-                    <div class="server-result" id="server2">
-                        <div class="server-title">Server 2 Results</div>
-                        <p class="loading">Searching...</p>
-                    </div>
-                `;
-                
-                debounceTimer = setTimeout(() => searchBothServers(input), 300);
-            } else {
-                 // If input is partial but not yet valid, clear previous error/results
-                 if (isPartialValid) {
-                    resultDiv.innerHTML = '';
-                 }
-            }
-        });
-
-        async function searchBothServers(searchTerm) {
-            if (!navigator.onLine) {
-                showOfflineError();
-                return;
-            }
-            
-            // Clear previous results before new search starts
-             resultDiv.innerHTML = `
-                <div class="server-result" id="server1">
-                    <div class="server-title">Server 1 Results</div>
-                    <p class="loading">Searching...</p>
-                </div>
-                <div class="server-result" id="server2">
-                    <div class="server-title">Server 2 Results</div>
-                    <p class="loading">Searching...</p>
-                </div>
-            `;
-
-            let server1Success = false;
-            let server2Success = false;
-
-            // Server 1 attempt
-            try {
-                try {
-                    const response = await fetchWithTimeout(SERVER_1_URL + searchTerm, {}, 5000);
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    const data = await response.json();
-                    displayResults(data, 1, searchTerm.startsWith('0'));
-                    server1Success = true;
-                } catch (error) {
-                    console.warn("Server 1 direct fetch failed, trying proxy:", error);
-                    const proxyResponse = await fetchWithTimeout(
-                        `https://api.allorigins.win/get?url=${encodeURIComponent(SERVER_1_URL + searchTerm)}`,
-                        {},
-                        5000
-                    );
-                     if (!proxyResponse.ok) throw new Error(`Proxy HTTP error! status: ${proxyResponse.status}`);
-                    const proxyData = await proxyResponse.json();
-                    if (proxyData.contents) {
-                       const parsedData = JSON.parse(proxyData.contents);
-                       displayResults(parsedData, 1, searchTerm.startsWith('0'));
-                       server1Success = true;
-                    } else {
-                       throw new Error("Proxy returned empty contents");
-                    }
-                }
-            } catch (server1Error) {
-                 console.error("Server 1 Final Error:", server1Error);
-                 showServerError(1, `Server 1 Failed: ${server1Error.message}`);
-            }
-
-            // Server 2 attempt
-            try {
-                const response = await fetchWithTimeout(SERVER_2_URL + searchTerm, {}, 5000);
-                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const data = await response.json();
-                displayResults(data, 2, searchTerm.startsWith('0'));
-                server2Success = true;
-            } catch (server2Error) {
-                 console.error("Server 2 Error:", server2Error);
-                 showServerError(2, `Server 2 Failed: ${server2Error.message}`);
-            }
-        }
-
-        function fetchWithTimeout(url, options, timeout) {
-            return Promise.race([
-                fetch(url, options),
-                new Promise((_, reject) =>
-                    setTimeout(() => reject(new Error('Timeout')), timeout)
-                )
-            ]);
-        }
-
-        function displayResults(data, serverNumber, isNumberSearch) {
-            const serverDiv = document.getElementById(`server${serverNumber}`);
-            if (!serverDiv) return;
-
-            // Clear previous content (like loading/error message)
-            serverDiv.innerHTML = `
-                <div class="server-title">Server ${serverNumber} Results</div>
-                <div class="search-type" style="font-size: 0.9em; opacity: 0.8; margin-bottom: 10px;">Search Type: ${isNumberSearch ? 'Number' : 'CNIC'}</div>
-            `;
-
-            if (data && data.length > 0) {
-                // --- YEH LINE WOHI HAI JISKO PEHLE BADALNE KA KAHA THA, AB ORIGINAL HAI ---
-                serverDiv.innerHTML += `<p class="success">Found ${data.length} record(s)</p>`;
-                // ----------------------------------------------------------------------------
-                data.forEach((record, index) => {
-                    // Basic sanitation / N/A handling
-                    const name = record.Name || 'N/A';
-                    const mobile = record.Mobile || 'N/A';
-                    const cnic = record.CNIC || 'N/A';
-                    const address = record.ADDRESS || 'N/A';
-
-                    serverDiv.innerHTML += `
-                        <div class="sim-card">
-                            <div class="sim-title" style="font-weight: bold; margin-bottom: 5px; color: var(--primary-color);">Record ${index + 1}</div>
-                            <div class="data-line"><strong>Name:</strong> ${name}</div>
-                            ${!isNumberSearch ? `<div class="data-line"><strong>Mobile:</strong> ${mobile}</div>` : ''}
-                            <div class="data-line"><strong>CNIC:</strong> ${cnic}</div>
-                            <div class="data-line"><strong>Address:</strong> ${address}</div>
-                        </div>
-                    `;
-                });
-            } else if (data && data.message && data.message.includes("No record found")) {
-                 serverDiv.innerHTML += `<p class="error">No records found on Server ${serverNumber}</p>`;
-            }
-             else {
-                // Handle cases where data might be null, undefined, or empty array
-                serverDiv.innerHTML += `<p class="error">No records found or unexpected response on Server ${serverNumber}</p>`;
-            }
-        }
-
-
-        function showOfflineError() {
-            resultDiv.innerHTML = `
-                <div class="server-result">
-                    <div class="server-title">Connection Error</div>
-                    <p class="error">Please check your internet connection</p>
-                </div>
-            `;
-        }
-
-        function showServerError(serverNumber, message) {
-            const serverDiv = document.getElementById(`server${serverNumber}`);
-            if (!serverDiv) return;
-
-            // Ensure the title remains if the div was already there
-            const titleHTML = `<div class="server-title">Server ${serverNumber} Results</div>`;
-            serverDiv.innerHTML = titleHTML + `
-                <p class="error">${message}</p>
-                <button class="retry-btn" onclick="retryServer(${serverNumber})">Retry Server ${serverNumber}</button>
-            `;
-        }
-
-        window.retryServer = async function(serverNumber) {
-            if (!currentSearchTerm) return;
-            if (!navigator.onLine) {
-                 showOfflineError(); // Check connection before retry
-                 return;
-            }
-
-            const serverDiv = document.getElementById(`server${serverNumber}`);
-            serverDiv.innerHTML = `
-                <div class="server-title">Server ${serverNumber} Results</div>
-                <p class="loading">Retrying...</p>
-            `;
-
-            const isNumberSearch = currentSearchTerm.startsWith('0');
-
-            try {
-                let url;
-                let response;
-                let data;
-
-                if (serverNumber === 1) {
-                     url = SERVER_1_URL + currentSearchTerm;
-                     try {
-                        response = await fetchWithTimeout(url, {}, 5000);
-                         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                         data = await response.json();
-                     } catch (error) {
-                         console.warn("Server 1 direct retry failed, trying proxy:", error);
-                         const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-                         response = await fetchWithTimeout(proxyUrl, {}, 5000);
-                         if (!response.ok) throw new Error(`Proxy HTTP error! status: ${response.status}`);
-                         const proxyData = await response.json();
-                         if (proxyData.contents) {
-                             data = JSON.parse(proxyData.contents);
-                         } else {
-                            throw new Error("Proxy returned empty contents on retry");
-                         }
-                     }
-                } else { // Server 2
-                    url = SERVER_2_URL + currentSearchTerm;
-                    response = await fetchWithTimeout(url, {}, 5000);
-                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                     data = await response.json();
-                }
-
-                displayResults(data, serverNumber, isNumberSearch);
-            } catch (error) {
-                 console.error(`Retry Server ${serverNumber} Error:`, error);
-                 showServerError(serverNumber, `Retry failed: ${error.message}`);
-            }
-        };
-
-
-        searchInput.addEventListener('keypress', (e) => {
-             // Allow only digits
-            if (!/\d/.test(e.key)) {
-                 e.preventDefault();
-            }
-        });
-
-        searchInput.addEventListener('paste', (e) => {
-             e.preventDefault();
-             const text = (e.clipboardData || window.clipboardData).getData('text');
-             const cleanedText = text.replace(/\D/g, ''); // Remove non-digits
-             // Insert cleaned text, respecting maxlength
-             const currentVal = e.target.value;
-             const selectionStart = e.target.selectionStart;
-             const selectionEnd = e.target.selectionEnd;
-             const newVal = currentVal.slice(0, selectionStart) + cleanedText + currentVal.slice(selectionEnd);
-             e.target.value = newVal.substring(0, 13); // Apply maxlength
-             // Trigger input event to re-validate and potentially search
-             searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-        });
-
-
-        // Theme switching functionality
-        function toggleThemeDropdown() {
-            document.getElementById("themeDropdown").classList.toggle("show");
-        }
-
-        function setTheme(themeName) {
-            document.body.className = `theme-${themeName}`;
-            localStorage.setItem('selectedTheme', themeName); // Save preference
-            document.getElementById("themeDropdown").classList.remove("show");
-
-            // Restart or stop typing effect based on theme
-            clearTimeout(window.typingTimeout); // Clear any existing typing timeout
-             if (themeName === 'hacker') {
-                 // Only apply typing effect if input is currently empty
-                 if (searchInput.value === '') {
-                    startTypingEffect();
-                 } else {
-                     // Keep the original placeholder if there's user input
-                     searchInput.setAttribute('placeholder',
-                        "e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)");
-                 }
-             } else {
-                 // Normal theme always gets the static placeholder
-                 searchInput.setAttribute('placeholder',
-                    "e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)");
-             }
-        }
-
-        // Close the dropdown if clicked outside
-        window.onclick = function(event) {
-            if (!event.target.matches('.theme-btn')) {
-                const dropdowns = document.getElementsByClassName("theme-dropdown");
-                for (let i = 0; i < dropdowns.length; i++) {
-                    const openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
-                }
-            }
-        }
-
-        // Typing effect function
-        function startTypingEffect() {
-            // Only run if the body has the hacker theme class
-             if (!document.body.classList.contains('theme-hacker')) {
-                return;
-             }
-             // Also check if the input field is empty before starting
-             if (searchInput.value !== '') {
-                searchInput.setAttribute('placeholder',
-                        "e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)");
-                return; // Don't start if user has typed something
-             }
-
-            const placeholderText = "e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)";
-            let i = 0;
-            searchInput.setAttribute('placeholder', ''); // Clear initially
-
-            function type() {
-                 // Check again inside timeout in case theme changed or user typed
-                 if (!document.body.classList.contains('theme-hacker') || searchInput.value !== '') {
-                     searchInput.setAttribute('placeholder', placeholderText); // Restore static placeholder
-                     return;
-                 }
-
-                if (i < placeholderText.length) {
-                    searchInput.setAttribute('placeholder', placeholderText.substring(0, i + 1) + '|'); // Add cursor
-                    i++;
-                    window.typingTimeout = setTimeout(type, Math.random() * 80 + 40); // Typing speed
-                } else {
-                     searchInput.setAttribute('placeholder', placeholderText); // Remove cursor at end
-                    window.typingTimeout = setTimeout(() => {
-                        // Restart effect only if still hacker theme and input is empty
-                        if (document.body.classList.contains('theme-hacker') && searchInput.value === '') {
-                            i = 0;
-                            searchInput.setAttribute('placeholder', '');
-                            window.typingTimeout = setTimeout(type, 1000); // Pause before restart
-                        } else {
-                             searchInput.setAttribute('placeholder', placeholderText); // Set static if condition changed
-                        }
-                    }, 2500); // Pause at end
-                }
-            }
-
-            clearTimeout(window.typingTimeout); // Clear previous before starting
-            type();
-        }
-        
-         // Stop typing effect if user starts typing
-        searchInput.addEventListener('input', () => {
-             clearTimeout(window.typingTimeout);
-              // Restore static placeholder if typing effect was running
-             if (document.body.classList.contains('theme-hacker')) {
-                 searchInput.setAttribute('placeholder',
-                        "e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)");
-             }
-        });
-
-        // Load saved theme or default to hacker
-        const savedTheme = localStorage.getItem('selectedTheme');
-        setTheme(savedTheme || 'hacker'); // Apply saved or default theme on load
-
+        createMatrix();
     </script>
 </body>
 </html>
