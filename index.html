@@ -4,13 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pak Hacker Pro - SIM Search</title>
-    <!--
-        CRITICAL: MAKE SURE 'html2canvas.min.js' IS IN THE SAME FOLDER AS THIS HTML FILE!
-        If you haven't downloaded it, go to:
-        https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js
-        Save it as 'html2canvas.min.js' in this same folder.
-    -->
-    <script src="html2canvas.min.js"></script>
+    <script src="html2canvas.min.js"></script> <!-- LOCAL FILE -->
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -21,7 +15,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            font-size: 16px; /* Base font size */
+            font-size: 16px;
         }
         .content-wrap {
             flex: 1;
@@ -58,6 +52,12 @@
             border-radius: 5px;
             font-size: 1em;
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            -moz-appearance: textfield;
+        }
+        #searchInput::-webkit-outer-spin-button,
+        #searchInput::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
         #searchInput:focus {
             border-color: #e2001a;
@@ -118,12 +118,12 @@
             border-radius: 5px;
             min-height: 50px;
             border: 1px solid #eee;
-            overflow-x: auto; /* Allow horizontal scroll if table is too wide */
+            overflow-x: auto;
         }
         #captureArea {
-            padding: 15px; /* Padding around the table for capture */
-            background-color: #ffffff; /* Solid background for image capture */
-            min-width: 450px; /* Minimum width for the capture area */
+            padding: 15px;
+            background-color: #ffffff;
+            min-width: 450px;
         }
         table {
             width: 100%;
@@ -134,25 +134,30 @@
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
-            font-size: 0.9em; /* Base table font size for mobile */
-            word-break: break-word; /* Allow wrapping by default */
+            font-size: 0.9em;
+            word-break: break-word;
             vertical-align: top;
         }
         th {
             background-color: #e2001a;
             color: white;
             font-weight: bold;
-            white-space: nowrap; /* Keep table headers on one line */
+            white-space: nowrap;
         }
         tr:nth-child(even) {
             background-color: #fdf0f0;
         }
 
-        /* Column Width Definitions (Mobile First - these allow wrapping) */
+        #captureArea table td:nth-child(1),
+        #captureArea table td:nth-child(2),
+        #captureArea table td:nth-child(3)
+        {
+            /* Default is wrap for mobile */
+        }
         #captureArea table th:nth-child(1), #captureArea table td:nth-child(1) { width: 25%; }
         #captureArea table th:nth-child(2), #captureArea table td:nth-child(2) { width: 30%; }
         #captureArea table th:nth-child(3), #captureArea table td:nth-child(3) { width: 20%; }
-        #captureArea table th:nth-child(4), #captureArea table td:nth-child(4) { width: 25%; }
+        #captureArea table th:nth-child(4), #captureArea table td:nth-child(4) { width: 25%; white-space: normal; }
 
 
         #resultsContainer > p {
@@ -204,7 +209,6 @@
             cursor: not-allowed;
             opacity: 0.7;
         }
-
         .footer {
             text-align: right;
             padding: 10px 15px;
@@ -212,10 +216,9 @@
             color: #f0f0f0;
             font-size: 0.8em;
             margin-top: auto;
+            line-height: 1.4; /* Added for better spacing between lines in footer */
         }
-
-        /* --- Responsive Adjustments --- */
-        @media (min-width: 768px) { /* Tablets and larger */
+        @media (min-width: 768px) {
             .content-wrap { padding: 20px; }
             .container { padding: 25px; margin: 20px auto; }
             h1 { font-size: 2.2em; }
@@ -226,7 +229,6 @@
             #resultsContainer { margin-top: 25px; }
             #captureArea { padding: 20px; min-width: 600px; }
             th, td { font-size: 0.95em; padding: 10px; }
-
             #captureArea table td:nth-child(1),
             #captureArea table td:nth-child(2),
             #captureArea table td:nth-child(3) {
@@ -238,13 +240,11 @@
             #captureArea table th:nth-child(2), #captureArea table td:nth-child(2) { width: 30%; }
             #captureArea table th:nth-child(3), #captureArea table td:nth-child(3) { width: 20%; }
             #captureArea table th:nth-child(4), #captureArea table td:nth-child(4) { width: 30%; white-space: normal; }
-
             #resultsContainer > p { padding: 20px; }
             #actionButtons { margin-top: 20px; gap: 15px; flex-direction: row; }
             #actionButtons button { padding: 10px 20px; font-size: 1em; flex-grow: 0; width: auto; }
         }
-
-        @media (max-width: 767px) { /* Smaller than tablets */
+        @media (max-width: 767px) {
              .search-area {
                 flex-direction: column;
                 gap: 15px;
@@ -272,7 +272,7 @@
             </div>
 
             <div class="search-area">
-                <input type="text" id="searchInput" placeholder="Enter Number or CNIC (digits only)">
+                <input type="tel" id="searchInput" inputmode="numeric" pattern="[0-9]*" placeholder="Number (11 digits) or CNIC (13 digits)">
                 <button id="searchButton">
                     <span class="button-text">Search</span>
                     <div class="spinner"></div>
@@ -290,8 +290,10 @@
         </div>
     </div>
 
+    <!-- UPDATED FOOTER -->
     <footer class="footer">
-        Create By Awais Narowaliya
+        Created by Awais Narowaliya<br>
+        WhatsApp +923070378723
     </footer>
 
     <script>
@@ -316,29 +318,29 @@
             const saveImageButton = document.getElementById('saveImageButton');
             const shareImageButton = document.getElementById('shareImageButton');
 
-            // --- DEBUG SEARCH BUTTON ---
             if (searchButton) {
                 console.log("Search button ELEMENT FOUND:", searchButton);
                 console.log("Search button initial disabled state:", searchButton.disabled);
-
-                searchButton.addEventListener('click', performSearch); // This is the primary event listener
+                searchButton.addEventListener('click', performSearch);
                 console.log("Event listener ADDED for Search button click (addEventListener).");
-
-                // Simple raw onclick for basic click detection test (can be removed after confirming basic click works)
-                // searchButton.onclick = function() {
-                //     console.log("--- RAW ONCLICK TEST: Search Button Clicked Physically! ---");
-                // };
-
             } else {
                 console.error("CRITICAL: searchButton element with ID 'searchButton' NOT FOUND in HTML!");
             }
-            // --- END DEBUG SEARCH BUTTON ---
-
 
             if (searchInput) {
                 searchInput.addEventListener('input', function(e) {
-                    this.value = this.value.replace(/[^0-9]/g, '');
+                    let value = this.value;
+                    value = value.replace(/[^0-9]/g, '');
+                    let maxLength = 13;
+                    if (value.length > 0 && value.charAt(0) === '0') {
+                        maxLength = 11;
+                    }
+                    if (value.length > maxLength) {
+                        value = value.slice(0, maxLength);
+                    }
+                    this.value = value;
                 });
+
                  searchInput.addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
                         console.log("Enter key pressed in searchInput.");
@@ -353,6 +355,7 @@
             } else {
                 console.error("CRITICAL: searchInput element NOT FOUND");
             }
+
 
             if (saveImageButton) {
                 saveImageButton.addEventListener('click', captureAndSaveImage);
@@ -373,7 +376,6 @@
                     console.warn("toggleSearchButtonLoading: searchButton not found.");
                     return;
                 }
-                console.log("toggleSearchButtonLoading called. isLoading:", isLoading, "Current disabled:", searchButton.disabled);
                 if (isLoading) {
                     searchButton.classList.add('loading');
                     searchButton.disabled = true;
@@ -381,7 +383,6 @@
                     searchButton.classList.remove('loading');
                     searchButton.disabled = false;
                 }
-                console.log("Search button disabled state AFTER toggle:", searchButton.disabled);
             }
 
             async function performSearch() {
@@ -401,6 +402,19 @@
                     resultsContainer.innerHTML = '<p class="error">Please enter something to search.</p>';
                     toggleSearchButtonLoading(false);
                     return;
+                }
+                let isValidLength = false;
+                if (searchTerm.charAt(0) === '0' && searchTerm.length === 11) {
+                    isValidLength = true;
+                } else if (searchTerm.charAt(0) !== '0' && searchTerm.length === 13) {
+                    isValidLength = true;
+                }
+
+                if (!isValidLength) {
+                     let expectedLength = searchTerm.charAt(0) === '0' ? 11 : 13;
+                     resultsContainer.innerHTML = `<p class="error">Please enter a complete ${expectedLength}-digit number.</p>`;
+                     toggleSearchButtonLoading(false);
+                     return;
                 }
 
                 const fullApiUrl = "https://www.appelevates.com/siminfo/rehmanbackupapi.php?search=" + encodeURIComponent(searchTerm);
