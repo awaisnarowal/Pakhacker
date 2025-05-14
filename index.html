@@ -1,3 +1,4 @@
+"Action buttons
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -489,4 +490,145 @@
                     resultsContainer.appendChild(captureArea);
                     if (actionButtonsContainer) {
                         actionButtonsContainer.style.display = 'flex';
-                        console.log("Action buttons
+                        console.log("Action buttons container displayed.");
+                        if (saveImageButton) saveImageButton.disabled = false;
+                        if (shareImageButton) shareImageButton.disabled = false;
+                    } else {
+                        console.error("actionButtonsContainer not found when trying to display it.");
+                    }
+                }
+            }
+
+            async function captureElementAsCanvas(elementId) {
+                console.log("Attempting to capture element with ID:", elementId);
+                const elementToCapture = document.getElementById(elementId);
+
+                if (!elementToCapture) {
+                    console.error("Element to capture not found:", elementId);
+                    alert("Error: Could not find the result area to capture.");
+                    return null;
+                }
+                if (typeof html2canvas === 'undefined') {
+                     console.error("html2canvas is not defined. Cannot capture image.");
+                     return null;
+                }
+
+                try {
+                    console.log("html2canvas starting for element:", elementToCapture);
+                    const canvas = await html2canvas(elementToCapture, {
+                        useCORS: true,
+                        backgroundColor: '#ffffff',
+                        scale: 2,
+                        logging: true
+                    });
+                    console.log("html2canvas completed successfully.");
+                    return canvas;
+                } catch (error) {
+                    console.error("Error capturing element with html2canvas:", error);
+                    alert("Error generating image from results. Check console. Message: " + error.message);
+                    return null;
+                }
+            }
+
+            async function captureAndSaveImage() {
+                console.log("--- captureAndSaveImage function CALLED ---");
+                if (!saveImageButton) { console.error("Save button is null in captureAndSaveImage"); return; }
+                saveImageButton.disabled = true;
+                saveImageButton.textContent = 'Saving...';
+
+                try {
+                    const canvas = await captureElementAsCanvas('captureArea');
+                    if (canvas) {
+                        const imageURL = canvas.toDataURL('image/png');
+                        const a = document.createElement('a');
+                        a.href = imageURL;
+                        a.download = 'pak_hacker_pro_result.png';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        console.log("Image download initiated.");
+                    } else {
+                        console.log("Canvas not generated, save aborted.");
+                        alert("Could not generate image. Please try again.");
+                    }
+                } catch (e) {
+                    console.error("Error during image save process:", e);
+                    alert("Failed to save image. " + e.message);
+                } finally {
+                    if (saveImageButton) {
+                        saveImageButton.disabled = false;
+                        saveImageButton.textContent = 'Save Result Image';
+                    }
+                }
+            }
+
+            async function captureAndShareImage() {
+                console.log("--- captureAndShareImage function CALLED ---");
+                if (!shareImageButton) { console.error("Share button is null in captureAndShareImage"); return; }
+                shareImageButton.disabled = true;
+                shareImageButton.textContent = 'Preparing...';
+
+                try {
+                    if (typeof navigator.share === 'undefined') {
+                        alert('Web Share API is not supported in your browser or not on HTTPS/localhost. Try saving the image.');
+                        console.warn("Web Share API not supported.");
+                    } else {
+                        const canvas = await captureElementAsCanvas('captureArea');
+                        if (canvas) {
+                            await new Promise((resolve, reject) => {
+                                canvas.toBlob(async function(blob) {
+                                    if (blob) {
+                                        const file = new File([blob], "pak_hacker_pro_result.png", { type: "image/png" });
+                                        const shareData = {
+                                            title: 'Pak Hacker Pro - SIM Result',
+                                            text: 'Check out this SIM information.',
+                                            files: [file]
+                                        };
+                                        if (navigator.canShare && navigator.canShare(shareData)) {
+                                            console.log("Attempting to share:", shareData);
+                                            try {
+                                                await navigator.share(shareData);
+                                                console.log('Share successful or dialog opened.');
+                                                resolve();
+                                            } catch (error) {
+                                                console.error('Error during navigator.share:', error);
+                                                if (error.name !== 'AbortError') {
+                                                   alert('Error sharing image: ' + error.message);
+                                                } else {
+                                                   console.log("User cancelled share.");
+                                                }
+                                                reject(error);
+                                            }
+                                        } else {
+                                            console.warn("navigator.canShare returned false or is unavailable.");
+                                            alert("Your browser cannot share this file type. Try saving.");
+                                            reject(new Error("Cannot share this data."));
+                                        }
+                                    } else {
+                                        console.error('Blob creation failed.');
+                                        alert('Could not create image blob for sharing.');
+                                        reject(new Error('Blob creation failed.'));
+                                    }
+                                }, 'image/png');
+                            });
+                        } else {
+                            console.log("Canvas not generated for sharing.");
+                            alert("Could not generate image for sharing.");
+                        }
+                    }
+                } catch (e) {
+                    console.error("General error in captureAndShareImage:", e);
+                     if (e.name !== 'AbortError' && e.message !== 'Blob creation failed.' && e.message !== "Cannot share this data.") {
+                        alert("Failed to prepare image for sharing. " + e.message);
+                    }
+                } finally {
+                    if (shareImageButton) {
+                        shareImageButton.disabled = false;
+                        shareImageButton.textContent = 'Share Result Image';
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
