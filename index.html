@@ -3,554 +3,490 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pak Hacker Pro - Search Tool</title>
+    <title>Pak Hacker Pro - SIM Search</title>
+    <!--
+        CRITICAL: MAKE SURE 'html2canvas.min.js' IS IN THE SAME FOLDER AS THIS HTML FILE!
+        If you haven't downloaded it, go to:
+        https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js
+        Save it as 'html2canvas.min.js' in this same folder.
+    -->
+    <script src="html2canvas.min.js"></script>
     <style>
-        /* Hacker Theme (always default) - FONT CHANGED HERE */
-        :root, .theme-hacker {
-            --bg-color: #000000;
-            --card-bg: #111111;
-            --primary-color: #00ff00;
-            --text-color: #00ff00;
-            --border-color: #003300;
-            --error-color: #ff3333;
-            --success-color: #00ff00;
-            --loading-color: #00aa00;
-            /* --- YEH LINE BADLI GAYI HAI --- */
-            --font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-            /* -------------------------------- */
-            --scan-effect: linear-gradient(rgba(0, 255, 0, 0.05) 2px, transparent 2px);
-            --header-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-            --input-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-            --card-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
-            --sim-card-shadow: 0 0 8px rgba(0, 255, 0, 0.2);
-            --header-bg: var(--card-bg);
-            --header-color: var(--primary-color);
-            --text-shadow: 0 0 5px var(--primary-color);
-            --glitch-effect: glitch-effect 3s infinite;
-        }
-
-        /* Normal Theme (alternative) */
-        .theme-normal {
-            --bg-color: #f3f3f3;
-            --card-bg: #ffffff;
-            --primary-color: #0078d4;
-            --text-color: #323130;
-            --border-color: #edebe9;
-            --error-color: #a4262c;
-            --success-color: #107c10;
-            --loading-color: #797775;
-            --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; /* Uses similar font */
-            --scan-effect: none;
-            --header-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            --input-shadow: none;
-            --card-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.1), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.07);
-            --sim-card-shadow: 0 0.8px 2.4px 0 rgba(0, 0, 0, 0.05);
-            --header-bg: var(--primary-color);
-            --header-color: white;
-            --text-shadow: none;
-            --glitch-effect: none;
-        }
-
         body {
-            font-family: var(--font-family); /* Uses the font defined in the theme */
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            line-height: 1.6;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--scan-effect);
-            background-size: 100% 4px;
-            z-index: -1;
-            animation: scan 8s linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes scan {
-            0% { background-position: 0 -100px; }
-            100% { background-position: 0 100px; }
-        }
-
-        @keyframes glitch-effect {
-            0% { transform: translate(0); }
-            20% { transform: translate(-3px, 3px); }
-            40% { transform: translate(-3px, -3px); }
-            60% { transform: translate(3px, 3px); }
-            80% { transform: translate(3px, -3px); }
-            100% { transform: translate(0); }
-        }
-
-        .page-header {
-            background-color: var(--header-bg);
-            color: var(--header-color);
-            padding: 15px 20px;
-            text-align: center;
-            border-radius: 4px;
-            margin-bottom: 30px;
-            box-shadow: var(--header-shadow);
-            border: 1px solid var(--primary-color);
-            text-shadow: var(--text-shadow);
-        }
-
-        h1 {
-            color: var(--primary-color);
-            font-weight: 600;
-            margin-bottom: 24px;
-            text-shadow: var(--text-shadow);
-        }
-
-        .input-container {
-            margin-bottom: 24px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            font-size: 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            box-sizing: border-box;
-            background-color: var(--card-bg);
-            transition: border-color 0.2s;
-            color: var(--text-color);
-            font-family: var(--font-family); /* Uses the theme font */
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: var(--input-shadow);
-        }
-
-        .result-container {
-            margin-top: 24px;
-        }
-
-        .server-result {
-            margin-bottom: 24px;
-            padding: 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background-color: var(--card-bg);
-            box-shadow: var(--card-shadow);
-        }
-
-        .server-title {
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 12px;
-            font-size: 16px;
-            text-shadow: var(--text-shadow);
-        }
-
-        .footer {
-            text-align: right;
-            margin-top: 32px;
-            color: var(--primary-color);
-            font-size: 13px;
-            font-weight: 600;
-            padding: 10px;
-            border-top: 2px solid var(--primary-color);
-            text-shadow: var(--text-shadow);
-        }
-
-        .loading {
-            color: var(--loading-color);
-            font-style: italic;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
             display: flex;
-            align-items: center;
-            gap: 8px;
-            text-shadow: var(--text-shadow);
+            flex-direction: column;
+            min-height: 100vh;
+            font-size: 16px; /* Base font size */
         }
-
-        .loading::after {
-            content: "";
-            display: inline-block;
+        .content-wrap {
+            flex: 1;
+            padding: 10px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 10px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .title-area {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #e2001a;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 2em;
+        }
+        .search-area {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        #searchInput {
+            flex-grow: 1;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        #searchInput:focus {
+            border-color: #e2001a;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(226, 0, 26, 0.25);
+        }
+        #searchButton {
+            padding: 10px 20px;
+            background-color: #e2001a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.2s ease-in-out, opacity 0.2s;
+            min-width: 90px;
+            position: relative;
+        }
+        #searchButton:hover:not(:disabled) {
+            background-color: #c00015;
+        }
+        #searchButton:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        #searchButton .button-text {
+            transition: opacity 0.2s;
+        }
+        #searchButton .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
             width: 16px;
             height: 16px;
-            border: 2px solid var(--loading-color);
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: spin 1s ease-in-out infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -8px;
+            margin-left: -8px;
+            display: none;
         }
-
+        #searchButton.loading .button-text {
+            opacity: 0;
+        }
+        #searchButton.loading .spinner {
+            display: block;
+        }
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        .error {
-            color: var(--error-color);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-shadow: var(--text-shadow);
+        #resultsContainer {
+            margin-top: 20px;
+            padding: 0;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            min-height: 50px;
+            border: 1px solid #eee;
+            overflow-x: auto; /* Allow horizontal scroll if table is too wide */
         }
-
-        .error::before {
-            content: "⚠️";
+        #captureArea {
+            padding: 15px; /* Padding around the table for capture */
+            background-color: #ffffff; /* Solid background for image capture */
+            min-width: 450px; /* Minimum width for the capture area */
         }
-
-        .success {
-            color: var(--success-color);
-            text-shadow: var(--text-shadow);
-        }
-
-        .data-line {
-            margin: 8px 0;
-        }
-
-        .retry-btn {
-            background-color: var(--card-bg);
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 8px;
-            font-size: 14px;
-            transition: all 0.2s;
-            font-family: var(--font-family); /* Uses the theme font */
-            text-shadow: var(--text-shadow);
-        }
-
-        .retry-btn:hover {
-            background-color: var(--primary-color);
-            color: black;
-            box-shadow: 0 0 10px var(--primary-color);
-        }
-
-        .sim-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 12px;
-            margin: 12px 0;
-            box-shadow: var(--sim-card-shadow);
-        }
-
-        .connection-status {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 13px;
-            display: none;
-            font-family: var(--font-family); /* Uses the theme font */
-            border: 1px solid;
-        }
-
-        .online {
-            background-color: var(--card-bg);
-            color: var(--success-color);
-            border-color: var(--success-color);
-            text-shadow: var(--text-shadow);
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-        }
-
-        .offline {
-            background-color: var(--card-bg);
-            color: var(--error-color);
-            border-color: var(--error-color);
-            text-shadow: var(--text-shadow);
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
-        }
-
-        .glitch {
-            position: relative;
-        }
-
-        .glitch::before, .glitch::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
+        table {
             width: 100%;
-            height: 100%;
-            opacity: 0.8;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            font-size: 0.9em; /* Base table font size for mobile */
+            word-break: break-word; /* Allow wrapping by default */
+            vertical-align: top;
+        }
+        th {
+            background-color: #e2001a;
+            color: white;
+            font-weight: bold;
+            white-space: nowrap; /* Keep table headers on one line */
+        }
+        tr:nth-child(even) {
+            background-color: #fdf0f0;
         }
 
-        .glitch::before {
-            color: #0ff;
-            z-index: -1;
-            animation: var(--glitch-effect);
-        }
+        /* Column Width Definitions (Mobile First - these allow wrapping) */
+        #captureArea table th:nth-child(1), #captureArea table td:nth-child(1) { width: 25%; }
+        #captureArea table th:nth-child(2), #captureArea table td:nth-child(2) { width: 30%; }
+        #captureArea table th:nth-child(3), #captureArea table td:nth-child(3) { width: 20%; }
+        #captureArea table th:nth-child(4), #captureArea table td:nth-child(4) { width: 25%; }
 
-        .glitch::after {
-            color: #f0f;
-            z-index: -2;
-            animation: var(--glitch-effect);
-        }
 
-        /* Theme selector styles - Already fixed */
-        .theme-selector {
-            position: fixed; /* Keeps the button fixed */
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
+        #resultsContainer > p {
+            padding: 15px;
+            margin: 0;
+            border-radius: 5px;
         }
-
-        .theme-btn {
-            background-color: var(--card-bg);
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
-            padding: 8px 16px;
-            border-radius: 4px;
+        .error {
+            color: #c00015;
+            font-weight: bold;
+            background-color: #ffebee;
+        }
+        .info {
+            color: #0056b3;
+            background-color: #e7f3fe;
+            text-align: center;
+        }
+        .loading-message {
+            text-align: center;
+            font-style: italic;
+            color: #555;
+            background-color: transparent;
+        }
+        #actionButtons {
+            margin-top: 15px;
+            text-align: center;
+            gap: 10px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        #actionButtons button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
-            font-family: var(--font-family); /* Uses the theme font */
-            text-shadow: var(--text-shadow);
-            transition: all 0.2s;
+            font-size: 0.95em;
+            transition: background-color 0.2s ease-in-out;
+            flex-grow: 1;
+            min-width: 120px;
+        }
+        #actionButtons button:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+        #actionButtons button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.7;
         }
 
-        .theme-btn:hover {
-            background-color: var(--primary-color);
-            color: var(--card-bg);
+        .footer {
+            text-align: right;
+            padding: 10px 15px;
+            background-color: #333;
+            color: #f0f0f0;
+            font-size: 0.8em;
+            margin-top: auto;
         }
 
-        .theme-dropdown {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: var(--card-bg);
-            border: 1px solid var(--primary-color);
-            border-radius: 4px;
-            min-width: 160px;
-            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-            z-index: 1;
-            margin-top: 5px;
+        /* --- Responsive Adjustments --- */
+        @media (min-width: 768px) { /* Tablets and larger */
+            .content-wrap { padding: 20px; }
+            .container { padding: 25px; margin: 20px auto; }
+            h1 { font-size: 2.2em; }
+            .search-area { margin-bottom: 25px; flex-direction: row; }
+            #searchInput, #searchButton { width: auto; }
+            #searchInput { padding: 12px 15px; }
+            #searchButton { padding: 12px 25px; min-width: 100px; }
+            #resultsContainer { margin-top: 25px; }
+            #captureArea { padding: 20px; min-width: 600px; }
+            th, td { font-size: 0.95em; padding: 10px; }
+
+            #captureArea table td:nth-child(1),
+            #captureArea table td:nth-child(2),
+            #captureArea table td:nth-child(3) {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            #captureArea table th:nth-child(1), #captureArea table td:nth-child(1) { width: 20%; }
+            #captureArea table th:nth-child(2), #captureArea table td:nth-child(2) { width: 30%; }
+            #captureArea table th:nth-child(3), #captureArea table td:nth-child(3) { width: 20%; }
+            #captureArea table th:nth-child(4), #captureArea table td:nth-child(4) { width: 30%; white-space: normal; }
+
+            #resultsContainer > p { padding: 20px; }
+            #actionButtons { margin-top: 20px; gap: 15px; flex-direction: row; }
+            #actionButtons button { padding: 10px 20px; font-size: 1em; flex-grow: 0; width: auto; }
         }
 
-        .theme-dropdown a {
-            color: var(--text-color);
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            transition: background-color 0.3s;
-            font-family: var(--font-family); /* Use theme font for dropdown items */
-        }
-
-        .theme-dropdown a:hover {
-            background-color: var(--primary-color);
-            color: var(--card-bg);
-        }
-
-        .show {
-            display: block;
+        @media (max-width: 767px) { /* Smaller than tablets */
+             .search-area {
+                flex-direction: column;
+                gap: 15px;
+            }
+            #searchInput, #searchButton {
+                width: 100%;
+                box-sizing: border-box;
+            }
+            #actionButtons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            #actionButtons button {
+                width: 100%;
+                box-sizing: border-box;
+            }
         }
     </style>
 </head>
-<body class="theme-hacker"> <!-- Starts with Hacker theme -->
-    <div class="theme-selector">
-        <button onclick="toggleThemeDropdown()" class="theme-btn">Themes ▼</button>
-        <div id="themeDropdown" class="theme-dropdown">
-            <a href="#" onclick="setTheme('hacker')">Hacker Theme</a>
-            <a href="#" onclick="setTheme('normal')">Normal Theme</a>
+<body>
+    <div class="content-wrap">
+        <div class="container">
+            <div class="title-area">
+                <h1>Pak Hacker Pro</h1>
+            </div>
+
+            <div class="search-area">
+                <input type="text" id="searchInput" placeholder="Enter Number or CNIC (digits only)">
+                <button id="searchButton">
+                    <span class="button-text">Search</span>
+                    <div class="spinner"></div>
+                </button>
+            </div>
+
+            <div id="resultsContainer">
+                <p class="info">Please enter a number or CNIC to search.</p>
+            </div>
+
+            <div id="actionButtons" style="display: none;">
+                <button id="saveImageButton">Save Result Image</button>
+                <button id="shareImageButton">Share Result Image</button>
+            </div>
         </div>
     </div>
 
-    <div class="page-header glitch" data-text="Pak Hacker Pro">
-        <h1 style="color: var(--header-color); margin: 0; text-shadow: var(--text-shadow);">Pak Hacker Pro</h1>
-    </div>
-
-    <h1>Number/CNIC Search</h1>
-    
-    <div class="input-container">
-        <label for="searchInput">Enter Number or CNIC:</label>
-        <input type="tel" id="searchInput"
-               placeholder="e.g.,03001234567 (11-digit number) or 4220112345678 (13-digit CNIC)"
-               maxlength="13"
-               inputmode="numeric"
-               pattern="\d*">
-        <div class="instructions">
-        </div>
-    </div>
-    
-    <div class="result-container" id="result"></div>
-
-    <div class="footer">
-        Created By Awais Narowaliya
-    </div>
-
-    <div id="connectionStatus" class="connection-status"></div>
+    <footer class="footer">
+        Create By Awais Narowaliya
+    </footer>
 
     <script>
-        const searchInput = document.getElementById('searchInput');
-        const resultDiv = document.getElementById('result');
-        const connectionStatus = document.getElementById('connectionStatus');
-        
-        const SERVER_1_URL = "https://findsiminfo.com/rana/index.php?search_term=";
-        const SERVER_2_URL = "https://www.appelevates.com/siminfo/rehmanbackupapi.php?search=";
-        
-        function updateConnectionStatus() {
-            if (navigator.onLine) {
-                connectionStatus.textContent = "Online";
-                connectionStatus.className = "connection-status online";
-                connectionStatus.style.display = "block";
-                setTimeout(() => connectionStatus.style.display = "none", 3000);
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("SCRIPT START: DOMContentLoaded fired.");
+
+            if (typeof html2canvas === 'undefined') {
+                console.error("CRITICAL: html2canvas library is not loaded! Ensure 'html2canvas.min.js' is in the same folder and the script tag is correct.");
+                alert("Error: Image capture library (html2canvas) failed to load. Save/Share features will not work. Please ensure 'html2canvas.min.js' is in the same folder as this HTML file and try refreshing.");
+                const tempSaveButton = document.getElementById('saveImageButton');
+                const tempShareButton = document.getElementById('shareImageButton');
+                if (tempSaveButton) tempSaveButton.disabled = true;
+                if (tempShareButton) tempShareButton.disabled = true;
             } else {
-                connectionStatus.textContent = "Offline - No Internet Connection";
-                connectionStatus.className = "connection-status offline";
-                connectionStatus.style.display = "block";
-            }
-        }
-
-        window.addEventListener('online', updateConnectionStatus);
-        window.addEventListener('offline', updateConnectionStatus);
-        updateConnectionStatus();
-        
-        let debounceTimer;
-        let currentSearchTerm = "";
-
-        searchInput.addEventListener('input', function(e) {
-            clearTimeout(debounceTimer);
-            const input = e.target.value.trim();
-            currentSearchTerm = input;
-
-            const isValidNumber = /^0\d{10}$/.test(input);
-            const isValidCNIC = /^[1-9]\d{12}$/.test(input);
-            const isPartialValid = /^(0\d{0,10}|[1-9]\d{0,12})$/.test(input);
-
-            if (!isPartialValid && input.length > 0) { // Only show error if input is non-empty and invalid
-                resultDiv.innerHTML = '<p class="error">Invalid input format</p>';
-                // Optionally correct the value if needed, or just let the user fix it.
-                // e.target.value = input.replace(/[^\d]/g, '').substring(0, 13);
-                return;
-            } else if (input.length === 0) {
-                 resultDiv.innerHTML = ''; // Clear results if input is empty
-                 return;
+                console.log("html2canvas library loaded successfully.");
             }
 
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const actionButtonsContainer = document.getElementById('actionButtons');
+            const saveImageButton = document.getElementById('saveImageButton');
+            const shareImageButton = document.getElementById('shareImageButton');
 
-            if (isValidNumber || isValidCNIC) {
-                searchInput.blur(); // Optionally remove focus
-                resultDiv.innerHTML = `
-                    <div class="server-result" id="server1">
-                        <div class="server-title">Server 1 Results</div>
-                        <p class="loading">Searching...</p>
-                    </div>
-                    <div class="server-result" id="server2">
-                        <div class="server-title">Server 2 Results</div>
-                        <p class="loading">Searching...</p>
-                    </div>
-                `;
-                
-                debounceTimer = setTimeout(() => searchBothServers(input), 300);
+            // --- DEBUG SEARCH BUTTON ---
+            if (searchButton) {
+                console.log("Search button ELEMENT FOUND:", searchButton);
+                console.log("Search button initial disabled state:", searchButton.disabled);
+
+                searchButton.addEventListener('click', performSearch); // This is the primary event listener
+                console.log("Event listener ADDED for Search button click (addEventListener).");
+
+                // Simple raw onclick for basic click detection test (can be removed after confirming basic click works)
+                // searchButton.onclick = function() {
+                //     console.log("--- RAW ONCLICK TEST: Search Button Clicked Physically! ---");
+                // };
+
             } else {
-                 // If input is partial but not yet valid, clear previous error/results
-                 if (isPartialValid) {
-                    resultDiv.innerHTML = '';
-                 }
+                console.error("CRITICAL: searchButton element with ID 'searchButton' NOT FOUND in HTML!");
             }
-        });
+            // --- END DEBUG SEARCH BUTTON ---
 
-        async function searchBothServers(searchTerm) {
-            if (!navigator.onLine) {
-                showOfflineError();
-                return;
-            }
-            
-            // Clear previous results before new search starts
-             resultDiv.innerHTML = `
-                <div class="server-result" id="server1">
-                    <div class="server-title">Server 1 Results</div>
-                    <p class="loading">Searching...</p>
-                </div>
-                <div class="server-result" id="server2">
-                    <div class="server-title">Server 2 Results</div>
-                    <p class="loading">Searching...</p>
-                </div>
-            `;
 
-            let server1Success = false;
-            let server2Success = false;
-
-            // Server 1 attempt
-            try {
-                try {
-                    const response = await fetchWithTimeout(SERVER_1_URL + searchTerm, {}, 5000);
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    const data = await response.json();
-                    displayResults(data, 1, searchTerm.startsWith('0'));
-                    server1Success = true;
-                } catch (error) {
-                    console.warn("Server 1 direct fetch failed, trying proxy:", error);
-                    const proxyResponse = await fetchWithTimeout(
-                        `https://api.allorigins.win/get?url=${encodeURIComponent(SERVER_1_URL + searchTerm)}`,
-                        {},
-                        5000
-                    );
-                     if (!proxyResponse.ok) throw new Error(`Proxy HTTP error! status: ${proxyResponse.status}`);
-                    const proxyData = await proxyResponse.json();
-                    if (proxyData.contents) {
-                       const parsedData = JSON.parse(proxyData.contents);
-                       displayResults(parsedData, 1, searchTerm.startsWith('0'));
-                       server1Success = true;
-                    } else {
-                       throw new Error("Proxy returned empty contents");
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                });
+                 searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        console.log("Enter key pressed in searchInput.");
+                        if(searchButton && !searchButton.disabled) {
+                            console.log("Calling performSearch from Enter key.");
+                            performSearch();
+                        } else {
+                            console.log("Search button not available or disabled, not calling performSearch from Enter key.");
+                        }
                     }
+                });
+            } else {
+                console.error("CRITICAL: searchInput element NOT FOUND");
+            }
+
+            if (saveImageButton) {
+                saveImageButton.addEventListener('click', captureAndSaveImage);
+                console.log("Event listener ADDED for Save Image button.");
+            } else {
+                 console.error("Save Image Button NOT FOUND, cannot add listener.");
+            }
+
+            if (shareImageButton) {
+                shareImageButton.addEventListener('click', captureAndShareImage);
+                console.log("Event listener ADDED for Share Image button.");
+            } else {
+                console.error("Share Image Button NOT FOUND, cannot add listener.");
+            }
+
+            function toggleSearchButtonLoading(isLoading) {
+                if (!searchButton) {
+                    console.warn("toggleSearchButtonLoading: searchButton not found.");
+                    return;
                 }
-            } catch (server1Error) {
-                 console.error("Server 1 Final Error:", server1Error);
-                 showServerError(1, `Server 1 Failed: ${server1Error.message}`);
+                console.log("toggleSearchButtonLoading called. isLoading:", isLoading, "Current disabled:", searchButton.disabled);
+                if (isLoading) {
+                    searchButton.classList.add('loading');
+                    searchButton.disabled = true;
+                } else {
+                    searchButton.classList.remove('loading');
+                    searchButton.disabled = false;
+                }
+                console.log("Search button disabled state AFTER toggle:", searchButton.disabled);
             }
 
-            // Server 2 attempt
-            try {
-                const response = await fetchWithTimeout(SERVER_2_URL + searchTerm, {}, 5000);
-                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const data = await response.json();
-                displayResults(data, 2, searchTerm.startsWith('0'));
-                server2Success = true;
-            } catch (server2Error) {
-                 console.error("Server 2 Error:", server2Error);
-                 showServerError(2, `Server 2 Failed: ${server2Error.message}`);
+            async function performSearch() {
+                console.log("--- performSearch function CALLED ---");
+                if (!searchInput || !resultsContainer) {
+                    console.error("performSearch: searchInput or resultsContainer not found. Aborting.");
+                    toggleSearchButtonLoading(false);
+                    return;
+                }
+
+                const searchTerm = searchInput.value.trim();
+                resultsContainer.innerHTML = '<p class="loading-message">Searching...</p>';
+                if (actionButtonsContainer) actionButtonsContainer.style.display = 'none';
+                toggleSearchButtonLoading(true);
+
+                if (!searchTerm) {
+                    resultsContainer.innerHTML = '<p class="error">Please enter something to search.</p>';
+                    toggleSearchButtonLoading(false);
+                    return;
+                }
+
+                const fullApiUrl = "https://www.appelevates.com/siminfo/rehmanbackupapi.php?search=" + encodeURIComponent(searchTerm);
+                console.log("Attempting to fetch:", fullApiUrl);
+
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+                    const response = await fetch(fullApiUrl, { signal: controller.signal });
+                    clearTimeout(timeoutId);
+
+                    if (!response.ok) {
+                        let errorText = `API request failed. Status: ${response.status}`;
+                        try {
+                            const errorData = await response.text();
+                            errorText += ` - ${errorData.substring(0, 200)}`;
+                        } catch (e) { /* ignore */ }
+                        throw new Error(errorText);
+                    }
+
+                    const data = await response.json();
+                    console.log("Data received:", data);
+                    displayResults(data);
+
+                } catch (error) {
+                    console.error('Fetch Error:', error);
+                    let errorMessageHTML = `<p class="error">Error fetching data: ${error.message}. Check your internet connection or try again later.</p>`;
+                    if (error.name === 'AbortError') {
+                         errorMessageHTML = `<p class="error">Request timed out. The server took too long to respond. Please try again.</p>`;
+                    }
+                    if (resultsContainer) resultsContainer.innerHTML = errorMessageHTML;
+                } finally {
+                    console.log("performSearch finally block: Re-enabling search button.");
+                    toggleSearchButtonLoading(false);
+                }
             }
-        }
 
-        function fetchWithTimeout(url, options, timeout) {
-            return Promise.race([
-                fetch(url, options),
-                new Promise((_, reject) =>
-                    setTimeout(() => reject(new Error('Timeout')), timeout)
-                )
-            ]);
-        }
+            function displayResults(data) {
+                if (!resultsContainer) return;
+                resultsContainer.innerHTML = '';
+                if (actionButtonsContainer) actionButtonsContainer.style.display = 'none';
 
-        function displayResults(data, serverNumber, isNumberSearch) {
-            const serverDiv = document.getElementById(`server${serverNumber}`);
-            if (!serverDiv) return;
+                if (!data) {
+                    resultsContainer.innerHTML = '<p class="error">No data received from the API.</p>';
+                    return;
+                }
+                if (data.status === "false" && data.message) {
+                     resultsContainer.innerHTML = `<p class="error">No records found: ${data.message}</p>`;
+                     return;
+                }
 
-            // Clear previous content (like loading/error message)
-            serverDiv.innerHTML = `
-                <div class="server-title">Server ${serverNumber} Results</div>
-                <div class="search-type" style="font-size: 0.9em; opacity: 0.8; margin-bottom: 10px;">Search Type: ${isNumberSearch ? 'Number' : 'CNIC'}</div>
-            `;
+                const records = Array.isArray(data) ? data : [data];
+                if (records.length === 0 || (records.length === 1 && Object.keys(records[0]).length === 0) || (records.length === 1 && !records[0].Mobile && !records[0].CNIC)) {
+                    resultsContainer.innerHTML = '<p class="info">No records found.</p>';
+                    return;
+                }
 
-            if (data && data.length > 0) {
-                // --- YEH LINE WOHI HAI JISKO PEHLE BADALNE KA KAHA THA, AB ORIGINAL HAI ---
-                serverDiv.innerHTML += `<p class="success">Found ${data.length} record(s)</p>`;
-                // ----------------------------------------------------------------------------
-                data.forEach((record, index) => {
-                    // Basic sanitation / N/A handling
-                    const name = record.Name || 'N/A';
-                    const mobile = record.Mobile || 'N/A';
-                    const cnic = record.CNIC || 'N/A';
-                    const address = record.ADDRESS || 'N/A';
+                const captureArea = document.createElement('div');
+                captureArea.id = 'captureArea';
+                const table = document.createElement('table');
+                const headerRow = table.insertRow();
+                const headers = ['Mobile', 'Name', 'CNIC', 'Address'];
+                headers.forEach(headerText => {
+                    const th = document.createElement('th');
+                    th.textContent = headerText;
+                    headerRow.appendChild(th);
+                });
 
-                    serverDiv.innerHTML += `
-                        <div class="sim-card">
-                            <div class="sim-title" style="font-weight: bold; margin-bottom: 5px; color: var(--primary-color);">Record ${index + 1}</div>
-                            <div class="data-line"><strong>Name:</strong> ${name}</div>
-                            ${!isNumberSearch ? `<div class="data-line"><strong>Mobile:</strong> ${mobile}</div>` : ''}
-                            <div class="data-line"><strong>CNIC:</strong> ${cnic}</
+                let validRecordsFound = 0;
+                records.forEach(record => {
+                    if (record && (record.Mobile || record.Name || record.CNIC || record.ADDRESS)) {
+                        const row = table.insertRow();
+                        row.insertCell().textContent = record.Mobile || 'N/A';
+                        row.insertCell().textContent = record.Name || 'N/A';
+                        row.insertCell().textContent = record.CNIC || 'N/A';
+                        row.insertCell().textContent = record.ADDRESS || 'N/A';
+                        validRecordsFound++;
+                    }
+                });
+
+                if (validRecordsFound === 0) {
+                    resultsContainer.innerHTML = '<p class="info">No valid records found to display.</p>';
+                } else {
+                    captureArea.appendChild(table);
+                    resultsContainer.appendChild(captureArea);
+                    if (actionButtonsContainer) {
+                        actionButtonsContainer.style.display = 'flex';
+                        console.log("Action buttons
