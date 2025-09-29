@@ -3,644 +3,677 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pak Hacker Pro - SIM Search</title>
-    <script src="html2canvas.min.js"></script> <!-- LOCAL FILE -->
+    <title>Pak Hacker Pro - SIM Database</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            background-color: #f0f0f0;
-            color: #333;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0067C0, #0078D7, #6B69D6);
+            color: #323130;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .search-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .search-box {
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            gap: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #323130;
+            font-size: 1.1rem;
+        }
+        
+        input {
+            padding: 16px;
+            border: 2px solid #E1E1E1;
+            border-radius: 8px;
             font-size: 16px;
+            transition: all 0.3s;
+            background: #FAF9F8;
         }
-        .content-wrap {
-            flex: 1;
-            padding: 10px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 10px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .title-area {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        h1 {
-            color: #e2001a;
-            margin-bottom: 15px;
-            font-weight: bold;
-            font-size: 2em;
-        }
-        .search-area {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            align-items: center;
-        }
-        #searchInput {
-            flex-grow: 1;
-            padding: 10px 12px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1em;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-            -moz-appearance: textfield;
-        }
-        #searchInput::-webkit-outer-spin-button,
-        #searchInput::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        #searchInput:focus {
-            border-color: #e2001a;
+        
+        input:focus {
+            border-color: #0078D7;
             outline: none;
-            box-shadow: 0 0 0 0.2rem rgba(226, 0, 26, 0.25);
+            box-shadow: 0 0 0 3px rgba(0, 120, 215, 0.2);
+            background: white;
         }
-        #searchButton {
-            padding: 10px 20px;
-            background-color: #e2001a;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: bold;
-            transition: background-color 0.2s ease-in-out, opacity 0.2s;
-            min-width: 90px;
-            position: relative;
-        }
-        #searchButton:hover:not(:disabled) {
-            background-color: #c00015;
-        }
-        #searchButton:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-        #searchButton .button-text {
-            transition: opacity 0.2s;
-        }
-        #searchButton .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            width: 16px;
-            height: 16px;
-            animation: spin 1s ease-in-out infinite;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            margin-top: -8px;
-            margin-left: -8px;
-            display: none;
-        }
-        #searchButton.loading .button-text {
-            opacity: 0;
-        }
-        #searchButton.loading .spinner {
-            display: block;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        #resultsContainer {
-            margin-top: 20px;
-            padding: 0;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            min-height: 50px;
-            border: 1px solid #eee;
-            overflow-x: auto;
-        }
-        #captureArea {
-            padding: 15px;
-            background-color: #ffffff;
-            min-width: 450px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-            font-size: 0.9em;
-            word-break: break-word;
-            vertical-align: top;
-        }
-        th {
-            background-color: #e2001a;
-            color: white;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-        tr:nth-child(even) {
-            background-color: #fdf0f0;
-        }
-
-        #captureArea table td:nth-child(1),
-        #captureArea table td:nth-child(2),
-        #captureArea table td:nth-child(3)
-        {
-            /* Default is wrap for mobile */
-        }
-        #captureArea table th:nth-child(1), #captureArea table td:nth-child(1) { width: 25%; }
-        #captureArea table th:nth-child(2), #captureArea table td:nth-child(2) { width: 30%; }
-        #captureArea table th:nth-child(3), #captureArea table td:nth-child(3) { width: 20%; }
-        #captureArea table th:nth-child(4), #captureArea table td:nth-child(4) { width: 25%; white-space: normal; }
-
-
-        #resultsContainer > p {
-            padding: 15px;
-            margin: 0;
-            border-radius: 5px;
-        }
-        .error {
-            color: #c00015;
-            font-weight: bold;
-            background-color: #ffebee;
-        }
-        .info {
-            color: #0056b3;
-            background-color: #e7f3fe;
-            text-align: center;
-        }
-        .loading-message {
-            text-align: center;
-            font-style: italic;
-            color: #555;
-            background-color: transparent;
-        }
-        #actionButtons {
-            margin-top: 15px;
-            text-align: center;
-            gap: 10px;
+        
+        .btn-group {
             display: flex;
-            justify-content: center;
+            gap: 15px;
             flex-wrap: wrap;
         }
-        #actionButtons button {
-            padding: 10px 15px;
-            background-color: #007bff;
+        
+        button {
+            background: #0078D7;
             color: white;
             border: none;
-            border-radius: 5px;
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 0.95em;
-            transition: background-color 0.2s ease-in-out;
-            flex-grow: 1;
-            min-width: 120px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 200px;
         }
-        #actionButtons button:hover:not(:disabled) {
-            background-color: #0056b3;
+        
+        button:hover {
+            background: #0067C0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-        #actionButtons button:disabled {
-            background-color: #ccc;
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        #pdf-btn {
+            background: #6B69D6;
+        }
+        
+        #pdf-btn:hover {
+            background: #5A58C4;
+        }
+        
+        button:disabled {
+            background: #A19F9D;
             cursor: not-allowed;
-            opacity: 0.7;
+            transform: none;
+            box-shadow: none;
         }
-        .footer {
+        
+        button:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .results-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            display: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #EDEBE9;
+        }
+        
+        .results-count {
+            font-weight: 600;
+            color: #0078D7;
+            font-size: 1.1rem;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            color: #605E5C;
+            font-size: 18px;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .result-card {
+            border: 1px solid #EDEBE9;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s;
+            background: #FAF9F8;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #0078D7, #6B69D6);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-color: #0078D7;
+        }
+        
+        .result-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #EDEBE9;
+        }
+        
+        .name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0078D7;
+        }
+        
+        .mobile {
+            background: #0078D7;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .card-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #EDEBE9;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #605E5C;
+        }
+        
+        .detail-value {
+            color: #323130;
             text-align: right;
-            padding: 10px 15px;
-            background-color: #333;
-            color: #f0f0f0;
-            font-size: 0.8em;
-            margin-top: auto;
-            line-height: 1.4; /* Added for better spacing between lines in footer */
+            max-width: 60%;
+            word-break: break-word;
         }
-        @media (min-width: 768px) {
-            .content-wrap { padding: 20px; }
-            .container { padding: 25px; margin: 20px auto; }
-            h1 { font-size: 2.2em; }
-            .search-area { margin-bottom: 25px; flex-direction: row; }
-            #searchInput, #searchButton { width: auto; }
-            #searchInput { padding: 12px 15px; }
-            #searchButton { padding: 12px 25px; min-width: 100px; }
-            #resultsContainer { margin-top: 25px; }
-            #captureArea { padding: 20px; min-width: 600px; }
-            th, td { font-size: 0.95em; padding: 10px; }
-            #captureArea table td:nth-child(1),
-            #captureArea table td:nth-child(2),
-            #captureArea table td:nth-child(3) {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            #captureArea table th:nth-child(1), #captureArea table td:nth-child(1) { width: 20%; }
-            #captureArea table th:nth-child(2), #captureArea table td:nth-child(2) { width: 30%; }
-            #captureArea table th:nth-child(3), #captureArea table td:nth-child(3) { width: 20%; }
-            #captureArea table th:nth-child(4), #captureArea table td:nth-child(4) { width: 30%; white-space: normal; }
-            #resultsContainer > p { padding: 20px; }
-            #actionButtons { margin-top: 20px; gap: 15px; flex-direction: row; }
-            #actionButtons button { padding: 10px 20px; font-size: 1em; flex-grow: 0; width: auto; }
+        
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 40px;
         }
-        @media (max-width: 767px) {
-             .search-area {
+        
+        .windows-loader {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+        
+        .windows-loader::before,
+        .windows-loader::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 4px solid transparent;
+            border-top-color: #0078D7;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+        }
+        
+        .windows-loader::after {
+            border-top-color: #6B69D6;
+            animation-duration: 2s;
+            animation-direction: reverse;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .pulse {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #0078D7;
+            box-shadow: 0 0 0 rgba(0, 120, 215, 0.4);
+            animation: pulse 1.5s infinite;
+            margin: 0 5px;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 120, 215, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 120, 215, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 120, 215, 0); }
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+        
+        .api-status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            background: #F3F2F1;
+            border-left: 4px solid;
+        }
+        
+        .status-success {
+            border-left-color: #107C10;
+            color: #107C10;
+        }
+        
+        .status-error {
+            border-left-color: #D13438;
+            color: #D13438;
+        }
+        
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .btn-group {
                 flex-direction: column;
-                gap: 15px;
             }
-            #searchInput, #searchButton {
-                width: 100%;
-                box-sizing: border-box;
-            }
-            #actionButtons {
-                flex-direction: column;
-                gap: 10px;
-            }
-            #actionButtons button {
-                width: 100%;
-                box-sizing: border-box;
+            
+            button {
+                min-width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <div class="content-wrap">
-        <div class="container">
-            <div class="title-area">
-                <h1>Pak Hacker Pro</h1>
+    <div class="container">
+        <header>
+            <h2>Pak Hacker Pro</h2>
+            <p class="subtitle">SIM Database</p>
+        </header>
+        
+        <section class="search-section">
+            <div class="search-box">
+                <div class="input-group">
+                    <label for="phone-number">Enter Phone Number</label>
+                    <input type="text" id="phone-number" placeholder="e.g., 03001234567" autocomplete="off">
+                </div>
+                <div class="btn-group">
+                    <button id="search-btn">
+                        <span>Search Database</span>
+                        <div class="pulse"></div>
+                    </button>
+                    <button id="pdf-btn" disabled>
+                        <span>Generate PDF Report</span>
+                    </button>
+                </div>
             </div>
-
-            <div class="search-area">
-                <input type="tel" id="searchInput" inputmode="numeric" pattern="[0-9]*" placeholder="Number (11 digits) or CNIC (13 digits)">
-                <button id="searchButton">
-                    <span class="button-text">Search</span>
-                    <div class="spinner"></div>
-                </button>
+        </section>
+        
+        <section class="results-section" id="results-section">
+            <div class="results-header">
+                <h2>Search Results</h2>
+                <div class="results-count" id="results-count">0 results found</div>
             </div>
-
-            <div id="resultsContainer">
-                <p class="info">Please enter a number or CNIC to search.</p>
+            
+            <div class="loader" id="loader">
+                <div class="windows-loader"></div>
+                <p>Searching database<span class="dots">...</span></p>
             </div>
-
-            <div id="actionButtons" style="display: none;">
-                <button id="saveImageButton">Save Result Image</button>
-                <button id="shareImageButton">Share Result Image</button>
+            
+            <div class="no-results" id="no-results">
+                No results to display. Enter a phone number and click search.
             </div>
-        </div>
+            
+            <div class="api-status" id="api-status"></div>
+            
+            <div class="results-grid" id="results-container">
+                <!-- Results will be inserted here by JavaScript -->
+            </div>
+        </section>
+        
+        <footer>
+            <p>Pak Hacker Pro &copy; 2025 | Advanced SIM Database System | By Awais Narowaliya</p>
+        </footer>
     </div>
 
-    <!-- UPDATED FOOTER -->
-    <footer class="footer">
-        Created by Awais Narowaliya<br>
-        WhatsApp +923070378723
-    </footer>
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log("SCRIPT START: DOMContentLoaded fired.");
-
-            if (typeof html2canvas === 'undefined') {
-                console.error("CRITICAL: html2canvas library is not loaded! Ensure 'html2canvas.min.js' is in the same folder and the script tag is correct.");
-                alert("Error: Image capture library (html2canvas) failed to load. Save/Share features will not work. Please ensure 'html2canvas.min.js' is in the same folder as this HTML file and try refreshing.");
-                const tempSaveButton = document.getElementById('saveImageButton');
-                const tempShareButton = document.getElementById('shareImageButton');
-                if (tempSaveButton) tempSaveButton.disabled = true;
-                if (tempShareButton) tempShareButton.disabled = true;
-            } else {
-                console.log("html2canvas library loaded successfully.");
-            }
-
-            const searchInput = document.getElementById('searchInput');
-            const searchButton = document.getElementById('searchButton');
-            const resultsContainer = document.getElementById('resultsContainer');
-            const actionButtonsContainer = document.getElementById('actionButtons');
-            const saveImageButton = document.getElementById('saveImageButton');
-            const shareImageButton = document.getElementById('shareImageButton');
-
-            if (searchButton) {
-                console.log("Search button ELEMENT FOUND:", searchButton);
-                console.log("Search button initial disabled state:", searchButton.disabled);
-                searchButton.addEventListener('click', performSearch);
-                console.log("Event listener ADDED for Search button click (addEventListener).");
-            } else {
-                console.error("CRITICAL: searchButton element with ID 'searchButton' NOT FOUND in HTML!");
-            }
-
-            if (searchInput) {
-                searchInput.addEventListener('input', function(e) {
-                    let value = this.value;
-                    value = value.replace(/[^0-9]/g, '');
-                    let maxLength = 13;
-                    if (value.length > 0 && value.charAt(0) === '0') {
-                        maxLength = 11;
-                    }
-                    if (value.length > maxLength) {
-                        value = value.slice(0, maxLength);
-                    }
-                    this.value = value;
-                });
-
-                 searchInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        console.log("Enter key pressed in searchInput.");
-                        if(searchButton && !searchButton.disabled) {
-                            console.log("Calling performSearch from Enter key.");
-                            performSearch();
-                        } else {
-                            console.log("Search button not available or disabled, not calling performSearch from Enter key.");
-                        }
-                    }
-                });
-            } else {
-                console.error("CRITICAL: searchInput element NOT FOUND");
-            }
-
-
-            if (saveImageButton) {
-                saveImageButton.addEventListener('click', captureAndSaveImage);
-                console.log("Event listener ADDED for Save Image button.");
-            } else {
-                 console.error("Save Image Button NOT FOUND, cannot add listener.");
-            }
-
-            if (shareImageButton) {
-                shareImageButton.addEventListener('click', captureAndShareImage);
-                console.log("Event listener ADDED for Share Image button.");
-            } else {
-                console.error("Share Image Button NOT FOUND, cannot add listener.");
-            }
-
-            function toggleSearchButtonLoading(isLoading) {
-                if (!searchButton) {
-                    console.warn("toggleSearchButtonLoading: searchButton not found.");
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchBtn = document.getElementById('search-btn');
+            const pdfBtn = document.getElementById('pdf-btn');
+            const phoneInput = document.getElementById('phone-number');
+            const resultsContainer = document.getElementById('results-container');
+            const noResults = document.getElementById('no-results');
+            const loader = document.getElementById('loader');
+            const resultsCount = document.getElementById('results-count');
+            const resultsSection = document.getElementById('results-section');
+            const apiStatus = document.getElementById('api-status');
+            const dots = document.querySelector('.dots');
+            
+            // Track if PDF was generated to refresh page
+            let pdfGenerated = false;
+            
+            // Animate dots in loading text
+            let dotCount = 0;
+            setInterval(() => {
+                dotCount = (dotCount + 1) % 4;
+                dots.textContent = '.'.repeat(dotCount);
+            }, 500);
+            
+            // Function to perform search
+            function performSearch() {
+                const phoneNumber = phoneInput.value.trim();
+                
+                if (!phoneNumber) {
+                    alert('Please enter a phone number');
                     return;
                 }
-                if (isLoading) {
-                    searchButton.classList.add('loading');
-                    searchButton.disabled = true;
-                } else {
-                    searchButton.classList.remove('loading');
-                    searchButton.disabled = false;
-                }
-            }
-
-            async function performSearch() {
-                console.log("--- performSearch function CALLED ---");
-                if (!searchInput || !resultsContainer) {
-                    console.error("performSearch: searchInput or resultsContainer not found. Aborting.");
-                    toggleSearchButtonLoading(false);
-                    return;
-                }
-
-                const searchTerm = searchInput.value.trim();
-                resultsContainer.innerHTML = '<p class="loading-message">Searching...</p>';
-                if (actionButtonsContainer) actionButtonsContainer.style.display = 'none';
-                toggleSearchButtonLoading(true);
-
-                if (!searchTerm) {
-                    resultsContainer.innerHTML = '<p class="error">Please enter something to search.</p>';
-                    toggleSearchButtonLoading(false);
-                    return;
-                }
-                let isValidLength = false;
-                if (searchTerm.charAt(0) === '0' && searchTerm.length === 11) {
-                    isValidLength = true;
-                } else if (searchTerm.charAt(0) !== '0' && searchTerm.length === 13) {
-                    isValidLength = true;
-                }
-
-                if (!isValidLength) {
-                     let expectedLength = searchTerm.charAt(0) === '0' ? 11 : 13;
-                     resultsContainer.innerHTML = `<p class="error">Please enter a complete ${expectedLength}-digit number.</p>`;
-                     toggleSearchButtonLoading(false);
-                     return;
-                }
-
-                const fullApiUrl = "https://famofcfallxd.serv00.net/apis/simdataapi.php?num=" + encodeURIComponent(searchTerm);
-                console.log("Attempting to fetch:", fullApiUrl);
-
-                try {
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-                    const response = await fetch(fullApiUrl, { signal: controller.signal });
-                    clearTimeout(timeoutId);
-
-                    if (!response.ok) {
-                        let errorText = `API request failed. Status: ${response.status}`;
-                        try {
-                            const errorData = await response.text();
-                            errorText += ` - ${errorData.substring(0, 200)}`;
-                        } catch (e) { /* ignore */ }
-                        throw new Error(errorText);
-                    }
-
-                    const data = await response.json();
-                    console.log("Data received:", data);
-                    displayResults(data);
-
-                } catch (error) {
-                    console.error('Fetch Error:', error);
-                    let errorMessageHTML = `<p class="error">Error fetching data: ${error.message}. Check your internet connection or try again later.</p>`;
-                    if (error.name === 'AbortError') {
-                         errorMessageHTML = `<p class="error">Request timed out. The server took too long to respond. Please try again.</p>`;
-                    }
-                    if (resultsContainer) resultsContainer.innerHTML = errorMessageHTML;
-                } finally {
-                    console.log("performSearch finally block: Re-enabling search button.");
-                    toggleSearchButtonLoading(false);
-                }
-            }
-
-            function displayResults(data) {
-                if (!resultsContainer) return;
+                
+                // Show loader, hide previous results
+                loader.style.display = 'block';
+                noResults.style.display = 'none';
                 resultsContainer.innerHTML = '';
-                if (actionButtonsContainer) actionButtonsContainer.style.display = 'none';
-
-                if (!data) {
-                    resultsContainer.innerHTML = '<p class="error">No data received from the API.</p>';
-                    return;
-                }
-                if (data.status === "false" && data.message) {
-                     resultsContainer.innerHTML = `<p class="error">No records found: ${data.message}</p>`;
-                     return;
-                }
-
-                const records = Array.isArray(data) ? data : [data];
-                if (records.length === 0 || (records.length === 1 && Object.keys(records[0]).length === 0) || (records.length === 1 && !records[0].Mobile && !records[0].CNIC)) {
-                    resultsContainer.innerHTML = '<p class="info">No records found.</p>';
-                    return;
-                }
-
-                const captureArea = document.createElement('div');
-                captureArea.id = 'captureArea';
-                const table = document.createElement('table');
-                const headerRow = table.insertRow();
-                const headers = ['Mobile', 'Name', 'CNIC', 'Address'];
-                headers.forEach(headerText => {
-                    const th = document.createElement('th');
-                    th.textContent = headerText;
-                    headerRow.appendChild(th);
-                });
-
-                let validRecordsFound = 0;
-                records.forEach(record => {
-                    if (record && (record.Mobile || record.Name || record.CNIC || record.ADDRESS)) {
-                        const row = table.insertRow();
-                        row.insertCell().textContent = record.Mobile || 'N/A';
-                        row.insertCell().textContent = record.Name || 'N/A';
-                        row.insertCell().textContent = record.CNIC || 'N/A';
-                        row.insertCell().textContent = record.ADDRESS || 'N/A';
-                        validRecordsFound++;
-                    }
-                });
-
-                if (validRecordsFound === 0) {
-                    resultsContainer.innerHTML = '<p class="info">No valid records found to display.</p>';
-                } else {
-                    captureArea.appendChild(table);
-                    resultsContainer.appendChild(captureArea);
-                    if (actionButtonsContainer) {
-                        actionButtonsContainer.style.display = 'flex';
-                        console.log("Action buttons container displayed.");
-                        if (saveImageButton) saveImageButton.disabled = false;
-                        if (shareImageButton) shareImageButton.disabled = false;
-                    } else {
-                        console.error("actionButtonsContainer not found when trying to display it.");
-                    }
-                }
-            }
-
-            async function captureElementAsCanvas(elementId) {
-                console.log("Attempting to capture element with ID:", elementId);
-                const elementToCapture = document.getElementById(elementId);
-
-                if (!elementToCapture) {
-                    console.error("Element to capture not found:", elementId);
-                    alert("Error: Could not find the result area to capture.");
-                    return null;
-                }
-                if (typeof html2canvas === 'undefined') {
-                     console.error("html2canvas is not defined. Cannot capture image.");
-                     return null;
-                }
-
-                try {
-                    console.log("html2canvas starting for element:", elementToCapture);
-                    const canvas = await html2canvas(elementToCapture, {
-                        useCORS: true,
-                        backgroundColor: '#ffffff',
-                        scale: 2,
-                        logging: true
-                    });
-                    console.log("html2canvas completed successfully.");
-                    return canvas;
-                } catch (error) {
-                    console.error("Error capturing element with html2canvas:", error);
-                    alert("Error generating image from results. Check console. Message: " + error.message);
-                    return null;
-                }
-            }
-
-            async function captureAndSaveImage() {
-                console.log("--- captureAndSaveImage function CALLED ---");
-                if (!saveImageButton) { console.error("Save button is null in captureAndSaveImage"); return; }
-                saveImageButton.disabled = true;
-                saveImageButton.textContent = 'Saving...';
-
-                try {
-                    const canvas = await captureElementAsCanvas('captureArea');
-                    if (canvas) {
-                        const imageURL = canvas.toDataURL('image/png');
-                        const a = document.createElement('a');
-                        a.href = imageURL;
-                        a.download = 'pak_hacker_pro_result.png';
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        console.log("Image download initiated.");
-                    } else {
-                        console.log("Canvas not generated, save aborted.");
-                        alert("Could not generate image. Please try again.");
-                    }
-                } catch (e) {
-                    console.error("Error during image save process:", e);
-                    alert("Failed to save image. " + e.message);
-                } finally {
-                    if (saveImageButton) {
-                        saveImageButton.disabled = false;
-                        saveImageButton.textContent = 'Save Result Image';
-                    }
-                }
-            }
-
-            async function captureAndShareImage() {
-                console.log("--- captureAndShareImage function CALLED ---");
-                if (!shareImageButton) { console.error("Share button is null in captureAndShareImage"); return; }
-                shareImageButton.disabled = true;
-                shareImageButton.textContent = 'Preparing...';
-
-                try {
-                    if (typeof navigator.share === 'undefined') {
-                        alert('Web Share API is not supported in your browser or not on HTTPS/localhost. Try saving the image.');
-                        console.warn("Web Share API not supported.");
-                    } else {
-                        const canvas = await captureElementAsCanvas('captureArea');
-                        if (canvas) {
-                            await new Promise((resolve, reject) => {
-                                canvas.toBlob(async function(blob) {
-                                    if (blob) {
-                                        const file = new File([blob], "pak_hacker_pro_result.png", { type: "image/png" });
-                                        const shareData = {
-                                            title: 'Pak Hacker Pro - SIM Result',
-                                            text: 'Check out this SIM information.',
-                                            files: [file]
-                                        };
-                                        if (navigator.canShare && navigator.canShare(shareData)) {
-                                            console.log("Attempting to share:", shareData);
-                                            try {
-                                                await navigator.share(shareData);
-                                                console.log('Share successful or dialog opened.');
-                                                resolve();
-                                            } catch (error) {
-                                                console.error('Error during navigator.share:', error);
-                                                if (error.name !== 'AbortError') {
-                                                   alert('Error sharing image: ' + error.message);
-                                                } else {
-                                                   console.log("User cancelled share.");
-                                                }
-                                                reject(error);
-                                            }
-                                        } else {
-                                            console.warn("navigator.canShare returned false or is unavailable.");
-                                            alert("Your browser cannot share this file type. Try saving.");
-                                            reject(new Error("Cannot share this data."));
-                                        }
-                                    } else {
-                                        console.error('Blob creation failed.');
-                                        alert('Could not create image blob for sharing.');
-                                        reject(new Error('Blob creation failed.'));
-                                    }
-                                }, 'image/png');
-                            });
-                        } else {
-                            console.log("Canvas not generated for sharing.");
-                            alert("Could not generate image for sharing.");
+                apiStatus.textContent = '';
+                apiStatus.className = 'api-status';
+                resultsSection.style.display = 'block';
+                pdfBtn.disabled = true;
+                
+                // Construct API URL
+                const apiUrl = `https://www.3patticenter.com/famofc/api/database.php?num=${phoneNumber}`;
+                
+                // Fetch data from API
+                fetch(apiUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
                         }
-                    }
-                } catch (e) {
-                    console.error("General error in captureAndShareImage:", e);
-                     if (e.name !== 'AbortError' && e.message !== 'Blob creation failed.' && e.message !== "Cannot share this data.") {
-                        alert("Failed to prepare image for sharing. " + e.message);
-                    }
-                } finally {
-                    if (shareImageButton) {
-                        shareImageButton.disabled = false;
-                        shareImageButton.textContent = 'Share Result Image';
-                    }
-                }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Hide loader
+                        loader.style.display = 'none';
+                        
+                        // Check API response status
+                        if (data.status === "success") {
+                            apiStatus.textContent = "Database Access: SUCCESS";
+                            apiStatus.className = "api-status status-success";
+                            
+                            // Check if we have results
+                            if (data.data && data.data.length > 0) {
+                                displayResults(data.data);
+                                pdfBtn.disabled = false;
+                                
+                                // Auto-scroll to results after a short delay
+                                setTimeout(() => {
+                                    resultsSection.scrollIntoView({ 
+                                        behavior: 'smooth', 
+                                        block: 'start'
+                                    });
+                                }, 300);
+                            } else {
+                                noResults.textContent = 'No results found for this number.';
+                                noResults.style.display = 'block';
+                                resultsCount.textContent = '0 results found';
+                                pdfBtn.disabled = true;
+                            }
+                        } else {
+                            apiStatus.textContent = "Database Access: ERROR - " + data.message;
+                            apiStatus.className = "api-status status-error";
+                            noResults.textContent = 'API returned an error.';
+                            noResults.style.display = 'block';
+                            resultsCount.textContent = '0 results found';
+                            pdfBtn.disabled = true;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                        loader.style.display = 'none';
+                        apiStatus.textContent = "Database Access: CONNECTION ERROR";
+                        apiStatus.className = "api-status status-error";
+                        noResults.textContent = 'Error fetching data. Please try again.';
+                        noResults.style.display = 'block';
+                        resultsCount.textContent = '0 results found';
+                        pdfBtn.disabled = true;
+                    });
             }
+            
+            // Function to display results
+            function displayResults(results) {
+                resultsContainer.innerHTML = '';
+                
+                // Update results count
+                resultsCount.textContent = `${results.length} result${results.length > 1 ? 's' : ''} found`;
+                
+                // Create HTML for each result
+                results.forEach(result => {
+                    const card = document.createElement('div');
+                    card.className = 'result-card';
+                    
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <div class="name">${result.Name || 'N/A'}</div>
+                            <div class="mobile">${result.Mobile || 'N/A'}</div>
+                        </div>
+                        <div class="card-details">
+                            <div class="detail-row">
+                                <span class="detail-label">Country:</span>
+                                <span class="detail-value">${result.Country || 'N/A'}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">CNIC:</span>
+                                <span class="detail-value">${result.CNIC || 'N/A'}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Address:</span>
+                                <span class="detail-value">${result.Address || 'N/A'}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    resultsContainer.appendChild(card);
+                });
+                
+                noResults.style.display = 'none';
+            }
+            
+            // Function to generate PDF
+            function generatePDF() {
+                console.log("PDF generation started");
+                
+                // Check if jsPDF is loaded
+                if (typeof jspdf === 'undefined') {
+                    console.error("jsPDF library not loaded");
+                    alert("PDF library not loaded. Please check your connection.");
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Add watermark function
+                const addWatermark = () => {
+                    doc.setFontSize(40);
+                    doc.setTextColor(100, 100, 100); // Darker gray for more visibility
+                    doc.setGState(new doc.GState({ opacity: 0.2 })); // Increased opacity
+                    doc.text('Pak Hacker Pro', 70, 140, { angle: 25 });
+                    doc.text(' GSM Awais', 80, 160, { angle: 25 });
+                    doc.setGState(new doc.GState({ opacity: 1 }));
+                };
+                
+                // Add title
+                doc.setFontSize(20);
+                doc.setTextColor(0, 120, 215);
+                doc.text('Pak Hacker Pro - SIM Database Report', 20, 20);
+                
+                // Add search info
+                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0);
+                doc.text(`Search Query: ${phoneInput.value}`, 20, 35);
+                doc.text(`Date: ${new Date().toLocaleString()}`, 20, 45);
+                doc.text(`Results: ${resultsCount.textContent}`, 20, 55);
+                                // Add results
+                let yPosition = 70;
+                const results = document.querySelectorAll('.result-card');
+                
+                if (results.length === 0) {
+                    doc.text("No results to display", 20, yPosition);
+                } else {
+                    results.forEach((card, index) => {
+                        if (yPosition > 250) {
+                            addWatermark();
+                            doc.addPage();
+                            yPosition = 20;
+                        }
+                        
+                        const name = card.querySelector('.name').textContent;
+                        const mobile = card.querySelector('.mobile').textContent;
+                        const details = card.querySelectorAll('.detail-value');
+                        
+                        doc.setFontSize(14);
+                        doc.setTextColor(0, 100, 180);
+                        doc.text(`Result ${index + 1}: ${name}`, 20, yPosition);
+                        yPosition += 7;
+                        
+                        doc.setFontSize(10);
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(`Mobile: ${mobile}`, 20, yPosition);
+                        yPosition += 5;
+                        doc.text(`Country: ${details[0].textContent}`, 20, yPosition);
+                        yPosition += 5;
+                        doc.text(`CNIC: ${details[1].textContent}`, 20, yPosition);
+                        yPosition += 5;
+                        doc.text(`Address: ${details[2].textContent}`, 20, yPosition);
+                        yPosition += 10;
+                    });
+                }
+                
+                // Add final watermark
+                addWatermark();
+                
+                // Save the PDF
+                doc.save(`Pak_Hacker_Pro_Report_${phoneInput.value}.pdf`);
+                console.log("PDF generated successfully");
+                
+                // Set flag that PDF was generated
+                pdfGenerated = true;
+                
+                // Refresh the page after PDF is generated
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            }
+            
+            // Check if we need to refresh after PDF was opened
+            if (sessionStorage.getItem('pdfGenerated') === 'true') {
+                sessionStorage.removeItem('pdfGenerated');
+                // Small delay to ensure page is fully loaded before any actions
+                setTimeout(() => {
+                    // You could add any post-refresh logic here if needed
+                }, 100);
+            }
+            
+            // Event listeners
+            searchBtn.addEventListener('click', performSearch);
+            pdfBtn.addEventListener('click', generatePDF);
+            
+            phoneInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            // Auto-search when user stops typing (with delay)
+            let typingTimer;
+            phoneInput.addEventListener('input', function() {
+                clearTimeout(typingTimer);
+                const phoneNumber = phoneInput.value.trim();
+                
+                if (phoneNumber.length >= 7) {
+                    typingTimer = setTimeout(performSearch, 1000);
+                }
+            });
         });
     </script>
 </body>
