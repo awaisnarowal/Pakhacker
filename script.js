@@ -13,9 +13,35 @@ const firebaseConfig = {
 const app = firebase.initializeApp(firebaseConfig);
 const auth = app.auth(); 
 
-// -------------------------------------------------------------------
+// --- 1. MOBILE UX FIX: Auto-Scroll on Keyboard Focus ---
+function setupAutoScroll() {
+    const inputs = document.querySelectorAll('.input-group input');
 
-// B. Login Event Listener aur Firebase Auth Logic
+    inputs.forEach(input => {
+        input.addEventListener('focus', (e) => {
+            // Input field ko center mein scroll karta hai
+            e.target.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'center'
+            });
+            
+            // 200ms delay ke baad dubara scroll karne se better result aata hai
+            setTimeout(() => {
+                e.target.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            }, 200);
+
+        });
+    });
+}
+
+// Page load hone par scroll functionality on karein
+setupAutoScroll();
+
+
+// --- 2. FIREBASE LOGIN LOGIC ---
 document.getElementById('loginForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
@@ -23,10 +49,9 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     const password = document.getElementById('password').value;
     const messageElement = document.getElementById('message');
     
-    // Message ko pehle hide/clear karte hain
     messageElement.classList.add('hidden');
     
-    // Front-end validation (Basic checks)
+    // Front-end validation
     if (!username || !password) {
         messageElement.textContent = 'ACCESS DENIED: All fields are required.';
         messageElement.style.color = '#ff3333';
@@ -38,25 +63,23 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     messageElement.style.color = '#00ff73';
     messageElement.classList.remove('hidden');
 
-    // --- Firebase Authentication Login ---
+    // Firebase Authentication
     auth.signInWithEmailAndPassword(username, password)
         .then((userCredential) => {
-            // Login successful!
+            // Login successful
             messageElement.textContent = 'ACCESS GRANTED: Redirecting to Main Terminal...';
             messageElement.style.color = '#00ff73';
             
-            // Redirect to dashboard page
             setTimeout(() => {
-                // *** Make sure you have a dashboard.html file! ***
+                // *** User ko secure dashboard page par bhejta hai ***
                 window.location.href = 'dashboard.html'; 
             }, 1500); 
 
         })
         .catch((error) => {
-            // Login failed!
+            // Login failed
             const errorCode = error.code;
             
-            // Custom error message based on common Firebase codes
             let displayMessage = "KEY REJECTED. Authentication Failed.";
             if (errorCode === 'auth/wrong-password') {
                 displayMessage = "CRITICAL ERROR: Invalid Encrypted Key.";
