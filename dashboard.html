@@ -2,14 +2,97 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pak Hacker Pro - Main Terminal</title>
-    <link rel="stylesheet" href="dashboard-style.css"> 
+    <style>
+        body { font-family: 'Consolas', monospace; background-color: #0a0e14; color: #00ff73; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00ff73; padding-bottom: 15px; margin-bottom: 30px; }
+        .header h1 { margin: 0; color: #ffffff; }
+        #logoutButton { background-color: transparent; border: 1px solid #ff3333; color: #ff3333; padding: 8px 15px; cursor: pointer; transition: background-color 0.3s; }
+        #logoutButton:hover { background-color: #ff3333; color: #0a0e14; }
+        
+        .story-panel {
+            padding: 30px; 
+            border: 1px dashed #00ff73; /* Neon Green dashed border */
+            border-radius: 10px; 
+            background-color: #1a202c; /* Card Dark Background */
+            margin-top: 20px;
+        }
+        .story-panel h3 { color: #ffffff; border-bottom: 2px solid #00ff73; padding-bottom: 10px; }
+        .story-panel p { color: #e6edf3; line-height: 1.8; }
+    </style>
 </head>
 <body>
+    <div class="header">
+        <h1>PAK HACKER PRO - ACCESS GRANTED</h1>
+        <button id="logoutButton">Log Out / Terminate Session</button>
+    </div>
+
+    <div class="main-content">
+        <p style="color: #909090;">[System Status: Secure Connection Established. Welcome back, Admin.]</p>
+        
+        <div class="story-panel">
+            <h3 style="color: #ffffff; border-bottom: 2px solid #00ff73; padding-bottom: 10px;">
+                📖 ڈیش بورڈ کی کہانی: عزم اور پُر اسرار چشمہ 
+            </h3>
+            <p style="color: #e6edf3; line-height: 1.8;">
+                ایک پرانے زمانے کا **حکیم** تھا جو اپنے شہر کی سب سے بڑی لائبریری کی دیکھ بھال کرتا تھا۔ اس لائبریری میں **قدیم علم** اور **نادِر کوڈز** کی کتابیں موجود تھیں۔ اس حکیم کا ایک نوجوان شاگرد تھا، جو ہر وقت **شارٹ کٹس** اور **آسان راستوں** کی تلاش میں رہتا۔
+            </p>
+            <p style="color: #e6edf3; line-height: 1.8;">
+                ایک دن شاگرد نے حکیم سے کہا، "استاد جی، مجھے وہ **پُر اسرار چشمہ** دکھا دیں جس کے بارے میں کہا جاتا ہے کہ ایک گھونٹ پینے سے انسان **تمام تر علوم** کا ماہر ہو جاتا ہے۔"
+            </p>
+            <p style="color: #e6edf3; line-height: 1.8;">
+                حکیم مسکرایا اور اسے لائبریری کے سب سے پرانے کونے میں لے گیا۔ وہاں ایک **مٹی کا گھڑا** پڑا تھا جو بالکل خالی تھا۔ حکیم نے کہا، "بیٹا، یہی وہ چشمہ ہے۔ اس گھڑے میں وہی علم آتا ہے جو تم **دن رات محنت** سے **اپنے ہاتھ** سے بھرتے ہو۔ **ہیکنگ** ہو یا کوئی اور فن، **جادو** کہیں نہیں ہے؛ **عزم** اور **لگاتار کوشش** ہی تمہارا پُر اسرار چشمہ ہے۔"
+            </p>
+            <p style="color: #00ff73; font-weight: bold; margin-top: 20px; font-style: italic;">
+                **نتیجہ:** کامیابی کا کوئی شارٹ کٹ نہیں ہوتا؛ مستقل مزاجی ہی وہ خفیہ کوڈ ہے جو ہر لاک کو کھولتا ہے۔
+            </p>
+        </div>
+        
+    </div>
+    
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
-    <script src="dashboard-security.js"></script> 
+    <script>
+        // B. Dashboard Security Logic (Aapki wahi config details yahan bhi copy paste karein)
+        const firebaseConfig = {
+          apiKey: "AIzaSyBsE6XjQZ7MdbvdPrAj6HR70g2Mi6Isx34",
+          authDomain: "pakhackerpro.firebaseapp.com",
+          databaseURL: "https://pakhackerpro-default-rtdb.firebaseio.com",
+          projectId: "pakhackerpro",
+          storageBucket: "pakhackerpro.firebasestorage.app",
+          messagingSenderId: "17345648769",
+          appId: "1:17345648769:web:f70f1bb04fae5626c69580"
+        };
+        
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = app.auth();
+
+        // --- CRITICAL SECURITY CHECK ---
+        // onAuthStateChanged: Check karta hai ki user logged in hai ya nahi.
+        auth.onAuthStateChanged(user => {
+            if (!user) {
+                // Agar user logged out hai, to login page par bhej do.
+                window.location.href = 'index.html'; 
+            } else {
+                // User logged in hai. Dashboard content show karein.
+                document.body.style.display = 'block'; 
+            }
+        });
+        
+        // --- LOGOUT LOGIC ---
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            auth.signOut().then(() => {
+                // Logout successful. onAuthStateChanged hook automatic redirect kar dega.
+                console.log("Session terminated.");
+            }).catch((error) => {
+                console.error("Logout Error:", error);
+            });
+        });
+        
+        // Initialy dashboard content hide kar do jab tak security check na ho jaye
+        document.body.style.display = 'none'; 
+    </script>
 </body>
 </html>
