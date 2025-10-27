@@ -80,7 +80,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
             // Login failed
             const errorCode = error.code;
             
-            let displayMessage = "KEY REJECTED. Authentication Failed.";
+            let displayMessage = "Wrong user.  WhatsApp 923070378723.";
             if (errorCode === 'auth/wrong-password') {
                 displayMessage = "CRITICAL ERROR: Invalid Encrypted Key.";
             } else if (errorCode === 'auth/user-not-found') {
