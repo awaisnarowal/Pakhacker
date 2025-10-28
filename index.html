@@ -1,31 +1,38 @@
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pak Hacker Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap');
-      body {
-        font-family: 'Fira Code', monospace;
-      }
-    </style>
-  <script type="importmap">
-{
-  "imports": {
-    "firebase/": "https://aistudiocdn.com/firebase@^12.4.0/",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pak Hacker Pro - Access Terminal</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-  <body class="bg-gray-900">
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+<body>
+    <div class="background-matrix"></div> 
+    
+    <div class="login-container">
+        <h1 class="glitch" data-text="Pak Hacker Pro">Pak Hacker Pro</h1>
+        <h2>// Initializing Secure Connection...</h2>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username">User ID (Email)</label>
+                <input type="email" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Encrypted Key</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" id="loginButton" class="neon-btn">
+                <span class="text">ACCESS</span>
+                <span class="line-1"></span><span class="line-2"></span>
+                <span class="line-3"></span><span class="line-4"></span>
+            </button>
+            <p id="message" class="hidden"></p>
+        </form>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
+    <script src="script.js"></script>
+</body>
 </html>
