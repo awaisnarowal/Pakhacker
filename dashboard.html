@@ -4,17 +4,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pak Hacker Pro - Main Terminal</title>
+    <style>
+        body { font-family: 'Consolas', monospace; background-color: #0a0e14; color: #00ff73; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00ff73; padding-bottom: 15px; margin-bottom: 30px; }
+        .header h1 { margin: 0; color: #ffffff; }
+        #logoutButton { background-color: transparent; border: 1px solid #ff3333; color: #ff3333; padding: 8px 15px; cursor: pointer; transition: background-color 0.3s; }
+        #logoutButton:hover { background-color: #ff3333; color: #0a0e14; }
+        
+        .story-panel {
+            padding: 30px; 
+            border: 1px dashed #00ff73; /* Neon Green dashed border */
+            border-radius: 10px; 
+            background-color: #1a202c; /* Card Dark Background */
+            margin-top: 20px;
+        }
+        .story-panel h3 { color: #ffffff; border-bottom: 2px solid #00ff73; padding-bottom: 10px; }
+        .story-panel p { color: #e6edf3; line-height: 1.8; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>PAK HACKER PRO - ACCESS GRANTED</h1>
+        <button id="logoutButton">Log Out / Terminate Session</button>
+    </div>
+
+    <div class="main-content">
+        <p style="color: #909090;">[System Status: Secure Connection Established. Welcome back, Admin.]</p>
+        
+        <div class="story-panel">
+            <h3 style="color: #ffffff; border-bottom: 2px solid #00ff73; padding-bottom: 10px;">
+                📖 ڈیش بورڈ کی کہانی: عزم اور پُر اسرار چشمہ 
+            </h3>
+            <p style="color: #e6edf3; line-height: 1.8;">
+                ایک پرانے زمانے کا **حکیم** تھا جو اپنے شہر کی سب سے بڑی لائبریری کی دیکھ بھال کرتا تھا۔ اس لائبریری میں **قدیم علم** اور **نادِر کوڈز** کی کتابیں موجود تھیں۔ اس حکیم کا ایک نوجوان شاگرد تھا، جو ہر وقت **شارٹ کٹس** اور **آسان راستوں** کی تلاش میں رہتا۔
+            </p>
+            <p style="color: #e6edf3; line-height: 1.8;">
+                ایک دن شاگرد نے حکیم سے کہا، "استاد جی، مجھے وہ **پُر اسرار چشمہ** دکھا دیں جس کے بارے میں کہا جاتا ہے کہ ایک گھونٹ پینے سے انسان **تمام تر علوم** کا ماہر ہو جاتا ہے۔"
+            </p>
+            <p style="color: #e6edf3; line-height: 1.8;">
+                حکیم مسکرایا اور اسے لائبریری کے سب سے پرانے کونے میں لے گیا۔ وہاں ایک **مٹی کا گھڑا** پڑا تھا جو بالکل خالی تھا۔ حکیم نے کہا، "بیٹا، یہی وہ چشمہ ہے۔ اس گھڑے میں وہی علم آتا ہے جو تم **دن رات محنت** سے **اپنے ہاتھ** سے بھرتے ہو۔ **ہیکنگ** ہو یا کوئی اور فن، **جادو** کہیں نہیں ہے؛ **عزم** اور **لگاتار کوشش** ہی تمہارا پُر اسرار چشمہ ہے۔"
+            </p>
+            <p style="color: #00ff73; font-weight: bold; margin-top: 20px; font-style: italic;">
+                **نتیجہ:** کامیابی کا کوئی شارٹ کٹ نہیں ہوتا؛ مستقل مزاجی ہی وہ خفیہ کوڈ ہے جو ہر لاک کو کھولتا ہے۔
+            </p>
+        </div>
+        
+    </div>
+    
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-</head>
-<body style="display: none;">
+
     <script>
-    // *************************************************************************
-    // * YAHAN POORA CODE OBFUSCATED HAI TAQII DIRECT READ NA HO SAKE *
-    // *************************************************************************
-    eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--){d[e(c)]=k[c]||e(c)}k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c])}}return p}('4.b.8=\'5\';3 0={a:\'AIzaSyBsE6XjQZ7MdbvdPrAj6HR70g2Mi6Isx34\',d:\'pakhackerpro.firebaseapp.com\',i:\'https://pakhackerpro-default-rtdb.firebaseio.com\',j:\'pakhackerpro\',l:\'pakhackerpro.firebasestorage.app\',m:\'17345648769\',f:\'1:17345648769:web:f70f1bb04fae5626c69580\'};3 9=h.n(0);3 7=9.g();7.k(c=>{if(!c){4.r.8=\'o.p\'}q{4.b.8=\'s\';u 6=`<v><h1>PAK W HACKER PRO - ACCESS GRANTED</h1><button t="w" 4="x">Log Out / Terminate Session</button></v><div 4="y"><p z:A:B="#909090;">[C D: E F G. H I J.]</p><div 4="K" L:M:N="#00ff73" O:P:Q="10px" R:S:T="#1a202c" V:W:X="20px"><h3 L:M:Y="#ffffff" O:P:Z="#00ff73" 10:11="10px">\\u066a \\u0688\\u0627\\u06cc\\u0634 \\u0628\\u0648\\u0631\\u0688 \\u06a9\\u06cc \\u06a9\\u06c1\\u0627\\u0646\\u06cc: \\u0639\\u0632\\u0645 \\u0627\\u0648\\u0631 \\u067e\\u064f\\u0631 \\u0627\\u0633\\u0631\\u0627\\u0631 \\u0686\\u0634\\u0645\\u06c1 </h3><p L:M:12="#e6edf3" 13:14="1.8">\\u0627\\u06cc\\u06a9 \\u067e\\u0631\\u0627\\u0646\\u06d2 \\u0632\\u0645\\u0627\\u0646\\u06d2 \\u06a9\\u0627 <b>\\u062d\\u06a9\\u06cc\\u0645</b> \\u062a\\u06be\\u0627 \\u062c\\u0648 \\u0627\\u067e\\u0646\\u06d2 \\u0634\\u06c1\\u0631 \\u06a9\\u06cc \\u0633\\u0628 \\u0633\\u06d2 \\u0628\\u0691\\u06cc \\u0644\\u0627\\u0626\\u0628\\u0631\\u06cc\\u0631\\u06cc \\u06a9\\u06cc \\u062f\\u06cc\\u06a9\\u06be \\u0628\\u06be\\u0627\\u0644 \\u06a9\\u0631\\u062a\\u0627 \\u062a\\u06be\\u0627\\u06d4 \\u0627\\u0633 \\u0644\\u0627\\u0626\\u0628\\u0631\\u06cc\\u0631\\u06cc \\u0645\\u06cc\\u06ba <b>\\u0642\\u062f\\u06cc\\u0645 \\u0639\\u0644\\u0645</b> \\u0627\\u0648\\u0631 <b>\\u0646\\u0627\\u062f\\u0650\\u0631 \\u06a9\\u0648\\u0688\\u0632</b> \\u06a9\\u06cc \\u06a9\\u062a\\u0627\\u0628\\u06cc\\u06ba \\u0645\\u0648\\u062c\\u0648\\u062f \\u062a\\u06be\\u06cc\\u06ba\\u06d4 \\u0627\\u0633 \\u062d\\u06a9\\u06cc\\u0645 \\u06a9\\u0627 \\u0627\\u06cc\\u06a9 \\u0646\\u0648\\u062c\\u0648\\u0627\\u0646 \\u0634\\u0627\\u06af\\u0631\\u062f \\u062a\\u06be\\u0627\\u060c \\u062c\\u0648 \\u06c1\\u0631 \\u0648\\u0642\\u062a <b>\\u0634\\u0627\\u0631\\u0679 \\u06a9\\u0679\\u0633</b> \\u0627\\u0648\\u0631 <b>\\u0622\\u0633\\u0627\\u0646 \\u0631\\u0627\\u0633\\u062a\\u0648\\u06ba</b> \\u06a9\\u06cc \\u062a\\u0644\\u0627\\u0634 \\u0645\\u06cc\\u06ba \\u0631\\u06c1\\u062a\\u0627\\u06d4</p><p L:M:12="#e6edf3" 13:14="1.8">\\u0627\\u06cc\\u06a9 \\u062f\\u0646 \\u0634\\u0627\\u06af\\u0631\\u062f \\u0646\\u06d2 \\u062d\\u06a9\\u06cc\\u0645 \\u0633\\u06d2 \\u06a9\\u06c1\\u0627\\u060c "\\u0627\\u0633\\u062a\\u0627\\u062f \\u062c\\u06cc\\u060c \\u0645\\u062c\\u06be\\u06d2 \\u0648\\u06c1 <b>\\u067e\\u064f\\u0631 \\u0627\\u0633\\u0631\\u0627\\u0631 \\u0686\\u0634\\u0645\\u06c1</b> \\u062f\\u06a9\\u06be\\u0627 \\u062f\\u06cc\\u06ba \\u062c\\u0633 \\u06a9\\u06d2 \\u0628\\u0627\\u0631\\u06d2 \\u0645\\u06cc\\u06ba \\u06a9\\u06c1\\u0627 \\u062c\\u0627\\u062a\\u0627 \\u06c1\\u06d2 \\u06a9\\u06c1 \\u0627\\u06cc\\u06a9 \\u063a\\u0648\\u0646\\u0679 \\u067e\\u06cc\\u0646\\u06d2 \\u0633\\u06d2 \\u0627\\u0646\\u0633\\u0627\\u0646 <b>\\u062a\\u0645\\u0627\\u0645 \\u062a\\u0631 \\u0639\\u0644\\u0648\\u0645</b> \\u06a9\\u0627 \\u0645\\u0627\\u06c1\\u0631 \\u06c1\\u0648 \\u062c\\u0627\\u062a\\u0627 \\u06c1\\u06d2\\u06d4"</p><p L:M:12="#e6edf3" 13:14="1.8">\\u062d\\u06a9\\u06cc\\u0645 \\u0645\\u0633\\u06a9\\u0631\\u0627\\u06cc\\u0627 \\u0627\\u0648\\u0631 \\u0627\\u0633\\u06d2 \\u0644\\u0627\\u0626\\u0628\\u0631\\u06cc\\u0631\\u06cc \\u06a9\\u06d2 \\u0633\\u0628 \\u0633\\u06d2 \\u067e\\u0631\\u0627\\u0646\\u06d2 \\u06a9\\u0648\\u0646\\u06d2 \\u0645\\u06cc\\u06ba \\u0644\\u06d2 \\u06af\\u06cc\\u0627\\u06d4 \\u0648\\u06c1\\u0627\\u06ba \\u0627\\u06cc\\u06a9 <b>\\u0645\\u0679\\u06cc \\u06a9\\u0627 \\u06af\\u06be\\u0691\\u0627</b> \\u067e\\u0691\\u0627 \\u062a\\u06be\\u0627 \\u062c\\u0648 \\u0628\\u0627\\u0644\\u06a9\\u0644 \\u062e\\u0627\\u0644\\u06cc \\u062a\\u06be\\u0627\\u06d4 \\u062d\\u06a9\\u06cc\\u0645 \\u0646\\u06d2 \\u06a9\\u06c1\\u0627\\u060c "\\u0628\\u06cc\\u0679\\u0627\\u060c \\u06cc\\u06c1\\u06cc \\u0648\\u06c1 \\u0686\\u0634\\u0645\\u06c1 \\u06c1\\u06d2\\u06d4 \\u0627\\u0633 \\u06af\\u06be\\u0691\\u06d2 \\u0645\\u06cc\\u06ba \\u0648\\u06c1\\u06cc \\u0639\\u0644\\u0645 \\u0622\\u062a\\u0627 \\u06c1\\u06d2 \\u062c\\u0648 \\u062a\\u0645 <b>\\u062f\\u0646 \\u0631\\u0627\\u062a \\u0645\\u062d\\u0646\\u062a</b> \\u0633\\u06d2 <b>\\u0627\\u067e\\u0646\\u06d2 \\u06c1\\u0627\\u062a\\u06be</b> \\u0633\\u06d2 \\u0628\\u06be\\u0631\\u062a\\u06d2 \\u06c1\\u0648\\u06d4 <b>\\u06c1\\u06cc\\u06a9\\u0646\\u06af</b> \\u06c1\\u0648 \\u06cc\\u0627 \\u06a9\\u0648\\u0626\\u06cc \\u0627\\u0648\\u0631 \\u0641\\u0646\\u060c <b>\\u062c\\u0627\\u062f\\u0648</b> \\u06a9\\u06c1\\u06cc\\u06ba \\u0646\\u06c1\\u06cc\\u06ba \\u06c1\\u06d2\\u061b <b>\\u0639\\u0632\\u0645</b> \\u0627\\u0648\\u0631 <b>\\u0644\\u06af\\u0627\\u062a\\u0627\\u0631 \\u06a9\\u0648\\u0634\\u0634</b> \\u06c1\\u06cc \\u062a\\u0645\\u06be\\u0627\\u0631\\u0627 \\u067e\\u064f\\u0631 \\u0627\\u0633\\u0631\\u0627\\u0631 \\u0686\\u0634\\u0645\\u06c1 \\u06c1\\u06d2\\u06d4</p><p L:M:Z="#00ff73" 15:16="bold" 17:18="20px" 19:1A="italic"><b>\\u0646\\u062a\\u06cc\\u062c\\u06c1:</b> \\u06a9\\u0627\\u0645\\u06cc\\u0627\\u0628\\u06cc \\u06a9\\u0627 \\u06a9\\u0648\\u0626\\u06cc \\u0634\\u0627\\u0631\\u0679 \\u06a9\\u0679 \\u0646\\u06c1\\u06cc\\u06ba \\u06c1\\u0648\\u062a\\u0627\\u061b \\u0645\\u0633\\u062a\\u0642\\u0644 \\u0645\\u0632\\u0627\\u062c\\u06cc \\u06c1\\u06cc \\u0648\\u06c1 \\u062e\\u0648\\u0641\\u06cc\\u06c1 \\u06a9\\u0648\\u0688 \\u06c1\\u06d2 \\u062c\\u0648 \\u06c1\\u0631 \\u0644\\u0627\\u06a9 \\u06a9\\u0648 \\u06a9\\u06be\\u0648\\u0644\\u062a\\u0627 \\u06c1\\u06d2\\u06d4</p></div></div>`;document.b.2(6);document.x.addEventListener(\'click\',()=>{\\u0037.s().then(()=>{})})}})',62,72,'firebaseConfig|c|write|const|document|none|contentHTML|auth|style|app|apiKey|body|user|authDomain|href|index|auth|firebase|databaseURL|projectId|onAuthStateChanged|storageBucket|messagingSenderId|initializeApp|html|js|else|location|signOut|block|let|div|type|logoutButton|main|style|color|lineHeight|System|Status|Secure|Connection|Established|Welcome|back|Admin|story|style|border|dashed|borderRadius|backgroundColor|padding|marginTop|div|id|class|data|content|TERMINAL|setTimeout'.split('|'),0,{}))
-    // *************************************************************************
+        // B. Dashboard Security Logic (Aapki wahi config details yahan bhi copy paste karein)
+        const firebaseConfig = {
+          apiKey: "AIzaSyBsE6XjQZ7MdbvdPrAj6HR70g2Mi6Isx34",
+          authDomain: "pakhackerpro.firebaseapp.com",
+          databaseURL: "https://pakhackerpro-default-rtdb.firebaseio.com",
+          projectId: "pakhackerpro",
+          storageBucket: "pakhackerpro.firebasestorage.app",
+          messagingSenderId: "17345648769",
+          appId: "1:17345648769:web:f70f1bb04fae5626c69580"
+        };
+        
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = app.auth();
+
+        // --- CRITICAL SECURITY CHECK ---
+        // onAuthStateChanged: Check karta hai ki user logged in hai ya nahi.
+        auth.onAuthStateChanged(user => {
+            if (!user) {
+                // Agar user logged out hai, to login page par bhej do.
+                window.location.href = 'index.html'; 
+            } else {
+                // User logged in hai. Dashboard content show karein.
+                document.body.style.display = 'block'; 
+            }
+        });
+        
+        // --- LOGOUT LOGIC ---
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            auth.signOut().then(() => {
+                // Logout successful. onAuthStateChanged hook automatic redirect kar dega.
+                console.log("Session terminated.");
+            }).catch((error) => {
+                console.error("Logout Error:", error);
+            });
+        });
+        
+        // Initialy dashboard content hide kar do jab tak security check na ho jaye
+        document.body.style.display = 'none'; 
     </script>
-    
-    </body>
+</body>
 </html>
