@@ -1,5 +1,0 @@
-{
-  "name": "Pak Hacker Pro Login",
-  "description": "A secure, hacker-themed login and authentication page for the 'Pak Hacker Pro' website, built with React, TypeScript, and Firebase. Features email/password and Google sign-in options.",
-  "requestFramePermissions": []
-}
