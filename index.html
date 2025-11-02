@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pak Hacker Pro</title>
+    <title>Pak Hacker Pro - Loading</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000"> 
@@ -16,117 +16,158 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #000000; /* Black Background */
-            color: #ffffff; /* White text */
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
             text-align: center;
         }
-        /* Loading message style */
         .loading {
             font-size: 1.6em;
             margin-bottom: 30px;
-            /* Simple fade animation for a 'loading' effect */
             animation: pulse 1.5s infinite alternate; 
         }
-        /* Custom Keyframes for pulse effect */
         @keyframes pulse {
             from { opacity: 0.8; }
             to { opacity: 1; }
         }
-
-        /* Improved Install Button Style */
-        #installButton {
-            padding: 15px 30px; /* Bigger button */
-            font-size: 1.4em;
-            background-color: #4CAF50; /* Green color for action/install */
+        .buttons-container {
+            display: none; /* Hidden until timer ends */
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .app-button {
+            padding: 15px 30px;
+            font-size: 1.2em;
             color: white;
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            margin-top: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4); /* Stronger shadow */
             transition: background-color 0.3s, transform 0.2s;
-            display: none; /* Hide by default, show if installable */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            text-decoration: none;
+            display: inline-block;
+            width: 250px;
+        }
+        #installButton {
+            background-color: #4CAF50; /* Green */
         }
         #installButton:hover {
             background-color: #45a049;
-            transform: scale(1.05); /* Slight lift on hover */
+            transform: scale(1.05);
+        }
+        #useDirectlyButton {
+            background-color: #007bff; /* Blue */
+        }
+        #useDirectlyButton:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        #whatsappLink {
+            margin-top: 30px;
+            color: #25D366; /* WhatsApp Green */
+            text-decoration: none;
+            font-size: 1em;
+            display: block;
         }
     </style>
 </head>
 <body>
 
-    <div class="loading" id="loadingMsg">انسٹالیشن کی تیاری ہو رہی ہے...</div>
+    <div class="loading" id="loadingMsg">Preparing App Installation...</div>
 
-    <button id="installButton">⬇️ Pak Hacker Pro App انسٹال کریں ⬇️</button> 
+    <div class="buttons-container" id="buttonsContainer">
+        <button id="installButton" class="app-button">⬇️ Install App (Recommended)</button>
+        <a id="useDirectlyButton" class="app-button" href="Narowaliya/1.html">Continue Using Browser</a>
+    </div>
+    
+    <a id="whatsappLink" href="https://wa.me/923070378723" target="_blank">
+        Need Help? Contact us on WhatsApp: +923070378723
+    </a>
 
     <script>
         let deferredPrompt; 
         const loadingMsg = document.getElementById('loadingMsg');
+        const buttonsContainer = document.getElementById('buttonsContainer');
         const installButton = document.getElementById('installButton');
         const REDIRECT_DELAY = 5000; // 5 seconds delay
 
-        // --- 1. Service Worker Registration ---
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/Pakhacker/sw.js', { scope: '/Pakhacker/' })
-                .then(reg => console.log('Service Worker registered.'))
-                .catch(err => console.error('Service Worker registration failed:', err));
+        // --- Utility Functions ---
+
+        // Check if the current browser is Chrome/Chromium
+        function isChrome() {
+            return navigator.userAgent.includes("Chrome") && !navigator.userAgent.includes("Edg");
         }
 
-        // Function to redirect after a fixed delay
-        function redirectAfterDelay() {
-            // Check if the PWA is already installed (standalone mode)
-            if (window.matchMedia('(display-mode: standalone)').matches || window.matchMedia('(display-mode: fullscreen)').matches) {
-                window.location.replace("Narowaliya/1.html");
+        // Redirect to the main content
+        function redirectToContent() {
+            window.location.replace("Narowaliya/1.html");
+        }
+
+        // Check if the PWA is already installed
+        function isInstalled() {
+             return window.matchMedia('(display-mode: standalone)').matches || window.matchMedia('(display-mode: fullscreen)').matches;
+        }
+
+        // --- Main Logic ---
+        function initializeApp() {
+            // 1. If already installed OR not Chrome, skip the install page
+            if (isInstalled() || !isChrome()) {
+                console.log('Skipping install page (Installed or Non-Chrome)');
+                redirectToContent();
                 return;
             }
 
-            // Start the 5-second timer for non-installed users
+            // 2. Only run PWA logic and timer for Chrome/Chromium
+            console.log('Running PWA logic for Chrome...');
+
+            // Start Service Worker registration
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/Pakhacker/sw.js', { scope: '/Pakhacker/' })
+                    .catch(err => console.error('SW registration failed:', err));
+            }
+            
+            // Start the 5-second timer
             setTimeout(() => {
-                // If button is still visible, it means the user ignored it. Redirect now.
-                if (installButton.style.display !== 'none') {
-                    console.log('Time limit reached, redirecting...');
-                    window.location.replace("Narowaliya/1.html");
+                loadingMsg.style.display = 'none';
+                buttonsContainer.style.display = 'flex'; // Show buttons after 5 seconds
+                document.getElementById('whatsappLink').style.display = 'block';
+
+                // If the PWA is installable, enable the install button
+                if (deferredPrompt) {
+                     installButton.style.display = 'block';
+                } else {
+                     // If deferredPrompt is null, hide the install button and just show "Direct Use"
+                     installButton.style.display = 'none';
                 }
             }, REDIRECT_DELAY);
         }
 
-        // --- 2. Main Logic on Load ---
-        function initializeApp() {
-            // Start the delay timer immediately
-            redirectAfterDelay();
-            
-            // Update loading message to prompt action
-            loadingMsg.textContent = 'انسٹالیشن مکمل کرنے کے لیے نیچے بٹن پر کلک کریں:';
-        }
-
-        // --- 3. Browser Install Prompt Event Listener ---
+        // --- PWA Events ---
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            console.log('PWA is installable.');
-
-            // Show the Install Button because the PWA is ready
-            installButton.style.display = 'block';
+            console.log('PWA is installable, prompt saved.');
+            // Do not display the button yet, let the 5-sec timer handle it.
         });
         
-        // --- 4. Install Button Click Handler ---
         installButton.addEventListener('click', () => {
             if (deferredPrompt) {
-                // Hide the custom button and show the native prompt
-                installButton.style.display = 'none';
-                loadingMsg.textContent = 'انسٹالیشن پرامپٹ سکرین پر ہے...';
+                // Change UI during installation process
+                buttonsContainer.style.display = 'none';
+                loadingMsg.style.display = 'block';
+                loadingMsg.textContent = 'Installation prompt is on your screen...';
                 
                 deferredPrompt.prompt();
                 
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
                         // Redirect immediately after successful installation
-                        window.location.replace("Narowaliya/1.html"); 
+                        redirectToContent(); 
                     } else {
-                        // User dismissed the prompt, restore loading message
-                        loadingMsg.textContent = 'انسٹالیشن مکمل کرنے کے لیے نیچے بٹن پر کلک کریں:';
-                        installButton.style.display = 'block';
+                        // User dismissed, redirect after a short delay
+                        loadingMsg.textContent = 'Installation dismissed. Redirecting...';
+                        setTimeout(redirectToContent, 1000);
                     }
                     deferredPrompt = null;
                 });
