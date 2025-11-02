@@ -24,18 +24,18 @@
         .loading {
             font-size: 1.6em;
             margin-bottom: 30px;
-            color: #FFC107; /* Amber/Yellow for security/warning */
+            color: #FFC107; 
         }
         /* CSS for the rotating spinner */
         .spinner {
-            border: 5px solid #333; /* Light grey */
-            border-top: 5px solid #4CAF50; /* Green spinner */
+            border: 5px solid #333; 
+            border-top: 5px solid #4CAF50; 
             border-radius: 50%;
             width: 50px;
             height: 50px;
             animation: spin 1s linear infinite;
             margin-bottom: 20px;
-            display: none; /* Show only when necessary */
+            display: none; 
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -45,11 +45,11 @@
             color: #ccc;
             margin-bottom: 20px;
             font-size: 1em;
-            display: none; /* Show after timer */
+            display: none; 
             max-width: 350px;
         }
         .buttons-container {
-            display: none; /* Hidden until timer ends */
+            display: none; 
             flex-direction: column;
             gap: 15px;
             margin-top: 20px;
@@ -68,14 +68,14 @@
             width: 250px;
         }
         #installButton {
-            background-color: #4CAF50; /* Green */
+            background-color: #4CAF50; 
         }
         #installButton:hover {
             background-color: #45a049;
             transform: scale(1.05);
         }
         #useDirectlyButton {
-            background-color: #007bff; /* Blue */
+            background-color: #007bff; 
         }
         #useDirectlyButton:hover {
             background-color: #0056b3;
@@ -116,12 +116,13 @@
         const installButton = document.getElementById('installButton');
         const infoText = document.getElementById('infoText');
         const spinner = document.getElementById('spinner');
-        const REDIRECT_DELAY = 5000; // 5 seconds delay
+        const REDIRECT_DELAY = 5000; 
 
         // --- Utility Functions ---
         function isChrome() {
-            // Checks for Chrome, Chromium, and Android Webview (which supports PWA)
-            return navigator.userAgent.includes("Chrome") && !navigator.userAgent.includes("Edg");
+            // Checks for Chrome, Chromium, and major forks that support PWA, excluding specific others.
+            const userAgent = navigator.userAgent;
+            return userAgent.includes("Chrome") && !userAgent.includes("Edg") && !userAgent.includes("FxiOS") && !userAgent.includes("OPR");
         }
         function redirectToContent() {
             window.location.replace("Narowaliya/1.html");
@@ -132,16 +133,16 @@
 
         // --- Main Logic ---
         function initializeApp() {
-            // Show spinner immediately for security check look
-            spinner.style.display = 'block';
-
             // 1. Skip logic for installed app OR non-Chrome browser
             if (isInstalled() || !isChrome()) {
+                console.log('Skipping install page (Installed or Non-Chrome browser detected).');
                 redirectToContent();
                 return;
             }
+            
+            // 2. Only run PWA logic and timer for Chrome
+            spinner.style.display = 'block';
 
-            // 2. Run PWA logic and timer only for Chrome
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/Pakhacker/sw.js', { scope: '/Pakhacker/' })
                     .catch(err => console.error('SW registration failed:', err));
@@ -149,14 +150,13 @@
             
             // Start the 5-second timer
             setTimeout(() => {
-                spinner.style.display = 'none'; // Hide spinner
-                loadingMsg.style.display = 'none'; // Hide security message
+                spinner.style.display = 'none'; 
+                loadingMsg.style.display = 'none'; 
 
-                // Show instruction text, buttons, and whatsapp link
                 infoText.style.display = 'block';
                 buttonsContainer.style.display = 'flex'; 
 
-                // If the PWA is installable, show the install button, otherwise hide it.
+                // If installable, show the install button
                 if (deferredPrompt) {
                      installButton.style.display = 'block';
                 } else {
@@ -169,12 +169,10 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            // The 5-second timer will decide when to show the button
         });
         
         installButton.addEventListener('click', () => {
             if (deferredPrompt) {
-                // Change UI during installation process
                 buttonsContainer.style.display = 'none';
                 infoText.style.display = 'none';
                 loadingMsg.style.display = 'block';
@@ -186,7 +184,7 @@
                     if (choiceResult.outcome === 'accepted') {
                         redirectToContent(); 
                     } else {
-                        // User dismissed, show the prompt again after 1 sec delay
+                        // User dismissed, show the prompt again
                         loadingMsg.style.display = 'none';
                         infoText.style.display = 'block';
                         buttonsContainer.style.display = 'flex'; 
