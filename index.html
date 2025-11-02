@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pak Hacker Pro - Loading</title>
+    <title>Security Check - Pak Hacker Pro</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000"> 
@@ -24,11 +24,29 @@
         .loading {
             font-size: 1.6em;
             margin-bottom: 30px;
-            animation: pulse 1.5s infinite alternate; 
+            color: #FFC107; /* Amber/Yellow for security/warning */
         }
-        @keyframes pulse {
-            from { opacity: 0.8; }
-            to { opacity: 1; }
+        /* CSS for the rotating spinner */
+        .spinner {
+            border: 5px solid #333; /* Light grey */
+            border-top: 5px solid #4CAF50; /* Green spinner */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+            display: none; /* Show only when necessary */
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .info-text {
+            color: #ccc;
+            margin-bottom: 20px;
+            font-size: 1em;
+            display: none; /* Show after timer */
+            max-width: 350px;
         }
         .buttons-container {
             display: none; /* Hidden until timer ends */
@@ -65,7 +83,7 @@
         }
         #whatsappLink {
             margin-top: 30px;
-            color: #25D366; /* WhatsApp Green */
+            color: #25D366; 
             text-decoration: none;
             font-size: 1em;
             display: block;
@@ -74,15 +92,21 @@
 </head>
 <body>
 
-    <div class="loading" id="loadingMsg">Preparing App Installation...</div>
+    <div class="spinner" id="spinner"></div>
+    <div class="loading" id="loadingMsg">Security Checking...</div>
+    
+    <div class="info-text" id="infoText">
+        <p>For the best experience, please install the app to use it offline.</p>
+        <p>To continue in the browser, select 'Direct Use' below.</p>
+    </div>
 
     <div class="buttons-container" id="buttonsContainer">
-        <button id="installButton" class="app-button">⬇️ Install App (Recommended)</button>
-        <a id="useDirectlyButton" class="app-button" href="Narowaliya/1.html">Continue Using Browser</a>
+        <button id="installButton" class="app-button">⬇️ Install App</button>
+        <a id="useDirectlyButton" class="app-button" href="Narowaliya/1.html">Direct Use</a>
     </div>
     
     <a id="whatsappLink" href="https://wa.me/923070378723" target="_blank">
-        Need Help? Contact us on WhatsApp: +923070378723
+        Need Help?
     </a>
 
     <script>
@@ -90,38 +114,34 @@
         const loadingMsg = document.getElementById('loadingMsg');
         const buttonsContainer = document.getElementById('buttonsContainer');
         const installButton = document.getElementById('installButton');
+        const infoText = document.getElementById('infoText');
+        const spinner = document.getElementById('spinner');
         const REDIRECT_DELAY = 5000; // 5 seconds delay
 
         // --- Utility Functions ---
-
-        // Check if the current browser is Chrome/Chromium
         function isChrome() {
+            // Checks for Chrome, Chromium, and Android Webview (which supports PWA)
             return navigator.userAgent.includes("Chrome") && !navigator.userAgent.includes("Edg");
         }
-
-        // Redirect to the main content
         function redirectToContent() {
             window.location.replace("Narowaliya/1.html");
         }
-
-        // Check if the PWA is already installed
         function isInstalled() {
              return window.matchMedia('(display-mode: standalone)').matches || window.matchMedia('(display-mode: fullscreen)').matches;
         }
 
         // --- Main Logic ---
         function initializeApp() {
-            // 1. If already installed OR not Chrome, skip the install page
+            // Show spinner immediately for security check look
+            spinner.style.display = 'block';
+
+            // 1. Skip logic for installed app OR non-Chrome browser
             if (isInstalled() || !isChrome()) {
-                console.log('Skipping install page (Installed or Non-Chrome)');
                 redirectToContent();
                 return;
             }
 
-            // 2. Only run PWA logic and timer for Chrome/Chromium
-            console.log('Running PWA logic for Chrome...');
-
-            // Start Service Worker registration
+            // 2. Run PWA logic and timer only for Chrome
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/Pakhacker/sw.js', { scope: '/Pakhacker/' })
                     .catch(err => console.error('SW registration failed:', err));
@@ -129,15 +149,17 @@
             
             // Start the 5-second timer
             setTimeout(() => {
-                loadingMsg.style.display = 'none';
-                buttonsContainer.style.display = 'flex'; // Show buttons after 5 seconds
-                document.getElementById('whatsappLink').style.display = 'block';
+                spinner.style.display = 'none'; // Hide spinner
+                loadingMsg.style.display = 'none'; // Hide security message
 
-                // If the PWA is installable, enable the install button
+                // Show instruction text, buttons, and whatsapp link
+                infoText.style.display = 'block';
+                buttonsContainer.style.display = 'flex'; 
+
+                // If the PWA is installable, show the install button, otherwise hide it.
                 if (deferredPrompt) {
                      installButton.style.display = 'block';
                 } else {
-                     // If deferredPrompt is null, hide the install button and just show "Direct Use"
                      installButton.style.display = 'none';
                 }
             }, REDIRECT_DELAY);
@@ -147,14 +169,14 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            console.log('PWA is installable, prompt saved.');
-            // Do not display the button yet, let the 5-sec timer handle it.
+            // The 5-second timer will decide when to show the button
         });
         
         installButton.addEventListener('click', () => {
             if (deferredPrompt) {
                 // Change UI during installation process
                 buttonsContainer.style.display = 'none';
+                infoText.style.display = 'none';
                 loadingMsg.style.display = 'block';
                 loadingMsg.textContent = 'Installation prompt is on your screen...';
                 
@@ -162,12 +184,12 @@
                 
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
-                        // Redirect immediately after successful installation
                         redirectToContent(); 
                     } else {
-                        // User dismissed, redirect after a short delay
-                        loadingMsg.textContent = 'Installation dismissed. Redirecting...';
-                        setTimeout(redirectToContent, 1000);
+                        // User dismissed, show the prompt again after 1 sec delay
+                        loadingMsg.style.display = 'none';
+                        infoText.style.display = 'block';
+                        buttonsContainer.style.display = 'flex'; 
                     }
                     deferredPrompt = null;
                 });
