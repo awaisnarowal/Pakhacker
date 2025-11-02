@@ -1,4 +1,4 @@
-const CACHE_NAME = 'PakHackerPro-v3'; // Increased version to force update
+const CACHE_NAME = 'PakHackerPro-v3'; 
 const urlsToCache = [
     '/Pakhacker/', 
     '/Pakhacker/index.html',
@@ -6,7 +6,6 @@ const urlsToCache = [
     '/Pakhacker/manifest.json',
     '/Pakhacker/icons/icon-192x192.png',
     '/Pakhacker/icons/icon-512x512.png'
-    // Add paths to other critical files like CSS/JS if any
 ];
 
 self.addEventListener('install', event => {
@@ -25,7 +24,6 @@ self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request)
             .then(response => {
-                // Cache hit - return response
                 if (response) {
                     return response;
                 }
