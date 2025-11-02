@@ -1,4 +1,4 @@
-const CACHE_NAME = 'PakHackerPro-v7'; // Increased version
+const CACHE_NAME = 'PakHackerPro-v7'; 
 const urlsToCache = [
     '/Pakhacker/', 
     '/Pakhacker/index.html',
@@ -9,7 +9,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
-    self.skipWaiting(); // Force the new Service Worker to start immediately
+    self.skipWaiting(); 
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
@@ -28,7 +28,6 @@ self.addEventListener('activate', event => {
             return Promise.all(
                 cacheNames.map(cacheName => {
                     if (cacheWhitelist.indexOf(cacheName) === -1) {
-                        // Delete old caches
                         console.log('Deleting old cache:', cacheName);
                         return caches.delete(cacheName);
                     }
@@ -50,7 +49,6 @@ self.addEventListener('fetch', event => {
     );
 });
 
-// Logic to handle the 'skipWaiting' command from the frontend
 self.addEventListener('message', function(event) {
   if (event.data && event.data.action === 'skipWaiting') {
       console.log('Skip waiting command received.');
