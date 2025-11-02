@@ -6,39 +6,37 @@
     <title>Pak Hacker Pro</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2196F3"> 
-
-    <style>
+    <meta name="theme-color" content="#000000"> <style>
         body {
             display: flex;
-            flex-direction: column; /* To stack loading/error and button */
+            flex-direction: column; 
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f0f0;
+            background-color: #000000; /* Black Background */
+            color: #ffffff; /* White text */
             text-align: center;
         }
         .loading {
             font-size: 1.4em;
-            color: #333;
             margin-bottom: 20px;
         }
         .error-message {
-            color: #d32f2f; /* Red-ish color */
+            color: #d32f2f;
             font-size: 1.5em;
             padding: 20px;
             border: 2px solid #d32f2f;
-            background-color: #ffebee; /* Light red background */
+            background-color: #ffebee;
             border-radius: 8px;
-            display: none; /* Hide by default */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none; 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
         }
         #installButton {
             padding: 12px 25px;
             font-size: 1.3em;
-            background-color: #007bff; /* Blue button */
+            background-color: #007bff; 
             color: white;
             border: none;
             border-radius: 6px;
@@ -46,7 +44,7 @@
             margin-top: 20px;
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
             transition: background-color 0.3s;
-            display: none; /* Hide by default, shown via JS */
+            display: none; 
         }
         #installButton:hover {
             background-color: #0056b3;
@@ -73,11 +71,21 @@
 
         // --- 1. Service Worker Registration ---
         if ('serviceWorker' in navigator) {
-            // Note: The path to sw.js is relative to the root URL (https://awaisnarowal.github.io/)
-            // so we use the repository name in the path.
+            // Register sw.js with the correct scope for GitHub Pages
             navigator.serviceWorker.register('/Pakhacker/sw.js', { scope: '/Pakhacker/' })
                 .then(reg => console.log('Service Worker registered. Scope:', reg.scope))
                 .catch(err => console.error('Service Worker registration failed:', err));
+        }
+
+        // Function to redirect after 5 seconds
+        function redirectAfterDelay() {
+            // Check if the install button is still visible (meaning user hasn't installed or clicked)
+            if (installButton.style.display !== 'none') {
+                setTimeout(() => {
+                    console.log('5 seconds passed, redirecting...');
+                    window.location.replace("Narowaliya/1.html"); 
+                }, 5000); // 5000 milliseconds = 5 seconds
+            }
         }
 
         // --- 2. Main Logic: Check Connection and Redirect/Install Prompt ---
@@ -90,24 +98,63 @@
                     return; 
                 }
                 
-                // If online AND NOT installed, hide loading and wait for the install prompt event.
-                // We show the install button after a short delay to ensure PWA checks are done.
-                loadingMsg.textContent = 'آپ کی ایپ تیار ہے! انسٹال کرنے کے لیے کلک کریں:';
-                setTimeout(() => {
-                    if (deferredPrompt) {
-                         installButton.style.display = 'block'; // Show our custom install button
-                    } else {
-                        // If no install prompt is available (user may have dismissed it previously), 
-                        // just proceed to the content.
-                        window.location.replace("Narowaliya/1.html");
-                    }
-                }, 1500); // 1.5 second delay
+                // If online AND NOT installed, show the install option
+                loadingMsg.textContent = 'آپ کی ایپ تیار ہے! انسٹال کرنے کے لیے نیچے بٹن پر کلک کریں:';
                 
+                // Only show the button if the browser can prompt for installation
+                if (deferredPrompt) {
+                     installButton.style.display = 'block'; // Show our custom install button
+                } else {
+                    // If deferredPrompt is null, the user has likely dismissed the prompt permanently.
+                    loadingMsg.textContent = 'لوڈنگ ہو رہی ہے...';
+                }
+                
+                // Start the 5-second timer to redirect to the actual content
+                redirectAfterDelay();
 
             } else {
                 // --- 3. Offline Condition ---
                 loadingMsg.style.display = 'none';
                 errorMsg.style.display = 'block';
+            }
+        }
+
+        // --- 4. Browser Install Prompt Event Listener ---
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Ensure the button is shown immediately if the event fires later
+            if (loadingMsg.textContent.includes('تیار ہے!')) {
+                 installButton.style.display = 'block';
+            }
+        });
+        
+        // --- 5. Install Button Click Handler ---
+        installButton.addEventListener('click', () => {
+            if (deferredPrompt) {
+                installButton.style.display = 'none';
+                loadingMsg.textContent = 'انسٹالیشن پرامپٹ سکرین پر ہے...';
+                
+                deferredPrompt.prompt();
+                
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                        // Redirect immediately after successful installation
+                        window.location.replace("Narowaliya/1.html"); 
+                    } else {
+                        console.log('User dismissed the install prompt');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        });
+
+        // Run the main check when the page loads
+        window.onload = checkConnectionAndRedirect;
+    </script>
+</body>
+</html>
             }
         }
 
