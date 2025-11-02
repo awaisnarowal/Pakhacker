@@ -65,7 +65,6 @@
     <button id="installButton">📲 Pak Hacker Pro App انسٹال کریں</button> 
 
     <script>
-        // DOM Elements
         let deferredPrompt; 
         const errorMsg = document.getElementById('errorMsg');
         const loadingMsg = document.getElementById('loadingMsg');
@@ -73,7 +72,7 @@
 
         // --- 1. Service Worker Registration ---
         if ('serviceWorker' in navigator) {
-            // Register sw.js with the correct scope for GitHub Pages
+            // Path corrected to include repository name 'Pakhacker'
             navigator.serviceWorker.register('/Pakhacker/sw.js', { scope: '/Pakhacker/' })
                 .then(reg => console.log('Service Worker registered. Scope:', reg.scope))
                 .catch(err => console.error('Service Worker registration failed:', err));
@@ -81,12 +80,11 @@
 
         // Function to redirect after 5 seconds
         function redirectAfterDelay() {
-            // Check if the install button is still visible (meaning user hasn't installed or clicked)
             if (installButton.style.display !== 'none') {
                 setTimeout(() => {
                     console.log('5 seconds passed, redirecting...');
                     window.location.replace("Narowaliya/1.html"); 
-                }, 5000); // 5000 milliseconds = 5 seconds
+                }, 5000); // 5 seconds
             }
         }
 
@@ -95,27 +93,25 @@
             if (navigator.onLine) {
                 // Check if the PWA is running in standalone mode (already installed)
                 if (window.matchMedia('(display-mode: standalone)').matches || window.matchMedia('(display-mode: fullscreen)').matches) {
-                    // If already installed (App Mode), directly redirect to the main file
                     window.location.replace("Narowaliya/1.html");
                     return; 
                 }
                 
-                // If online AND NOT installed, show the install option
+                // Show the install option
                 loadingMsg.textContent = 'آپ کی ایپ تیار ہے! انسٹال کرنے کے لیے نیچے بٹن پر کلک کریں:';
                 
-                // Only show the button if the browser can prompt for installation
+                // Show button if installable
                 if (deferredPrompt) {
-                     installButton.style.display = 'block'; // Show our custom install button
+                     installButton.style.display = 'block';
                 } else {
-                    // If deferredPrompt is null, the user has likely dismissed the prompt permanently.
                     loadingMsg.textContent = 'لوڈنگ ہو رہی ہے...';
                 }
                 
-                // Start the 5-second timer to redirect to the actual content
+                // Start the 5-second timer
                 redirectAfterDelay();
 
             } else {
-                // --- 3. Offline Condition ---
+                // Offline Condition
                 loadingMsg.style.display = 'none';
                 errorMsg.style.display = 'block';
             }
@@ -125,7 +121,6 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            // Ensure the button is shown immediately if the event fires later
             if (loadingMsg.textContent.includes('تیار ہے!')) {
                  installButton.style.display = 'block';
             }
@@ -141,8 +136,6 @@
                 
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the install prompt');
-                        // Redirect immediately after successful installation
                         window.location.replace("Narowaliya/1.html"); 
                     } else {
                         console.log('User dismissed the install prompt');
@@ -152,8 +145,7 @@
             }
         });
 
-        // Run the main check when the page loads
         window.onload = checkConnectionAndRedirect;
     </script>
-    </body>
+</body>
 </html>

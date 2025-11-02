@@ -3,11 +3,12 @@
   "short_name": "Pak Hacker Pro", 
   "description": "The official app for Pak Hacker Pro.",
   
-  
+  // Correct start path for GitHub Pages
   "start_url": "/Pakhacker/Narowaliya/1.html", 
   
   "display": "standalone",
   
+  // Black background for splash screen and theme
   "background_color": "#000000",
   "theme_color": "#000000",
   
