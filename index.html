@@ -21,6 +21,36 @@
             color: #ffffff;
             text-align: center;
         }
+        /* New Header Style */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute; 
+            top: 0;
+            width: 100%;
+            padding: 15px 0;
+            background-color: #1a1a1a; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        .header img {
+            height: 30px; 
+            margin-right: 10px;
+        }
+        .header h1 {
+            font-size: 1.5em;
+            margin: 0;
+            color: #ffffff;
+        }
+        /* Adjust body content for header space */
+        .content-area {
+            display: flex;
+            flex-direction: column; 
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1; 
+            padding-top: 80px; 
+        }
         .loading {
             font-size: 1.6em;
             margin-bottom: 30px;
@@ -88,26 +118,40 @@
             font-size: 1em;
             display: block;
         }
+        #updateButton { /* Style for the new update button */
+            background-color: #555;
+            display: none; /* Hidden by default */
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
-
-    <div class="spinner" id="spinner"></div>
-    <div class="loading" id="loadingMsg">Security Checking...</div>
     
-    <div class="info-text" id="infoText">
-        <p>For the best experience, please install the app to use it.If Not Show Installation button Please Use Chrome Browser Latest Version</p>
-        <p>To continue in the browser, select 'Direct Use' below.</p>
+    <div class="header">
+        <img src="icons/icon-192x192.png" alt="App Icon"> 
+        <h1>Pak Hacker Pro</h1>
     </div>
 
-    <div class="buttons-container" id="buttonsContainer">
-        <button id="installButton" class="app-button">⬇️ Install App</button>
-        <a id="useDirectlyButton" class="app-button" href="Narowaliya/1.html">Direct Use</a>
+    <div class="content-area">
+        <div class="spinner" id="spinner"></div>
+        <div class="loading" id="loadingMsg">Security Checking...</div>
+        
+        <div class="info-text" id="infoText">
+            <p>For the best experience, please install the app. If the App Installation Button is not shown, please use the Chrome Browser Latest version.</p>
+            <p>To continue in the browser, select 'Direct Use' below.</p>
+        </div>
+
+        <div class="buttons-container" id="buttonsContainer">
+            <button id="installButton" class="app-button">⬇️ Install App</button>
+            <a id="useDirectlyButton" class="app-button" href="Narowaliya/1.html">Direct Use</a>
+        </div>
+        
+        <a id="updateButton" class="app-button" href="#">🔄 Check for Update</a>
+
+        <a id="whatsappLink" href="https://wa.me/923070378723" target="_blank">
+            Need Help?
+        </a>
     </div>
-    
-    <a id="whatsappLink" href="https://wa.me/923070378723" target="_blank">
-        Need Help?
-    </a>
 
     <script>
         let deferredPrompt = null; 
@@ -116,18 +160,18 @@
         const installButton = document.getElementById('installButton');
         const infoText = document.getElementById('infoText');
         const spinner = document.getElementById('spinner');
+        const updateButton = document.getElementById('updateButton'); // Reference to the new button
         const REDIRECT_DELAY = 5000; 
+        let newWorker; // To store the reference to the new Service Worker
 
         // --- Utility Functions ---
         function isChrome() {
             const userAgent = navigator.userAgent;
-            // Strict check: Must contain 'Chrome' and not contain common non-PWA supporting browser strings.
             const isTrueChrome = userAgent.includes("Chrome") && !userAgent.includes("Edg") && !userAgent.includes("FxiOS") && !userAgent.includes("OPR");
             return isTrueChrome;
         }
         
         function redirectToContent() {
-            // Use the absolute path if necessary to ensure redirection works correctly on GitHub Pages
             window.location.replace("Narowaliya/1.html"); 
         }
         
@@ -135,25 +179,45 @@
              return window.matchMedia('(display-mode: standalone)').matches || window.matchMedia('(display-mode: fullscreen)').matches;
         }
 
+        // --- Service Worker Logic ---
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/Pakhacker/sw.js', { scope: '/Pakhacker/' })
+                    .then(reg => {
+                        console.log('SW registered. Scope:', reg.scope);
+                        
+                        // Check for update availability
+                        reg.addEventListener('updatefound', () => {
+                            newWorker = reg.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // A new Service Worker is waiting, show the update button only if we are on this page
+                                    if (isChrome() && !isInstalled()) {
+                                        updateButton.style.display = 'block'; 
+                                        updateButton.textContent = '🔄 Update Available! Click to Install';
+                                    }
+                                }
+                            });
+                        });
+                    })
+                    .catch(err => console.error('SW registration failed:', err));
+            }
+        }
+
         // --- Main Logic ---
         function initializeApp() {
-            // 1. Skip logic for installed app OR non-Chrome browser
             if (isInstalled() || !isChrome()) {
                 console.log('Skipping install page (Installed or Non-Chrome browser detected).');
                 redirectToContent();
                 return;
             }
             
-            // 2. Only run PWA logic and timer for Chrome
-            spinner.style.display = 'block';
+            // Register SW for Chrome only
+            registerServiceWorker();
 
-            if ('serviceWorker' in navigator) {
-                // Service Worker registration with correct scope for GitHub Pages
-                navigator.serviceWorker.register('/Pakhacker/sw.js', { scope: '/Pakhacker/' })
-                    .catch(err => console.error('SW registration failed:', err));
-            }
+            // Only run PWA logic and timer for Chrome
+            spinner.style.display = 'block';
             
-            // Start the 5-second timer
             setTimeout(() => {
                 spinner.style.display = 'none'; 
                 loadingMsg.style.display = 'none'; 
@@ -161,17 +225,39 @@
                 infoText.style.display = 'block';
                 buttonsContainer.style.display = 'flex'; 
 
-                // Only show Install button if deferredPrompt was successfully saved
                 if (deferredPrompt) {
                      installButton.style.display = 'block';
                 } else {
-                     // Hide install button if PWA is not installable even in Chrome
                      installButton.style.display = 'none';
                 }
             }, REDIRECT_DELAY);
         }
 
-        // --- PWA Events ---
+        // --- Event Handlers ---
+
+        // 1. Force Update/Check for Update Handler
+        updateButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (newWorker) {
+                // Send message to the new worker to skip waiting and activate immediately
+                newWorker.postMessage({ action: 'skipWaiting' });
+                updateButton.textContent = 'Updating... Please wait.';
+            } else {
+                updateButton.textContent = 'Checking for updates...';
+                // Try to check for updates manually
+                navigator.serviceWorker.getRegistration().then(reg => {
+                    reg.update();
+                });
+            }
+        });
+
+        // 2. SW Controller change listener (Fires after successful update/activation)
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            console.log('New Service Worker activated. Reloading page...');
+            window.location.reload(); 
+        });
+
+        // 3. PWA Installation Handler
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
