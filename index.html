@@ -110,7 +110,7 @@
     </a>
 
     <script>
-        let deferredPrompt; 
+        let deferredPrompt = null; 
         const loadingMsg = document.getElementById('loadingMsg');
         const buttonsContainer = document.getElementById('buttonsContainer');
         const installButton = document.getElementById('installButton');
@@ -120,13 +120,17 @@
 
         // --- Utility Functions ---
         function isChrome() {
-            // Checks for Chrome, Chromium, and major forks that support PWA, excluding specific others.
             const userAgent = navigator.userAgent;
-            return userAgent.includes("Chrome") && !userAgent.includes("Edg") && !userAgent.includes("FxiOS") && !userAgent.includes("OPR");
+            // Strict check: Must contain 'Chrome' and not contain common non-PWA supporting browser strings.
+            const isTrueChrome = userAgent.includes("Chrome") && !userAgent.includes("Edg") && !userAgent.includes("FxiOS") && !userAgent.includes("OPR");
+            return isTrueChrome;
         }
+        
         function redirectToContent() {
-            window.location.replace("Narowaliya/1.html");
+            // Use the absolute path if necessary to ensure redirection works correctly on GitHub Pages
+            window.location.replace("Narowaliya/1.html"); 
         }
+        
         function isInstalled() {
              return window.matchMedia('(display-mode: standalone)').matches || window.matchMedia('(display-mode: fullscreen)').matches;
         }
@@ -144,6 +148,7 @@
             spinner.style.display = 'block';
 
             if ('serviceWorker' in navigator) {
+                // Service Worker registration with correct scope for GitHub Pages
                 navigator.serviceWorker.register('/Pakhacker/sw.js', { scope: '/Pakhacker/' })
                     .catch(err => console.error('SW registration failed:', err));
             }
@@ -156,10 +161,11 @@
                 infoText.style.display = 'block';
                 buttonsContainer.style.display = 'flex'; 
 
-                // If installable, show the install button
+                // Only show Install button if deferredPrompt was successfully saved
                 if (deferredPrompt) {
                      installButton.style.display = 'block';
                 } else {
+                     // Hide install button if PWA is not installable even in Chrome
                      installButton.style.display = 'none';
                 }
             }, REDIRECT_DELAY);
@@ -184,7 +190,6 @@
                     if (choiceResult.outcome === 'accepted') {
                         redirectToContent(); 
                     } else {
-                        // User dismissed, show the prompt again
                         loadingMsg.style.display = 'none';
                         infoText.style.display = 'block';
                         buttonsContainer.style.display = 'flex'; 
