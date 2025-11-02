@@ -1,0 +1,21 @@
+{
+  "name": "Pak Hacker Pro",
+  "short_name": "PakHacker",
+  "description": "The official app for Pak Hacker Pro website.",
+  "start_url": "/Pakhacker/Narowaliya/1.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2196F3",
+  "icons": [
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
