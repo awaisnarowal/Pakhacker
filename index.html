@@ -11,53 +11,139 @@
     <style>
         body {
             display: flex;
+            flex-direction: column; /* To stack loading/error and button */
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f0f0f0;
             text-align: center;
         }
         .loading {
-            font-size: 1.2em;
+            font-size: 1.4em;
             color: #333;
+            margin-bottom: 20px;
         }
         .error-message {
-            color: red;
+            color: #d32f2f; /* Red-ish color */
             font-size: 1.5em;
             padding: 20px;
-            border: 1px solid red;
-            background-color: #ffe0e0;
+            border: 2px solid #d32f2f;
+            background-color: #ffebee; /* Light red background */
             border-radius: 8px;
             display: none; /* Hide by default */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #installButton {
+            padding: 12px 25px;
+            font-size: 1.3em;
+            background-color: #007bff; /* Blue button */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s;
+            display: none; /* Hide by default, shown via JS */
+        }
+        #installButton:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
 
-    <div class="loading">انٹرنیٹ کنیکشن چیک ہو رہا ہے... براہ کرم انتظار کریں</div>
+    <div class="loading" id="loadingMsg">انٹرنیٹ کنیکشن چیک ہو رہا ہے... براہ کرم انتظار کریں</div>
     <div class="error-message" id="errorMsg">
         ⚠️ **انٹرنیٹ کنیکشن ایرر** ⚠️
         <br>
-        ویب سائٹ چلانے کے لیے آپ کا انٹرنیٹ کنیکشن آن ہونا ضروری ہے۔
+        ویب سائٹ چلانے کے لیے آپ کا انٹرنیٹ کنیکشن **آن** ہونا ضروری ہے۔
     </div>
 
+    <button id="installButton">📲 Pak Hacker Pro App انسٹال کریں</button> 
+
     <script>
-        // Check internet connection and redirect
+        // DOM Elements
+        let deferredPrompt; 
+        const errorMsg = document.getElementById('errorMsg');
+        const loadingMsg = document.getElementById('loadingMsg');
+        const installButton = document.getElementById('installButton');
+
+        // --- 1. Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            // Note: The path to sw.js is relative to the root URL (https://awaisnarowal.github.io/)
+            // so we use the repository name in the path.
+            navigator.serviceWorker.register('/Pakhacker/sw.js', { scope: '/Pakhacker/' })
+                .then(reg => console.log('Service Worker registered. Scope:', reg.scope))
+                .catch(err => console.error('Service Worker registration failed:', err));
+        }
+
+        // --- 2. Main Logic: Check Connection and Redirect/Install Prompt ---
         function checkConnectionAndRedirect() {
             if (navigator.onLine) {
-                // If online, redirect to the actual content file.
-                // Note: The path is relative to the index.html file.
-                window.location.replace("Narowaliya/1.html"); 
+                // Check if the PWA is running in standalone mode (already installed)
+                if (window.matchMedia('(display-mode: standalone)').matches || window.matchMedia('(display-mode: fullscreen)').matches) {
+                    // If already installed (App Mode), directly redirect to the main file
+                    window.location.replace("Narowaliya/1.html");
+                    return; 
+                }
+                
+                // If online AND NOT installed, hide loading and wait for the install prompt event.
+                // We show the install button after a short delay to ensure PWA checks are done.
+                loadingMsg.textContent = 'آپ کی ایپ تیار ہے! انسٹال کرنے کے لیے کلک کریں:';
+                setTimeout(() => {
+                    if (deferredPrompt) {
+                         installButton.style.display = 'block'; // Show our custom install button
+                    } else {
+                        // If no install prompt is available (user may have dismissed it previously), 
+                        // just proceed to the content.
+                        window.location.replace("Narowaliya/1.html");
+                    }
+                }, 1500); // 1.5 second delay
+                
+
             } else {
-                // If offline, display the error message and hide loading text.
-                document.querySelector('.loading').style.display = 'none';
-                document.getElementById('errorMsg').style.display = 'block';
+                // --- 3. Offline Condition ---
+                loadingMsg.style.display = 'none';
+                errorMsg.style.display = 'block';
             }
         }
 
-        // Run the check when the page loads
+        // --- 4. Browser Install Prompt Event Listener ---
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Stop the browser from showing the default prompt
+            e.preventDefault();
+            // Store the event so we can trigger it later when the user clicks our button
+            deferredPrompt = e;
+            console.log('beforeinstallprompt fired and saved.');
+        });
+        
+        // --- 5. Install Button Click Handler ---
+        installButton.addEventListener('click', () => {
+            if (deferredPrompt) {
+                // Hide the button once clicked
+                installButton.style.display = 'none';
+                
+                // Show the browser's native install prompt using the saved event
+                deferredPrompt.prompt();
+                
+                // Wait for the user to respond to the prompt
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                        // Redirect to the content after successful installation
+                        window.location.replace("Narowaliya/1.html"); 
+                    } else {
+                        console.log('User dismissed the install prompt');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        });
+
+        // Run the main check when the page loads
         window.onload = checkConnectionAndRedirect;
     </script>
 </body>
