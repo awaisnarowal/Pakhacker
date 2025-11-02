@@ -1,11 +1,23 @@
 {
   "name": "Pak Hacker Pro",
   "short_name": "PakHacker",
-  "description": "The official app for Pak Hacker Pro website.",
-  "start_url": "/Pakhacker/Narowaliya/1.html",
+  "description": "The official app for Pak Hacker Pro.",
+  
+  // 1. **Crucial Change for GitHub Pages**
+  //    This tells the PWA where to start when launched from the home screen.
+  //    It must include your repository name: /Pakhacker/
+  "start_url": "/Pakhacker/Narowaliya/1.html", 
+  
+  // 2. **Display Mode**
+  //    'standalone' ensures the app opens without the browser address bar,
+  //    giving it a native app feel.
   "display": "standalone",
+  
   "background_color": "#ffffff",
   "theme_color": "#2196F3",
+  
+  // 3. **Icon Paths**
+  //    Ensure you have an 'icons' folder with these two PNG images.
   "icons": [
     {
       "src": "icons/icon-192x192.png",
