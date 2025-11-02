@@ -1,4 +1,4 @@
-const CACHE_NAME = 'PakHackerPro-v6'; // Version increased to force re-download
+const CACHE_NAME = 'PakHackerPro-v7'; // Increased version
 const urlsToCache = [
     '/Pakhacker/', 
     '/Pakhacker/index.html',
@@ -9,8 +9,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
-    // Force the new Service Worker to start immediately instead of waiting
-    self.skipWaiting(); 
+    self.skipWaiting(); // Force the new Service Worker to start immediately
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
@@ -51,7 +50,7 @@ self.addEventListener('fetch', event => {
     );
 });
 
-// New logic to handle the 'Check for Update' button click
+// Logic to handle the 'skipWaiting' command from the frontend
 self.addEventListener('message', function(event) {
   if (event.data && event.data.action === 'skipWaiting') {
       console.log('Skip waiting command received.');

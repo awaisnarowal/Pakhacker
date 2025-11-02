@@ -21,13 +21,19 @@
             color: #ffffff;
             text-align: center;
         }
-        /* New Header Style */
+        /* Fixed Header Style */
         .header {
             display: flex;
             align-items: center;
             justify-content: center;
-            position: absolute; 
-            top: 0;
+            
+            /* === CRITICAL FOR FIXED HEADER === */
+            position: fixed; /* Header ko screen par chipka dega */
+            z-index: 1000;   /* Hamesha sabse upar rahega */
+            left: 0;         
+            top: 0;          
+            /* ======================================= */
+
             width: 100%;
             padding: 15px 0;
             background-color: #1a1a1a; 
@@ -42,14 +48,14 @@
             margin: 0;
             color: #ffffff;
         }
-        /* Adjust body content for header space */
+        /* Content Area should start below the fixed header */
         .content-area {
             display: flex;
             flex-direction: column; 
             justify-content: center;
             align-items: center;
             flex-grow: 1; 
-            padding-top: 80px; 
+            padding-top: 80px; /* Space for the header */
         }
         .loading {
             font-size: 1.6em;
@@ -118,9 +124,9 @@
             font-size: 1em;
             display: block;
         }
-        #updateButton { /* Style for the new update button */
+        #updateButton { 
             background-color: #555;
-            display: none; /* Hidden by default */
+            display: none; 
             margin-top: 15px;
         }
     </style>
@@ -160,9 +166,9 @@
         const installButton = document.getElementById('installButton');
         const infoText = document.getElementById('infoText');
         const spinner = document.getElementById('spinner');
-        const updateButton = document.getElementById('updateButton'); // Reference to the new button
+        const updateButton = document.getElementById('updateButton'); 
         const REDIRECT_DELAY = 5000; 
-        let newWorker; // To store the reference to the new Service Worker
+        let newWorker; 
 
         // --- Utility Functions ---
         function isChrome() {
@@ -186,12 +192,10 @@
                     .then(reg => {
                         console.log('SW registered. Scope:', reg.scope);
                         
-                        // Check for update availability
                         reg.addEventListener('updatefound', () => {
                             newWorker = reg.installing;
                             newWorker.addEventListener('statechange', () => {
                                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    // A new Service Worker is waiting, show the update button only if we are on this page
                                     if (isChrome() && !isInstalled()) {
                                         updateButton.style.display = 'block'; 
                                         updateButton.textContent = '🔄 Update Available! Click to Install';
@@ -200,92 +204,3 @@
                             });
                         });
                     })
-                    .catch(err => console.error('SW registration failed:', err));
-            }
-        }
-
-        // --- Main Logic ---
-        function initializeApp() {
-            if (isInstalled() || !isChrome()) {
-                console.log('Skipping install page (Installed or Non-Chrome browser detected).');
-                redirectToContent();
-                return;
-            }
-            
-            // Register SW for Chrome only
-            registerServiceWorker();
-
-            // Only run PWA logic and timer for Chrome
-            spinner.style.display = 'block';
-            
-            setTimeout(() => {
-                spinner.style.display = 'none'; 
-                loadingMsg.style.display = 'none'; 
-
-                infoText.style.display = 'block';
-                buttonsContainer.style.display = 'flex'; 
-
-                if (deferredPrompt) {
-                     installButton.style.display = 'block';
-                } else {
-                     installButton.style.display = 'none';
-                }
-            }, REDIRECT_DELAY);
-        }
-
-        // --- Event Handlers ---
-
-        // 1. Force Update/Check for Update Handler
-        updateButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (newWorker) {
-                // Send message to the new worker to skip waiting and activate immediately
-                newWorker.postMessage({ action: 'skipWaiting' });
-                updateButton.textContent = 'Updating... Please wait.';
-            } else {
-                updateButton.textContent = 'Checking for updates...';
-                // Try to check for updates manually
-                navigator.serviceWorker.getRegistration().then(reg => {
-                    reg.update();
-                });
-            }
-        });
-
-        // 2. SW Controller change listener (Fires after successful update/activation)
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-            console.log('New Service Worker activated. Reloading page...');
-            window.location.reload(); 
-        });
-
-        // 3. PWA Installation Handler
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-        });
-        
-        installButton.addEventListener('click', () => {
-            if (deferredPrompt) {
-                buttonsContainer.style.display = 'none';
-                infoText.style.display = 'none';
-                loadingMsg.style.display = 'block';
-                loadingMsg.textContent = 'Installation prompt is on your screen...';
-                
-                deferredPrompt.prompt();
-                
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        redirectToContent(); 
-                    } else {
-                        loadingMsg.style.display = 'none';
-                        infoText.style.display = 'block';
-                        buttonsContainer.style.display = 'flex'; 
-                    }
-                    deferredPrompt = null;
-                });
-            }
-        });
-
-        window.onload = initializeApp;
-    </script>
-</body>
-</html>
