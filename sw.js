@@ -1,10 +1,12 @@
-const CACHE_NAME = 'PakHackerPro-v1';
+const CACHE_NAME = 'PakHackerPro-v2';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/Narowaliya/1.html',
-    '/manifest.json'
-    // Add other critical assets like CSS/JS/icons paths here
+    '/Pakhacker/', 
+    '/Pakhacker/index.html',
+    '/Pakhacker/Narowaliya/1.html',
+    '/Pakhacker/manifest.json',
+    // Ensure your icon paths are correct
+    '/Pakhacker/icons/icon-192x192.png',
+    '/Pakhacker/icons/icon-512x512.png'
 ];
 
 self.addEventListener('install', event => {
@@ -13,7 +15,7 @@ self.addEventListener('install', event => {
             .then(cache => {
                 console.log('Opened cache');
                 return cache.addAll(urlsToCache).catch(err => {
-                    console.error('Failed to cache:', err);
+                    console.error('Failed to cache required assets:', err);
                 });
             })
     );
