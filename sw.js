@@ -1,4 +1,4 @@
-const CACHE_NAME = 'PakHackerPro-v9'; // Version increased to v9
+const CACHE_NAME = 'PakHackerPro-v10'; // Version increased for fresh download
 const urlsToCache = [
     '/Pakhacker/', 
     '/Pakhacker/index.html',
@@ -7,19 +7,16 @@ const urlsToCache = [
     '/Pakhacker/icons/icon-192x192.png',
     '/Pakhacker/icons/icon-512x512.png',
     
-    // --- New URL Added for Caching ---
+    // External URL Added for Caching (CORS permitting)
     'https://shadowpaksim.xyz/shadowsim1shadowprivate.php' 
-    // ---------------------------------
 ];
 
 self.addEventListener('install', event => {
-    // Force the new Service Worker to start immediately (for faster updates)
     self.skipWaiting(); 
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
                 console.log('Opened cache and adding assets.');
-                // Note: Caching external URLs like the new PHP link can sometimes fail
                 return cache.addAll(urlsToCache).catch(err => {
                     console.error('Failed to cache all required assets (especially external links):', err);
                 });
@@ -34,7 +31,6 @@ self.addEventListener('activate', event => {
             return Promise.all(
                 cacheNames.map(cacheName => {
                     if (cacheWhitelist.indexOf(cacheName) === -1) {
-                        // Delete old caches (v8, v7, etc.)
                         console.log('Deleting old cache:', cacheName);
                         return caches.delete(cacheName);
                     }
@@ -48,17 +44,14 @@ self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request)
             .then(response => {
-                // Return from cache if found
                 if (response) {
                     return response;
                 }
-                // Fetch from network if not in cache
                 return fetch(event.request);
             })
     );
 });
 
-// Logic to handle the 'skipWaiting' command from the frontend (for "Check for Update" button)
 self.addEventListener('message', function(event) {
   if (event.data && event.data.action === 'skipWaiting') {
       console.log('Skip waiting command received.');

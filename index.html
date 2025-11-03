@@ -21,6 +21,42 @@
             color: #ffffff;
             text-align: center;
         }
+        /* Fixed Header Style */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+            /* === CRITICAL FOR FIXED HEADER === */
+            position: fixed; /* Header ko screen par chipka dega */
+            z-index: 1000;   /* Hamesha sabse upar rahega */
+            left: 0;         
+            top: 0;          
+            /* ======================================= */
+
+            width: 100%;
+            padding: 15px 0;
+            background-color: #1a1a1a; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        .header img {
+            height: 30px; 
+            margin-right: 10px;
+        }
+        .header h1 {
+            font-size: 1.5em;
+            margin: 0;
+            color: #ffffff;
+        }
+        /* Content Area should start below the fixed header */
+        .content-area {
+            display: flex;
+            flex-direction: column; 
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1; 
+            padding-top: 80px; /* Space for the header */
+        }
         .loading {
             font-size: 1.6em;
             margin-bottom: 30px;
@@ -61,7 +97,7 @@
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s; /* Added box-shadow to transition */
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
             text-decoration: none;
             display: inline-block;
@@ -69,10 +105,25 @@
         }
         #installButton {
             background-color: #4CAF50; 
+            animation: pulse 2s infinite, shadow-pulse 2s infinite; /* Animation for install button */
         }
         #installButton:hover {
             background-color: #45a049;
             transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); /* Enhanced shadow on hover */
+            animation: none; /* Stop animation on hover */
+        }
+        /* Keyframes for the pulsing animation */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); } /* Slightly enlarge the button */
+            100% { transform: scale(1); }
+        }
+        /* Keyframes for the shadow pulsing animation */
+        @keyframes shadow-pulse {
+            0% { box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4); }
+            50% { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7); } /* Darker, larger shadow */
+            100% { box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4); }
         }
         #useDirectlyButton {
             background-color: #007bff; 
@@ -97,24 +148,31 @@
 </head>
 <body>
     
-    <div class="spinner" id="spinner"></div>
-    <div class="loading" id="loadingMsg">Security Checking...</div>
-    
-    <div class="info-text" id="infoText">
-        <p>For the best experience, please install the app. If the App Installation Button is not shown, please use the Chrome Browser Latest version.</p>
-        <p>To continue in the browser, select 'Direct Use' below.</p>
+    <div class="header">
+        <img src="icons/icon-192x192.png" alt="App Icon"> 
+        <h1>Pak Hacker Pro</h1>
     </div>
 
-    <div class="buttons-container" id="buttonsContainer">
-        <button id="installButton" class="app-button">⬇️ Install App</button>
-        <a id="useDirectlyButton" class="app-button" href="Narowaliya/1.html">Direct Use</a>
-    </div>
-    
-    <a id="updateButton" class="app-button" href="#">🔄 Check for Update</a>
+    <div class="content-area">
+        <div class="spinner" id="spinner"></div>
+        <div class="loading" id="loadingMsg">Security Checking...</div>
+        
+        <div class="info-text" id="infoText">
+            <p>For the best experience, please install the app. If the App Installation Button is not shown, please use the Chrome Browser Latest version.</p>
+            <p>To continue in the browser, select 'Direct Use' below.</p>
+        </div>
 
-    <a id="whatsappLink" href="https://wa.me/923070378723" target="_blank">
-        Need Help?
-    </a>
+        <div class="buttons-container" id="buttonsContainer">
+            <button id="installButton" class="app-button">⬇️ Install App</button>
+            <a id="useDirectlyButton" class="app-button" href="Narowaliya/1.html">Direct Use</a>
+        </div>
+        
+        <a id="updateButton" class="app-button" href="#">🔄 Check for Update</a>
+
+        <a id="whatsappLink" href="https://wa.me/923070378723" target="_blank">
+            Need Help?
+        </a>
+    </div>
 
     <script>
         let deferredPrompt = null; 
@@ -145,19 +203,15 @@
         // --- Service Worker Logic (Registration is Back) ---
         function registerServiceWorker() {
             if ('serviceWorker' in navigator) {
-                // Register the Service Worker
                 navigator.serviceWorker.register('/Pakhacker/sw.js', { scope: '/Pakhacker/' })
                     .then(reg => {
                         console.log('SW registered. Scope:', reg.scope);
                         
-                        // Listen for update
                         reg.addEventListener('updatefound', () => {
                             newWorker = reg.installing;
                             newWorker.addEventListener('statechange', () => {
-                                // If the new worker is installed and a previous one is running (meaning an update is waiting)
                                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                                     if (isChrome() && !isInstalled()) {
-                                        // Show the update button
                                         updateButton.style.display = 'block'; 
                                         updateButton.textContent = '🔄 Update Available! Click to Install';
                                     }
@@ -171,17 +225,14 @@
 
         // --- Main Logic ---
         function initializeApp() {
-            // 1. Skip logic if already installed OR non-Chrome
             if (isInstalled() || !isChrome()) {
                 console.log('Skipping install page (Installed or Non-Chrome browser detected).');
                 redirectToContent();
                 return;
             }
             
-            // Register SW for Chrome only
             registerServiceWorker();
 
-            // Only run timer for Chrome
             spinner.style.display = 'block';
             
             setTimeout(() => {
@@ -205,19 +256,17 @@
         updateButton.addEventListener('click', (e) => {
             e.preventDefault();
             if (newWorker) {
-                // Send message to the new worker to skip waiting and activate immediately
                 newWorker.postMessage({ action: 'skipWaiting' });
                 updateButton.textContent = 'Updating... Please wait.';
             } else {
                 updateButton.textContent = 'Checking for updates...';
-                // Manually check for updates in case the initial event was missed
                 navigator.serviceWorker.getRegistration().then(reg => {
                     if (reg) reg.update();
                 });
             }
         });
 
-        // 2. SW Controller change listener (Fires after successful update/activation)
+        // 2. SW Controller change listener 
         navigator.serviceWorker.addEventListener('controllerchange', () => {
             console.log('New Service Worker activated. Reloading page...');
             window.location.reload(); 
