@@ -21,8 +21,6 @@
             color: #ffffff;
             text-align: center;
         }
-        /* No .header or .content-area CSS here. Body handles center alignment. */
-
         .loading {
             font-size: 1.6em;
             margin-bottom: 30px;
@@ -90,11 +88,6 @@
             font-size: 1em;
             display: block;
         }
-        #updateButton { 
-            background-color: #555;
-            display: none; 
-            margin-top: 15px;
-        }
     </style>
 </head>
 <body>
@@ -112,8 +105,6 @@
         <a id="useDirectlyButton" class="app-button" href="Narowaliya/1.html">Direct Use</a>
     </div>
     
-    <a id="updateButton" class="app-button" href="#">🔄 Check for Update</a>
-
     <a id="whatsappLink" href="https://wa.me/923070378723" target="_blank">
         Need Help?
     </a>
@@ -125,9 +116,30 @@
         const installButton = document.getElementById('installButton');
         const infoText = document.getElementById('infoText');
         const spinner = document.getElementById('spinner');
-        const updateButton = document.getElementById('updateButton'); 
         const REDIRECT_DELAY = 5000; 
-        let newWorker; 
+
+        // --- Service Worker Removal Logic ---
+        function unregisterServiceWorkers() {
+            if ('serviceWorker' in navigator) {
+                // Find and unregister all existing Service Workers
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    for(let registration of registrations) {
+                        registration.unregister();
+                        console.log('Service Worker Unregistered:', registration.scope);
+                    }
+                    // Also clear all caches associated with this site
+                    caches.keys().then(function(cacheNames) {
+                        cacheNames.forEach(function(cacheName) {
+                            caches.delete(cacheName);
+                        });
+                        console.log('All caches deleted.');
+                    });
+                });
+            }
+        }
+        // Run this logic immediately
+        unregisterServiceWorkers(); 
+        // --- End Service Worker Removal Logic ---
 
         // --- Utility Functions ---
         function isChrome() {
@@ -144,39 +156,16 @@
              return window.matchMedia('(display-mode: standalone)').matches || window.matchMedia('(display-mode: fullscreen)').matches;
         }
 
-        // --- Service Worker Logic ---
-        function registerServiceWorker() {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/Pakhacker/sw.js', { scope: '/Pakhacker/' })
-                    .then(reg => {
-                        console.log('SW registered. Scope:', reg.scope);
-                        
-                        reg.addEventListener('updatefound', () => {
-                            newWorker = reg.installing;
-                            newWorker.addEventListener('statechange', () => {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    if (isChrome() && !isInstalled()) {
-                                        updateButton.style.display = 'block'; 
-                                        updateButton.textContent = '🔄 Update Available! Click to Install';
-                                    }
-                                }
-                            });
-                        });
-                    })
-                    .catch(err => console.error('SW registration failed:', err));
-            }
-        }
-
-        // --- Main Logic ---
+        // --- Main Logic (No Service Worker Registration Now) ---
         function initializeApp() {
+            // 1. Skip logic if already installed OR non-Chrome
             if (isInstalled() || !isChrome()) {
                 console.log('Skipping install page (Installed or Non-Chrome browser detected).');
                 redirectToContent();
                 return;
             }
             
-            registerServiceWorker();
-
+            // Only run timer for Chrome
             spinner.style.display = 'block';
             
             setTimeout(() => {
@@ -196,27 +185,6 @@
 
         // --- Event Handlers ---
 
-        // 1. Check for Update Handler
-        updateButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (newWorker) {
-                newWorker.postMessage({ action: 'skipWaiting' });
-                updateButton.textContent = 'Updating... Please wait.';
-            } else {
-                updateButton.textContent = 'Checking for updates...';
-                navigator.serviceWorker.getRegistration().then(reg => {
-                    if (reg) reg.update();
-                });
-            }
-        });
-
-        // 2. SW Controller change listener 
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-            console.log('New Service Worker activated. Reloading page...');
-            window.location.reload(); 
-        });
-
-        // 3. PWA Installation Handler
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
