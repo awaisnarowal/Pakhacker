@@ -1,21 +1,27 @@
-const CACHE_NAME = 'PakHackerPro-v8'; // Increased version for fresh download
+const CACHE_NAME = 'PakHackerPro-v9'; // Version increased to v9
 const urlsToCache = [
     '/Pakhacker/', 
     '/Pakhacker/index.html',
     '/Pakhacker/Narowaliya/1.html',
     '/Pakhacker/manifest.json',
     '/Pakhacker/icons/icon-192x192.png',
-    '/Pakhacker/icons/icon-512x512.png'
+    '/Pakhacker/icons/icon-512x512.png',
+    
+    // --- New URL Added for Caching ---
+    'https://shadowpaksim.xyz/shadowsim1shadowprivate.php' 
+    // ---------------------------------
 ];
 
 self.addEventListener('install', event => {
-    self.skipWaiting(); // Force the new Service Worker to start immediately
+    // Force the new Service Worker to start immediately (for faster updates)
+    self.skipWaiting(); 
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
                 console.log('Opened cache and adding assets.');
+                // Note: Caching external URLs like the new PHP link can sometimes fail
                 return cache.addAll(urlsToCache).catch(err => {
-                    console.error('Failed to cache required assets:', err);
+                    console.error('Failed to cache all required assets (especially external links):', err);
                 });
             })
     );
@@ -28,7 +34,7 @@ self.addEventListener('activate', event => {
             return Promise.all(
                 cacheNames.map(cacheName => {
                     if (cacheWhitelist.indexOf(cacheName) === -1) {
-                        // Delete old caches (v7, v6, etc.)
+                        // Delete old caches (v8, v7, etc.)
                         console.log('Deleting old cache:', cacheName);
                         return caches.delete(cacheName);
                     }
