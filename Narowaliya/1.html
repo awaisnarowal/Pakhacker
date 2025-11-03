@@ -1,112 +1,133 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maintenance Mode - Pak Hacker Pro</title> 
-    
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#000000"> 
-    
+    <title>Sim Database</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <style>
+        /* Base Styles for Mobile Adjustment and Centering */
         body {
-            /* Consistent Dark Background and Center Alignment */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
             margin: 0;
-            font-family: Arial, sans-serif; /* Adjusted font family */
-            background-color: #000000; /* Consistent background color */
-            color: #ffffff; /* Consistent text color */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
+            background-color: #f0f2f5;
         }
 
-        .container {
-            padding: 40px;
-            border-radius: 10px;
-            background-color: #111111; /* Slightly lighter dark shade for contrast */
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-            max-width: 90%;
+        /* Message Box Styling */
+        .message-box {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 90%; /* Ensures good fit on mobile screens */
+            width: 300px;
         }
 
-        h1 {
-            color: #FFC107; /* Used the yellow/gold from index.html's .loading class */
-            font-size: 2.5em; /* Adjusted size */
-            margin-bottom: 5px;
+        /* Error/Main Message Styling */
+        .error-message {
+            color: #d9534f; /* Red tone for error */
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 15px;
         }
 
-        p {
-            color: #ccc;
-            font-size: 1.1em;
-            margin-top: 10px;
+        /* Icon Styling */
+        .status-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+            display: inline-block;
         }
 
-        /* --- Animated Cone Styling (Same as before) --- */
-        .cone-container {
-            margin: 30px 0;
-            position: relative;
-            width: 100px;
-            height: 120px;
-            animation: wiggle 1s infinite alternate;
+        /* Animation Keyframes: The Shake Effect 
+           This will be applied only when the device is offline.
+        */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        /* Class to apply the shake animation */
+        .shake-animation {
+            animation: shake 0.5s infinite; 
         }
         
-        .cone {
-            width: 0;
-            height: 0;
-            border-left: 30px solid transparent;
-            border-right: 30px solid transparent;
-            border-bottom: 90px solid #ff4500;
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
+        /* Utility Class to hide elements */
+        .hidden {
+            display: none;
         }
-        
-        .cone-stripe {
-            position: absolute;
-            width: 80%;
-            height: 10px;
-            background-color: #fff;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            clip-path: polygon(15% 0, 85% 0, 95% 100%, 5% 100%);
-        }
-        
-        .cone-base {
-            position: absolute;
-            width: 80px;
-            height: 10px;
-            background-color: #333;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 2px;
-        }
-        
-        @keyframes wiggle {
-            0% { transform: rotate(-5deg); }
-            100% { transform: rotate(5deg); }
-        }
-        
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Maintenance Mode - Pak Hacker Pro </h1>
-        
-        <div class="cone-container">
-            <div class="cone-base"></div>
-            <div class="cone">
-                <div class="cone-stripe"></div>
-            </div>
+    <div class="message-box">
+        <div id="loading-message">
+            <div class="status-icon">🔄</div> <p>Checking Internet and Loading Database...</p>
         </div>
-        
-        <p>App par behtari ka kaam ho raha hai.</p>
-        <p>Hum bahut jald naye features ke saath wapis aayenge.</p>
 
+        <div id="no-internet" class="hidden">
+            <div class="status-icon" id="offline-icon">🚫</div>
+            <p class="error-message">CONNECTION FAILED</p>
+            <p>Please connect to the internet to access the **Sim Database**.</p>
+            <button onclick="checkConnection()" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; margin-top: 15px; cursor: pointer;">
+                Retry Connection
+            </button>
+        </div>
     </div>
+
+    <script>
+        const targetUrl = 'https://shadowscriptz.xyz/shadowinnovationsapps/simdataapp.php';
+        const noInternetDiv = document.getElementById('no-internet');
+        const loadingDiv = document.getElementById('loading-message');
+        const offlineIcon = document.getElementById('offline-icon');
+
+        function checkConnection() {
+            // 1. Reset state to show loading before checking
+            loadingDiv.classList.remove('hidden');
+            noInternetDiv.classList.add('hidden');
+            offlineIcon.classList.remove('shake-animation'); // Remove animation if it was there
+
+            // Use a small delay for better user experience (UX)
+            setTimeout(() => {
+                if (navigator.onLine) {
+                    // 2. Internet is ON: Redirect
+                    loadingDiv.innerHTML = '<div class="status-icon">✅</div><p>Internet Connected! Redirecting...</p>';
+                    // Using replace ensures the user can't hit 'Back' to this page easily
+                    window.location.replace(targetUrl); 
+                } else {
+                    // 3. Internet is OFF: Show Error and Animation
+                    loadingDiv.classList.add('hidden');
+                    noInternetDiv.classList.remove('hidden');
+                    // Apply the shake animation ONLY when offline
+                    offlineIcon.classList.add('shake-animation'); 
+                }
+            }, 500); // Wait 500ms before showing result
+        }
+
+        // Run the check when the page first loads
+        document.addEventListener('DOMContentLoaded', checkConnection);
+        
+        // Listen for connectivity changes: if it comes back online, try redirecting again
+        window.addEventListener('online', checkConnection);
+        
+        // If connection is lost after initial load, show the error
+        window.addEventListener('offline', () => {
+             // Immediately switch to offline message and animation
+             loadingDiv.classList.add('hidden');
+             noInternetDiv.classList.remove('hidden');
+             offlineIcon.classList.add('shake-animation');
+        });
+    </script>
 </body>
 </html>
