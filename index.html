@@ -27,13 +27,10 @@
             align-items: center;
             justify-content: center;
             
-            /* === CRITICAL FOR FIXED HEADER === */
-            position: fixed; /* Header ko screen par chipka dega */
-            z-index: 1000;   /* Hamesha sabse upar rahega */
+            position: fixed; 
+            z-index: 1000;   
             left: 0;         
             top: 0;          
-            /* ======================================= */
-
             width: 100%;
             padding: 15px 0;
             background-color: #1a1a1a; 
@@ -55,7 +52,7 @@
             justify-content: center;
             align-items: center;
             flex-grow: 1; 
-            padding-top: 80px; /* Space for the header */
+            padding-top: 80px; 
         }
         .loading {
             font-size: 1.6em;
@@ -97,34 +94,34 @@
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s; /* Added box-shadow to transition */
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
             text-decoration: none;
             display: inline-block;
             width: 250px;
         }
+        /* === Animated Install Button CSS === */
         #installButton {
             background-color: #4CAF50; 
-            animation: pulse 2s infinite, shadow-pulse 2s infinite; /* Animation for install button */
+            animation: pulse 2s infinite, shadow-pulse 2s infinite; 
         }
         #installButton:hover {
             background-color: #45a049;
             transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); /* Enhanced shadow on hover */
-            animation: none; /* Stop animation on hover */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); 
+            animation: none; 
         }
-        /* Keyframes for the pulsing animation */
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.03); } /* Slightly enlarge the button */
+            50% { transform: scale(1.03); } 
             100% { transform: scale(1); }
         }
-        /* Keyframes for the shadow pulsing animation */
         @keyframes shadow-pulse {
             0% { box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4); }
-            50% { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7); } /* Darker, larger shadow */
+            50% { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7); } 
             100% { box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4); }
         }
+        /* ================================== */
         #useDirectlyButton {
             background-color: #007bff; 
         }
@@ -197,12 +194,14 @@
         }
         
         function isInstalled() {
+             // Check if the app is running in standalone mode (PWA installed)
              return window.matchMedia('(display-mode: standalone)').matches || window.matchMedia('(display-mode: fullscreen)').matches;
         }
 
-        // --- Service Worker Logic (Registration is Back) ---
+        // --- Service Worker Logic ---
         function registerServiceWorker() {
             if ('serviceWorker' in navigator) {
+                // Registering the SW ensures automatic updates start running
                 navigator.serviceWorker.register('/Pakhacker/sw.js', { scope: '/Pakhacker/' })
                     .then(reg => {
                         console.log('SW registered. Scope:', reg.scope);
@@ -223,31 +222,40 @@
             }
         }
 
-        // --- Main Logic ---
+        // --- Main Logic (PWA Auto Redirect Included) ---
         function initializeApp() {
-            if (isInstalled() || !isChrome()) {
-                console.log('Skipping install page (Installed or Non-Chrome browser detected).');
-                redirectToContent();
+            // 1. MUST register Service Worker first for updates to work
+            registerServiceWorker(); 
+            
+            // 2. NEW LOGIC: If installed, redirect immediately after SW registration
+            if (isInstalled()) {
+                console.log('PWA is installed. Redirecting to content for auto-update cycle.');
+                redirectToContent(); 
                 return;
             }
             
-            registerServiceWorker();
+            // 3. Old Logic: If not installed and using Chrome, show the install prompt
+            if (isChrome()) {
+                spinner.style.display = 'block';
+                
+                setTimeout(() => {
+                    spinner.style.display = 'none'; 
+                    loadingMsg.style.display = 'none'; 
 
-            spinner.style.display = 'block';
-            
-            setTimeout(() => {
-                spinner.style.display = 'none'; 
-                loadingMsg.style.display = 'none'; 
+                    infoText.style.display = 'block';
+                    buttonsContainer.style.display = 'flex'; 
 
-                infoText.style.display = 'block';
-                buttonsContainer.style.display = 'flex'; 
-
-                if (deferredPrompt) {
-                     installButton.style.display = 'block';
-                } else {
-                     installButton.style.display = 'none';
-                }
-            }, REDIRECT_DELAY);
+                    if (deferredPrompt) {
+                        installButton.style.display = 'block';
+                    } else {
+                        installButton.style.display = 'none';
+                    }
+                }, REDIRECT_DELAY);
+            } else {
+                // 4. If not Chrome (and not installed), directly redirect to content
+                console.log('Non-Chrome browser detected. Redirecting to content.');
+                redirectToContent();
+            }
         }
 
         // --- Event Handlers ---
