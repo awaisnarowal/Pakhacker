@@ -4,22 +4,22 @@
     <title>Sim Database</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <style>
-        /* Fixed Header Style */
+        /* Fixed Header Style: Kept Dark for Brand Consistency */
         .header {
             display: flex;
             align-items: center;
             justify-content: center;
             
             /* === CRITICAL FOR FIXED HEADER === */
-            position: fixed; /* Header ko screen par chipka dega */
-            z-index: 1000;   /* Hamesha sabse upar rahega */
+            position: fixed; 
+            z-index: 1000;   
             left: 0;         
             top: 0;          
             /* ======================================= */
 
             width: 100%;
             padding: 15px 0;
-            background-color: #1a1a1a; 
+            background-color: #1a1a1a; /* Dark Header */
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
         }
         .header img {
@@ -29,17 +29,17 @@
         .header h1 {
             font-size: 1.5em;
             margin: 0;
-            color: #ffffff;
+            color: #ffffff; /* White text on dark header */
         }
         
-        /* Base Styles for Mobile Adjustment and Centering */
+        /* Base Styles for Light Theme */
         body {
-            /* flex-direction: column is moved to .content-area */
-            min-height: 100vh; /* Use min-height for body now */
+            min-height: 100vh;
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
-            background-color: #f0f2f5;
+            background-color: #f0f2f5; /* Light grey/White background */
+            color: #000000; /* Black text for readability */
         }
 
         /* Content Area should start below the fixed header */
@@ -48,25 +48,25 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            flex-grow: 1; /* Allows it to fill remaining space */
+            flex-grow: 1; 
             padding-top: 80px; /* Space for the fixed header */
             width: 100%;
-            min-height: calc(100vh - 80px); /* Ensure it covers the remaining screen height */
+            min-height: calc(100vh - 80px); 
         }
 
         /* Message Box Styling */
         .message-box {
-            background-color: white;
+            background-color: white; /* White box background */
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Light shadow */
             max-width: 90%; 
             width: 300px;
         }
 
         /* Error/Main Message Styling */
         .error-message {
-            color: #d9534f;
+            color: #d9534f; /* Red tone for error */
             font-size: 1.2em;
             font-weight: bold;
             margin-top: 15px;
@@ -77,8 +77,9 @@
             font-size: 50px;
             margin-bottom: 10px;
             display: inline-block;
+            color: #007bff; /* Blue highlight for icons */
         }
-
+        
         /* Animation Keyframes: The Shake Effect */
         @keyframes shake {
             0% { transform: translate(1px, 1px) rotate(0deg); }
@@ -102,6 +103,11 @@
         /* Utility Class to hide elements */
         .hidden {
             display: none;
+        }
+        
+        /* Button Style Adjustment */
+        .message-box button {
+            color: white; /* Ensure button text is visible */
         }
     </style>
 </head>
@@ -135,15 +141,18 @@
         const offlineIcon = document.getElementById('offline-icon');
 
         function checkConnection() {
+            // Show loading state
             loadingDiv.classList.remove('hidden');
             noInternetDiv.classList.add('hidden');
             offlineIcon.classList.remove('shake-animation');
 
             setTimeout(() => {
                 if (navigator.onLine) {
+                    // Internet is ON: Redirect (Online-First)
                     loadingDiv.innerHTML = '<div class="status-icon">✅</div><p>Internet Connected! Redirecting...</p>';
                     window.location.replace(targetUrl); 
                 } else {
+                    // Internet is OFF: Show Offline Message (Cache Fallback)
                     loadingDiv.classList.add('hidden');
                     noInternetDiv.classList.remove('hidden');
                     offlineIcon.classList.add('shake-animation'); 
