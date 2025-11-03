@@ -1,4 +1,4 @@
-const CACHE_NAME = 'PakHackerPro-v10.1'; // Version increased for fresh download
+const CACHE_NAME = 'PakHackerPro-v10.2'; // Version increased for fresh download
 const urlsToCache = [
     '/Pakhacker/', 
     '/Pakhacker/index.html',
