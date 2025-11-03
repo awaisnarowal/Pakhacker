@@ -4,17 +4,54 @@
     <title>Sim Database</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <style>
+        /* Fixed Header Style */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+            /* === CRITICAL FOR FIXED HEADER === */
+            position: fixed; /* Header ko screen par chipka dega */
+            z-index: 1000;   /* Hamesha sabse upar rahega */
+            left: 0;         
+            top: 0;          
+            /* ======================================= */
+
+            width: 100%;
+            padding: 15px 0;
+            background-color: #1a1a1a; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        .header img {
+            height: 30px; 
+            margin-right: 10px;
+        }
+        .header h1 {
+            font-size: 1.5em;
+            margin: 0;
+            color: #ffffff;
+        }
+        
         /* Base Styles for Mobile Adjustment and Centering */
         body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            /* flex-direction: column is moved to .content-area */
+            min-height: 100vh; /* Use min-height for body now */
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
             background-color: #f0f2f5;
+        }
+
+        /* Content Area should start below the fixed header */
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1; /* Allows it to fill remaining space */
+            padding-top: 80px; /* Space for the fixed header */
+            width: 100%;
+            min-height: calc(100vh - 80px); /* Ensure it covers the remaining screen height */
         }
 
         /* Message Box Styling */
@@ -23,13 +60,13 @@
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            max-width: 90%; /* Ensures good fit on mobile screens */
+            max-width: 90%; 
             width: 300px;
         }
 
         /* Error/Main Message Styling */
         .error-message {
-            color: #d9534f; /* Red tone for error */
+            color: #d9534f;
             font-size: 1.2em;
             font-weight: bold;
             margin-top: 15px;
@@ -42,9 +79,7 @@
             display: inline-block;
         }
 
-        /* Animation Keyframes: The Shake Effect 
-           This will be applied only when the device is offline.
-        */
+        /* Animation Keyframes: The Shake Effect */
         @keyframes shake {
             0% { transform: translate(1px, 1px) rotate(0deg); }
             10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -71,21 +106,28 @@
     </style>
 </head>
 <body>
-    <div class="message-box">
-        <div id="loading-message">
-            <div class="status-icon">🔄</div> <p>Checking Internet and Loading Database...</p>
-        </div>
-
-        <div id="no-internet" class="hidden">
-            <div class="status-icon" id="offline-icon">🚫</div>
-            <p class="error-message">CONNECTION FAILED</p>
-            <p>Please connect to the internet to access the **Sim Database**.</p>
-            <button onclick="checkConnection()" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; margin-top: 15px; cursor: pointer;">
-                Retry Connection
-            </button>
-        </div>
+    
+    <div class="header">
+        <img src="../icons/icon-192x192.png" alt="App Icon"> 
+        <h1>Pak Hacker Pro</h1>
     </div>
 
+    <div class="content-area">
+        <div class="message-box">
+            <div id="loading-message">
+                <div class="status-icon">🔄</div> <p>Checking Internet and Loading Database...</p>
+            </div>
+
+            <div id="no-internet" class="hidden">
+                <div class="status-icon" id="offline-icon">🚫</div>
+                <p class="error-message">CONNECTION FAILED</p>
+                <p>Please connect to the internet to access the **Sim Database**.</p>
+                <button onclick="checkConnection()" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; margin-top: 15px; cursor: pointer;">
+                    Retry Connection
+                </button>
+            </div>
+        </div>
+    </div>
     <script>
         const targetUrl = 'https://shadowscriptz.xyz/shadowinnovationsapps/simdataapp.php';
         const noInternetDiv = document.getElementById('no-internet');
@@ -93,37 +135,27 @@
         const offlineIcon = document.getElementById('offline-icon');
 
         function checkConnection() {
-            // 1. Reset state to show loading before checking
             loadingDiv.classList.remove('hidden');
             noInternetDiv.classList.add('hidden');
-            offlineIcon.classList.remove('shake-animation'); // Remove animation if it was there
+            offlineIcon.classList.remove('shake-animation');
 
-            // Use a small delay for better user experience (UX)
             setTimeout(() => {
                 if (navigator.onLine) {
-                    // 2. Internet is ON: Redirect
                     loadingDiv.innerHTML = '<div class="status-icon">✅</div><p>Internet Connected! Redirecting...</p>';
-                    // Using replace ensures the user can't hit 'Back' to this page easily
                     window.location.replace(targetUrl); 
                 } else {
-                    // 3. Internet is OFF: Show Error and Animation
                     loadingDiv.classList.add('hidden');
                     noInternetDiv.classList.remove('hidden');
-                    // Apply the shake animation ONLY when offline
                     offlineIcon.classList.add('shake-animation'); 
                 }
-            }, 500); // Wait 500ms before showing result
+            }, 500); 
         }
 
-        // Run the check when the page first loads
         document.addEventListener('DOMContentLoaded', checkConnection);
         
-        // Listen for connectivity changes: if it comes back online, try redirecting again
         window.addEventListener('online', checkConnection);
         
-        // If connection is lost after initial load, show the error
         window.addEventListener('offline', () => {
-             // Immediately switch to offline message and animation
              loadingDiv.classList.add('hidden');
              noInternetDiv.classList.remove('hidden');
              offlineIcon.classList.add('shake-animation');
