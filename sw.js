@@ -1,7 +1,7 @@
 const CACHE_NAME = 'PakHackerPro-v10.3'; // Version increased for fresh download
 const urlsToCache = [
     '/Pakhacker/', 
-    '/Pakhacker/index.html',
+    //'/Pakhacker/index.html',
     '/Pakhacker/Narowaliya/1.html',
     '/Pakhacker/manifest.json',
     '/Pakhacker/icons/icon-192x192.png',
