@@ -1,174 +1,128 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Sim Database</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pak Hack Pro</title>
     <style>
-        /* Fixed Header Style: Kept Dark for Brand Consistency */
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            
-            /* === CRITICAL FOR FIXED HEADER === */
-            position: fixed; 
-            z-index: 1000;   
-            left: 0;         
-            top: 0;          
-            /* ======================================= */
-
-            width: 100%;
-            padding: 15px 0;
-            background-color: #1a1a1a; /* Dark Header */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-        }
-        .header img {
-            height: 30px; 
-            margin-right: 10px;
-        }
-        .header h1 {
-            font-size: 1.5em;
+        * {
             margin: 0;
-            color: #ffffff; /* White text on dark header */
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
-        
-        /* Base Styles for Light Theme */
+
         body {
-            min-height: 100vh;
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-align: center;
-            background-color: #f0f2f5; /* Light grey/White background */
-            color: #000000; /* Black text for readability */
+            background: radial-gradient(circle, #000000, #0a1f0a);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
         }
 
-        /* Content Area should start below the fixed header */
-        .content-area {
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 60px 40px;
+            border-radius: 30px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #00ff41;
+            text-shadow: 0 0 15px #00ff41;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #aaa;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .btn-container {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            flex-grow: 1; 
-            padding-top: 80px; /* Space for the fixed header */
-            width: 100%;
-            min-height: calc(100vh - 80px); 
+            gap: 20px;
         }
 
-        /* Message Box Styling */
-        .message-box {
-            background-color: white; /* White box background */
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Light shadow */
-            max-width: 90%; 
-            width: 300px;
-        }
-
-        /* Error/Main Message Styling */
-        .error-message {
-            color: #d9534f; /* Red tone for error */
-            font-size: 1.2em;
+        /* --- OFFERS BUTTON (EXTRA ATTRACTIVE) --- */
+        .btn-offer {
+            padding: 18px;
+            font-size: 1.3rem;
             font-weight: bold;
-            margin-top: 15px;
+            text-decoration: none;
+            color: white;
+            background: linear-gradient(45deg, #ff0000, #ff8c00, #ff0000);
+            background-size: 200% auto;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+            animation: pulse 1.5s infinite, gradientMove 3s linear infinite;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
         }
 
-        /* Icon Styling */
-        .status-icon {
-            font-size: 50px;
-            margin-bottom: 10px;
-            display: inline-block;
-            color: #007bff; /* Blue highlight for icons */
-        }
-        
-        /* Animation Keyframes: The Shake Effect */
-        @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        .btn-offer:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.9);
         }
 
-        /* Class to apply the shake animation */
-        .shake-animation {
-            animation: shake 0.5s infinite; 
+        /* --- MODDED APPS BUTTON --- */
+        .btn-apps {
+            padding: 18px;
+            font-size: 1.1rem;
+            text-decoration: none;
+            color: #00ff41;
+            border: 1px solid #00ff41;
+            border-radius: 15px;
+            background: transparent;
+            transition: 0.4s;
         }
-        
-        /* Utility Class to hide elements */
-        .hidden {
-            display: none;
+
+        .btn-apps:hover {
+            background: rgba(0, 255, 65, 0.1);
+            transform: scale(1.02);
         }
-        
-        /* Button Style Adjustment */
-        .message-box button {
-            color: white; /* Ensure button text is visible */
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
         }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
     </style>
 </head>
 <body>
-    
-    <div class="header">
-        <img src="../icons/icon-192x192.png" alt="App Icon"> 
-        <h1>Pak Hacker Pro</h1>
-    </div>
 
-    <div class="content-area">
-        <div class="message-box">
-            <div id="loading-message">
-                <div class="status-icon">🔄</div> <p>Checking Internet and Loading Database...</p>
-            </div>
-
-            <div id="no-internet" class="hidden">
-                <div class="status-icon" id="offline-icon">🚫</div>
-                <p class="error-message">CONNECTION FAILED</p>
-                <p>Please connect to the internet to access the **Sim Database**.</p>
-                <button onclick="checkConnection()" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; margin-top: 15px; cursor: pointer;">
-                    Retry Connection
-                </button>
-            </div>
+    <div class="container">
+        <h1>PAK HACKER PRO</h1>
+        <p class="subtitle">Power By Awais Narowaliya</p>
+        
+        <div class="btn-container">
+            <a href="offer.html" class="btn-offer">🔥 Offers (Madian Mobile)</a>
+            
+            <a href="ap.html" class="btn-apps">Modded Apps</a>
         </div>
     </div>
-    <script>
-        const targetUrl = 'https://freshsimownerdetails.com/';
-        const noInternetDiv = document.getElementById('no-internet');
-        const loadingDiv = document.getElementById('loading-message');
-        const offlineIcon = document.getElementById('offline-icon');
 
-        function checkConnection() {
-            // Show loading state
-            loadingDiv.classList.remove('hidden');
-            noInternetDiv.classList.add('hidden');
-            offlineIcon.classList.remove('shake-animation');
-
-            setTimeout(() => {
-                if (navigator.onLine) {
-                    // Internet is ON: Redirect (Online-First)
-                    loadingDiv.innerHTML = '<div class="status-icon">✅</div><p>Internet Connected! Redirecting...</p>';
-                    window.location.replace(targetUrl); 
-                } else {
-                    // Internet is OFF: Show Offline Message (Cache Fallback)
-                    loadingDiv.classList.add('hidden');
-                    noInternetDiv.classList.remove('hidden');
-                    offlineIcon.classList.add('shake-animation'); 
-                }
-            }, 500); 
-        }
-
-        document.addEventListener('DOMContentLoaded', checkConnection);
-        
-        window.addEventListener('online', checkConnection);
-        
-        window.addEventListener('offline', () => {
-             loadingDiv.classList.add('hidden');
-             noInternetDiv.classList.remove('hidden');
-             offlineIcon.classList.add('shake-animation');
-        });
-    </script>
 </body>
 </html>
