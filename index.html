@@ -3,146 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Security Check - Pak Hacker Pro</title>
-    
+    <title>Pak Hacker Pro</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#000000"> 
-
+    <meta name="theme-color" content="#00ff41">
+    <link rel="apple-touch-icon" href="icons/icon-512x512.png">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Poppins:wght@300;600&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            display: flex;
-            flex-direction: column; 
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #000000;
-            color: #ffffff;
-            text-align: center;
+            background: radial-gradient(circle, #001a00, #000000);
+            height: 100vh; display: flex; justify-content: center; align-items: center;
+            color: white; overflow: hidden; font-family: 'Poppins', sans-serif;
         }
-        /* Fixed Header Style */
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            
-            position: fixed; 
-            z-index: 1000;   
-            left: 0;         
-            top: 0;          
-            width: 100%;
-            padding: 15px 0;
-            background-color: #1a1a1a; 
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+
+        .container {
+            text-align: center; background: rgba(0, 40, 0, 0.2);
+            padding: 50px 30px; border-radius: 40px; backdrop-filter: blur(20px);
+            border: 2px solid rgba(0, 255, 65, 0.2); width: 90%; max-width: 450px;
+            box-shadow: 0 0 40px rgba(0, 255, 65, 0.1);
         }
-        .header img {
-            height: 30px; 
-            margin-right: 10px;
+
+        h1 { 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.8rem; color: #00ff41; 
+            text-shadow: 0 0 20px rgba(0, 255, 65, 0.8); 
+            margin-bottom: 5px; font-weight: 900;
         }
-        .header h1 {
-            font-size: 1.5em;
-            margin: 0;
-            color: #ffffff;
+
+        .subtitle { 
+            font-size: 0.85rem; color: #00ff41; opacity: 0.8;
+            margin-bottom: 40px; letter-spacing: 3px; font-weight: bold;
         }
-        /* Content Area should start below the fixed header */
-        .content-area {
-            display: flex;
-            flex-direction: column; 
-            justify-content: center;
-            align-items: center;
-            flex-grow: 1; 
-            padding-top: 80px; 
+
+        .btn-container { display: flex; flex-direction: column; gap: 20px; }
+        
+        /* 🔥 Clean & Aggressive Offers Button */
+        .btn-offer {
+            padding: 20px; font-size: 1.4rem; font-weight: 900; 
+            text-decoration: none; color: white; 
+            background: linear-gradient(90deg, #ff0000, #ff8c00, #ff0000);
+            background-size: 200% auto; border-radius: 20px;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+            animation: pulse-shake 2s infinite, gradientMove 3s linear infinite;
+            border: none; text-transform: uppercase;
         }
-        .loading {
-            font-size: 1.6em;
-            margin-bottom: 30px;
-            color: #FFC107; 
+
+        .btn-apps {
+            padding: 16px; font-size: 1.1rem; text-decoration: none; color: #00ff41;
+            border: 2px solid #00ff41; border-radius: 20px; transition: 0.4s;
+            font-weight: 600; background: rgba(0, 255, 65, 0.05);
         }
-        /* CSS for the rotating spinner */
-        .spinner {
-            border: 5px solid #333; 
-            border-top: 5px solid #4CAF50; 
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-            display: none; 
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .info-text {
-            color: #ccc;
-            margin-bottom: 20px;
-            font-size: 1em;
-            display: none; 
-            max-width: 350px;
-        }
-        .buttons-container {
-            display: none; 
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        .app-button {
-            padding: 15px 30px;
-            font-size: 1.2em;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-            text-decoration: none;
-            display: inline-block;
-            width: 250px;
-        }
-        /* === Animated Install Button CSS === */
-        #installButton {
-            background-color: #4CAF50; 
-            animation: pulse 2s infinite, shadow-pulse 2s infinite; 
-        }
-        #installButton:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); 
-            animation: none; 
-        }
-        @keyframes pulse {
+        
+        .btn-apps:hover { background: #00ff41; color: #000; box-shadow: 0 0 20px #00ff41; }
+
+        @keyframes pulse-shake {
             0% { transform: scale(1); }
-            50% { transform: scale(1.03); } 
+            50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-        @keyframes shadow-pulse {
-            0% { box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4); }
-            50% { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7); } 
-            100% { box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4); }
-        }
-        /* ================================== */
-        #useDirectlyButton {
-            background-color: #007bff; 
-        }
-        #useDirectlyButton:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
-        #whatsappLink {
-            margin-top: 30px;
-            color: #25D366; 
-            text-decoration: none;
-            font-size: 1em;
-            display: block;
-        }
-        #updateButton { 
-            background-color: #555;
-            display: none; 
-            margin-top: 15px;
-        }
+
+        @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
     </style>
 </head>
+<body>
+
+    <div class="container">
+        <h1>PAK HACKER PRO</h1>
+        <p class="subtitle">POWERED BY AWAIS NAROWALIYA</p>
+        
+        <div class="btn-container">
+            <a href="offer.html" class="btn-offer">Offers (Madian Mobile)</a>
+            <a href="ap.html" class="btn-apps">Modded Apps</a>
+        </div>
+    </div>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    reg.onupdatefound = () => {
+                        const worker = reg.installing;
+                        worker.onstatechange = () => {
+                            if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+                                window.location.reload();
+                            }
+                        };
+                    };
+                });
+            });
+        }
+    </script>
+</body>
+</html>
 <body>
     
     <div class="header">
