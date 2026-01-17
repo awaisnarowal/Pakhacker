@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pak-hacker-pro-v3.0.2'; // Version updated for fresh refresh
+const CACHE_NAME = 'pak-hacker-pro-v3.0.3'; // Version updated for fresh refresh
 const assets = [
   './',
   './index.html',

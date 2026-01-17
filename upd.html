@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pak Hacker Pro | Maintenance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: #000;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ff41; /* Classic Hacker Green */
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(0, 20, 0, 0.8);
+            border: 2px solid #00ff41;
+            box-shadow: 0 0 20px #00ff41;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .glitch {
+            font-size: 3rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            position: relative;
+            text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75),
+                         -0.025em -0.05em 0 rgba(0, 255, 0, 0.75),
+                         0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
+            animation: glitch 500ms infinite;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 0.05em 0 0 #ff0000, -0.05em -0.025em 0 #00ff00, -0.025em 0.05em 0 #0000ff; }
+            14% { text-shadow: 0.05em 0 0 #ff0000, -0.05em -0.025em 0 #00ff00, -0.025em 0.05em 0 #0000ff; }
+            15% { text-shadow: -0.05em -0.025em 0 #ff0000, 0.025em 0.025em 0 #00ff00, -0.05em -0.05em 0 #0000ff; }
+            49% { text-shadow: -0.05em -0.025em 0 #ff0000, 0.025em 0.025em 0 #00ff00, -0.05em -0.05em 0 #0000ff; }
+            50% { text-shadow: 0.025em 0.05em 0 #ff0000, 0.05em 0 0 #00ff00, 0 -0.05em 0 #0000ff; }
+            99% { text-shadow: 0.025em 0.05em 0 #ff0000, 0.05em 0 0 #00ff00, 0 -0.05em 0 #0000ff; }
+            100% { text-shadow: -0.025em 0 0 #ff0000, -0.025em -0.025em 0 #00ff00, -0.025em -0.05em 0 #0000ff; }
+        }
+
+        .updating-text {
+            font-size: 1.2rem;
+            margin: 20px 0;
+            letter-spacing: 3px;
+        }
+
+        /* Matrix like scanning bar */
+        .scan-line {
+            width: 100%;
+            height: 2px;
+            background: #00ff41;
+            box-shadow: 0 0 10px #00ff41;
+            position: relative;
+            animation: scan 3s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 20px; opacity: 0; }
+        }
+
+        .status-box {
+            border: 1px solid #00ff41;
+            padding: 10px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: #008f11;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="glitch">PAK HACKER PRO</div>
+        <div class="updating-text">>> SYSTEM UPDATING...</div>
+        
+        <div class="scan-line"></div>
+        
+        <div class="status-box">
+            [STATUS]: Server maintenance in progress...<br>
+            [ACTION]: Bypassing bugs & optimizing core...<br>
+            [ETA]: Coming back stronger soon.
+        </div>
+
+        <div class="footer">
+            &copy; 2026 Pak Hacker Pro | Authorized Access Only.
+        </div>
+    </div>
+
+</body>
+</html>
