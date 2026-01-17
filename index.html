@@ -25,60 +25,44 @@
             box-shadow: 0 0 40px rgba(0, 255, 65, 0.1);
         }
 
-        /* --- Logo Icon Style --- */
         .brand-logo {
-            width: 80px; height: 80px;
-            margin-bottom: 15px;
-            border-radius: 50%;
-            border: 2px solid #00ff41;
-            box-shadow: 0 0 15px #00ff41;
-            object-fit: cover;
+            width: 90px; height: 90px; margin-bottom: 15px; border-radius: 50%;
+            border: 2px solid #00ff41; box-shadow: 0 0 15px #00ff41;
             animation: glow 2s infinite alternate;
         }
 
+        /* --- Updated Black Title with Glow --- */
         h1 { 
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.2rem; color: #00ff41; 
-            text-shadow: 0 0 20px rgba(0, 255, 65, 0.8); 
-            margin-bottom: 5px; font-weight: 900;
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 2.2rem; 
+            color: #000000; /* Title color Black */
+            text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff41; /* Green glow for visibility */
+            margin-bottom: 5px; font-weight: 900; 
         }
 
-        .subtitle { 
-            font-size: 0.8rem; color: #00ff41; opacity: 0.8;
-            margin-bottom: 35px; letter-spacing: 2px; font-weight: bold;
-        }
+        .subtitle { font-size: 0.8rem; color: #00ff41; opacity: 0.8; margin-bottom: 30px; letter-spacing: 2px; font-weight: bold; }
 
         .btn-container { display: flex; flex-direction: column; gap: 15px; }
         
         .btn-offer {
-            padding: 18px; font-size: 1.2rem; font-weight: 900; 
-            text-decoration: none; color: white; 
-            background: linear-gradient(90deg, #ff0000, #ff8c00, #ff0000);
-            background-size: 200% auto; border-radius: 15px;
-            box-shadow: 0 0 25px rgba(255, 0, 0, 0.6);
-            animation: pulse-shake 2s infinite, gradientMove 3s linear infinite;
-            border: none; text-transform: uppercase;
+            padding: 18px; font-size: 1.2rem; font-weight: 900; text-decoration: none; color: white; 
+            background: linear-gradient(90deg, #ff4500, #ff8c00, #ff4500); background-size: 200% auto; border-radius: 15px;
+            box-shadow: 0 0 25px rgba(255, 69, 0, 0.6); animation: pulse 2s infinite, gradientMove 3s linear infinite;
         }
 
-        .btn-apps {
-            padding: 15px; font-size: 1rem; text-decoration: none; color: #00ff41;
-            border: 2px solid #00ff41; border-radius: 15px; transition: 0.4s;
-            font-weight: 600; background: rgba(0, 255, 65, 0.05);
-        }
-        
-        .btn-apps:hover { background: #00ff41; color: #000; box-shadow: 0 0 20px #00ff41; }
+        .btn-apps { padding: 15px; font-size: 1rem; text-decoration: none; color: #00ff41; border: 2px solid #00ff41; border-radius: 15px; font-weight: 600; transition: 0.3s; }
+        .btn-apps:hover { background: rgba(0, 255, 65, 0.2); }
 
-        @keyframes glow {
-            from { box-shadow: 0 0 10px #00ff41; }
-            to { box-shadow: 0 0 25px #00ff41; transform: scale(1.05); }
+        /* --- Install Button Style --- */
+        #installBtn {
+            display: none; /* Initially hidden */
+            padding: 15px; font-size: 1rem; color: #000; background: #00ff41; 
+            border: none; border-radius: 15px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 0 20px #00ff41; transition: 0.3s; margin-top: 10px;
         }
 
-        @keyframes pulse-shake {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
+        @keyframes glow { from { box-shadow: 0 0 10px #00ff41; } to { box-shadow: 0 0 25px #00ff41; transform: scale(1.05); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
         @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
     </style>
 </head>
@@ -86,29 +70,56 @@
 
     <div class="container">
         <img src="icons/icon-512x512.png" alt="Logo" class="brand-logo">
-        
         <h1>PAK HACKER PRO</h1>
         <p class="subtitle">POWERED BY AWAIS NAROWALIYA</p>
         
         <div class="btn-container">
             <a href="offer.html" class="btn-offer">Offers (Madian Mobile)</a>
             <a href="ap.html" class="btn-apps">Modded Apps</a>
+            <button id="installBtn">📲 INSTALL APP</button>
         </div>
     </div>
 
     <script>
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+
+        // Logic to show/hide Install Button
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Only show button if site is opened in Chrome (not already installed)
+            if (!window.matchMedia('(display-mode: standalone)').matches) {
+                installBtn.style.display = 'block';
+            }
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installBtn.style.display = 'none';
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            installBtn.style.display = 'none';
+        });
+
+        // Service Worker for auto update
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then(reg => {
-                    reg.onupdatefound = () => {
-                        const worker = reg.installing;
-                        worker.onstatechange = () => {
-                            if (worker.state === 'installed' && navigator.serviceWorker.controller) {
-                                window.location.reload();
-                            }
-                        };
+            navigator.serviceWorker.register('./sw.js').then(reg => {
+                reg.onupdatefound = () => {
+                    const worker = reg.installing;
+                    worker.onstatechange = () => {
+                        if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+                            window.location.reload();
+                        }
                     };
-                });
+                };
             });
         }
     </script>
