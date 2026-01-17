@@ -20,43 +20,58 @@
 
         .container {
             text-align: center; background: rgba(0, 40, 0, 0.2);
-            padding: 50px 30px; border-radius: 40px; backdrop-filter: blur(20px);
+            padding: 40px 30px; border-radius: 40px; backdrop-filter: blur(20px);
             border: 2px solid rgba(0, 255, 65, 0.2); width: 90%; max-width: 450px;
             box-shadow: 0 0 40px rgba(0, 255, 65, 0.1);
         }
 
+        /* --- Logo Icon Style --- */
+        .brand-logo {
+            width: 80px; height: 80px;
+            margin-bottom: 15px;
+            border-radius: 50%;
+            border: 2px solid #00ff41;
+            box-shadow: 0 0 15px #00ff41;
+            object-fit: cover;
+            animation: glow 2s infinite alternate;
+        }
+
         h1 { 
             font-family: 'Orbitron', sans-serif;
-            font-size: 2.8rem; color: #00ff41; 
+            font-size: 2.2rem; color: #00ff41; 
             text-shadow: 0 0 20px rgba(0, 255, 65, 0.8); 
             margin-bottom: 5px; font-weight: 900;
         }
 
         .subtitle { 
-            font-size: 0.85rem; color: #00ff41; opacity: 0.8;
-            margin-bottom: 40px; letter-spacing: 3px; font-weight: bold;
+            font-size: 0.8rem; color: #00ff41; opacity: 0.8;
+            margin-bottom: 35px; letter-spacing: 2px; font-weight: bold;
         }
 
-        .btn-container { display: flex; flex-direction: column; gap: 20px; }
+        .btn-container { display: flex; flex-direction: column; gap: 15px; }
         
-        /* 🔥 Clean & Aggressive Offers Button */
         .btn-offer {
-            padding: 20px; font-size: 1.4rem; font-weight: 900; 
+            padding: 18px; font-size: 1.2rem; font-weight: 900; 
             text-decoration: none; color: white; 
             background: linear-gradient(90deg, #ff0000, #ff8c00, #ff0000);
-            background-size: 200% auto; border-radius: 20px;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+            background-size: 200% auto; border-radius: 15px;
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.6);
             animation: pulse-shake 2s infinite, gradientMove 3s linear infinite;
             border: none; text-transform: uppercase;
         }
 
         .btn-apps {
-            padding: 16px; font-size: 1.1rem; text-decoration: none; color: #00ff41;
-            border: 2px solid #00ff41; border-radius: 20px; transition: 0.4s;
+            padding: 15px; font-size: 1rem; text-decoration: none; color: #00ff41;
+            border: 2px solid #00ff41; border-radius: 15px; transition: 0.4s;
             font-weight: 600; background: rgba(0, 255, 65, 0.05);
         }
         
         .btn-apps:hover { background: #00ff41; color: #000; box-shadow: 0 0 20px #00ff41; }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 10px #00ff41; }
+            to { box-shadow: 0 0 25px #00ff41; transform: scale(1.05); }
+        }
 
         @keyframes pulse-shake {
             0% { transform: scale(1); }
@@ -70,6 +85,8 @@
 <body>
 
     <div class="container">
+        <img src="icons/icon-512x512.png" alt="Logo" class="brand-logo">
+        
         <h1>PAK HACKER PRO</h1>
         <p class="subtitle">POWERED BY AWAIS NAROWALIYA</p>
         
@@ -94,175 +111,6 @@
                 });
             });
         }
-    </script>
-</body>
-</html>
-<body>
-    
-    <div class="header">
-        <img src="icons/icon-192x192.png" alt="App Icon"> 
-        <h1>Pak Hacker Pro</h1>
-    </div>
-
-    <div class="content-area">
-        <div class="spinner" id="spinner"></div>
-        <div class="loading" id="loadingMsg">Security Checking...</div>
-        
-        <div class="info-text" id="infoText">
-            <p>For the best experience, please install the app. If the App Installation Button is not shown, please use the Chrome Browser Latest version.</p>
-            <p>To continue in the browser, select 'Direct Use' below.</p>
-        </div>
-
-        <div class="buttons-container" id="buttonsContainer">
-            <button id="installButton" class="app-button">⬇️ Install App</button>
-            <a id="useDirectlyButton" class="app-button" href="Narowaliya/1.html">Direct Use</a>
-        </div>
-        
-        <a id="updateButton" class="app-button" href="#">🔄 Check for Update</a>
-
-        <a id="whatsappLink" href="https://wa.me/923070378723" target="_blank">
-            Need Help?
-        </a>
-    </div>
-
-    <script>
-        let deferredPrompt = null; 
-        const loadingMsg = document.getElementById('loadingMsg');
-        const buttonsContainer = document.getElementById('buttonsContainer');
-        const installButton = document.getElementById('installButton');
-        const infoText = document.getElementById('infoText');
-        const spinner = document.getElementById('spinner');
-        const updateButton = document.getElementById('updateButton'); 
-        const REDIRECT_DELAY = 5000; 
-        let newWorker; 
-
-        // --- Utility Functions ---
-        function isChrome() {
-            const userAgent = navigator.userAgent;
-            const isTrueChrome = userAgent.includes("Chrome") && !userAgent.includes("Edg") && !userAgent.includes("FxiOS") && !userAgent.includes("OPR");
-            return isTrueChrome;
-        }
-        
-        function redirectToContent() {
-            window.location.replace("Narowaliya/1.html"); 
-        }
-        
-        function isInstalled() {
-             // Check if the app is running in standalone mode (PWA installed)
-             return window.matchMedia('(display-mode: standalone)').matches || window.matchMedia('(display-mode: fullscreen)').matches;
-        }
-
-        // --- Service Worker Logic ---
-        function registerServiceWorker() {
-            if ('serviceWorker' in navigator) {
-                // Registering the SW ensures automatic updates start running
-                navigator.serviceWorker.register('/Pakhacker/sw.js', { scope: '/Pakhacker/' })
-                    .then(reg => {
-                        console.log('SW registered. Scope:', reg.scope);
-                        
-                        reg.addEventListener('updatefound', () => {
-                            newWorker = reg.installing;
-                            newWorker.addEventListener('statechange', () => {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    if (isChrome() && !isInstalled()) {
-                                        updateButton.style.display = 'block'; 
-                                        updateButton.textContent = '🔄 Update Available! Click to Install';
-                                    }
-                                }
-                            });
-                        });
-                    })
-                    .catch(err => console.error('SW registration failed:', err));
-            }
-        }
-
-        // --- Main Logic (PWA Auto Redirect Included) ---
-        function initializeApp() {
-            // 1. MUST register Service Worker first for updates to work
-            registerServiceWorker(); 
-            
-            // 2. NEW LOGIC: If installed, redirect immediately after SW registration
-            if (isInstalled()) {
-                console.log('PWA is installed. Redirecting to content for auto-update cycle.');
-                redirectToContent(); 
-                return;
-            }
-            
-            // 3. Old Logic: If not installed and using Chrome, show the install prompt
-            if (isChrome()) {
-                spinner.style.display = 'block';
-                
-                setTimeout(() => {
-                    spinner.style.display = 'none'; 
-                    loadingMsg.style.display = 'none'; 
-
-                    infoText.style.display = 'block';
-                    buttonsContainer.style.display = 'flex'; 
-
-                    if (deferredPrompt) {
-                        installButton.style.display = 'block';
-                    } else {
-                        installButton.style.display = 'none';
-                    }
-                }, REDIRECT_DELAY);
-            } else {
-                // 4. If not Chrome (and not installed), directly redirect to content
-                console.log('Non-Chrome browser detected. Redirecting to content.');
-                redirectToContent();
-            }
-        }
-
-        // --- Event Handlers ---
-
-        // 1. Check for Update Handler
-        updateButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (newWorker) {
-                newWorker.postMessage({ action: 'skipWaiting' });
-                updateButton.textContent = 'Updating... Please wait.';
-            } else {
-                updateButton.textContent = 'Checking for updates...';
-                navigator.serviceWorker.getRegistration().then(reg => {
-                    if (reg) reg.update();
-                });
-            }
-        });
-
-        // 2. SW Controller change listener 
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-            console.log('New Service Worker activated. Reloading page...');
-            window.location.reload(); 
-        });
-
-        // 3. PWA Installation Handler
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-        });
-        
-        installButton.addEventListener('click', () => {
-            if (deferredPrompt) {
-                buttonsContainer.style.display = 'none';
-                infoText.style.display = 'none';
-                loadingMsg.style.display = 'block';
-                loadingMsg.textContent = 'Installation prompt is on your screen...';
-                
-                deferredPrompt.prompt();
-                
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        redirectToContent(); 
-                    } else {
-                        loadingMsg.style.display = 'none';
-                        infoText.style.display = 'block';
-                        buttonsContainer.style.display = 'flex'; 
-                    }
-                    deferredPrompt = null;
-                });
-            }
-        });
-
-        window.onload = initializeApp;
     </script>
 </body>
 </html>
