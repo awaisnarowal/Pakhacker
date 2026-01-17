@@ -1,60 +1,99 @@
-const CACHE_NAME = 'PakHackerPro-v10.6'; // Version increased for fresh download
-const urlsToCache = [
-    '/Pakhacker/', 
-    '/Pakhacker/index.html',
-    '/Pakhacker/Narowaliya/1.html',
-    '/Pakhacker/manifest.json',
-    '/Pakhacker/icons/icon-192x192.png',
-    '/Pakhacker/icons/icon-512x512.png',
-    
-    // External URL Added for Caching (CORS permitting)
-    'https://shadowpaksim.xyz/shadowsim1shadowprivate.php' 
-];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pak Hacker Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00ff41">
+    <link rel="apple-touch-icon" href="icons/icon-512x512.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Poppins:wght@300;600&display=swap');
 
-self.addEventListener('install', event => {
-    self.skipWaiting(); 
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('Opened cache and adding assets.');
-                return cache.addAll(urlsToCache).catch(err => {
-                    console.error('Failed to cache all required assets (especially external links):', err);
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: radial-gradient(circle, #001a00, #000000);
+            height: 100vh; display: flex; justify-content: center; align-items: center;
+            color: white; overflow: hidden; font-family: 'Poppins', sans-serif;
+        }
+
+        .container {
+            text-align: center; background: rgba(0, 40, 0, 0.2);
+            padding: 50px 30px; border-radius: 40px; backdrop-filter: blur(20px);
+            border: 2px solid rgba(0, 255, 65, 0.2); width: 90%; max-width: 450px;
+            box-shadow: 0 0 40px rgba(0, 255, 65, 0.1);
+        }
+
+        h1 { 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.8rem; color: #00ff41; 
+            text-shadow: 0 0 20px rgba(0, 255, 65, 0.8); 
+            margin-bottom: 5px; font-weight: 900;
+        }
+
+        .subtitle { 
+            font-size: 0.85rem; color: #00ff41; opacity: 0.8;
+            margin-bottom: 40px; letter-spacing: 3px; font-weight: bold;
+        }
+
+        .btn-container { display: flex; flex-direction: column; gap: 20px; }
+        
+        /* 🔥 Clean & Aggressive Offers Button */
+        .btn-offer {
+            padding: 20px; font-size: 1.4rem; font-weight: 900; 
+            text-decoration: none; color: white; 
+            background: linear-gradient(90deg, #ff0000, #ff8c00, #ff0000);
+            background-size: 200% auto; border-radius: 20px;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+            animation: pulse-shake 2s infinite, gradientMove 3s linear infinite;
+            border: none; text-transform: uppercase;
+        }
+
+        .btn-apps {
+            padding: 16px; font-size: 1.1rem; text-decoration: none; color: #00ff41;
+            border: 2px solid #00ff41; border-radius: 20px; transition: 0.4s;
+            font-weight: 600; background: rgba(0, 255, 65, 0.05);
+        }
+        
+        .btn-apps:hover { background: #00ff41; color: #000; box-shadow: 0 0 20px #00ff41; }
+
+        @keyframes pulse-shake {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>PAK HACKER PRO</h1>
+        <p class="subtitle">POWERED BY AWAIS NAROWALIYA</p>
+        
+        <div class="btn-container">
+            <a href="offer.html" class="btn-offer">Offers (Madian Mobile)</a>
+            <a href="ap.html" class="btn-apps">Modded Apps</a>
+        </div>
+    </div>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    reg.onupdatefound = () => {
+                        const worker = reg.installing;
+                        worker.onstatechange = () => {
+                            if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+                                window.location.reload();
+                            }
+                        };
+                    };
                 });
-            })
-    );
-});
-
-self.addEventListener('activate', event => {
-    const cacheWhitelist = [CACHE_NAME];
-    event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (cacheWhitelist.indexOf(cacheName) === -1) {
-                        console.log('Deleting old cache:', cacheName);
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
-        })
-    );
-});
-
-self.addEventListener('fetch', event => {
-    event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                if (response) {
-                    return response;
-                }
-                return fetch(event.request);
-            })
-    );
-});
-
-self.addEventListener('message', function(event) {
-  if (event.data && event.data.action === 'skipWaiting') {
-      console.log('Skip waiting command received.');
-    self.skipWaiting();
-  }
-});
+            });
+        }
+    </script>
+</body>
+</html>
