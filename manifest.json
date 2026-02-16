@@ -1,10 +1,8 @@
 {
   "name": "Pak Hacker Pro",
   "short_name": "Pak Hacker Pro",
-  "description": "Smart Detection Terminal",
-  "start_url": "index.html",
+  "start_url": "./index.html",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#020617",
   "theme_color": "#00ff7f",
   "icons": [

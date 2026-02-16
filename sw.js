@@ -1,22 +1,33 @@
-const CACHE_NAME = 'php-v2.2';
+
+const CACHE_NAME = 'pakhacker-cache-v3.1';
 
 self.addEventListener('install', (event) => {
+  
     self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
     event.waitUntil(
-        caches.keys().then((keys) => {
-            return Promise.all(keys.map(key => caches.delete(key)));
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cache) => {
+                    if (cache !== CACHE_NAME) {
+             
+                        console.log('Service Worker: Clearing Old Cache');
+                        return caches.delete(cache);
+                    }
+                })
+            );
         })
     );
     self.clients.claim();
 });
 
-// Always fetch from server (No local storage)
+
 self.addEventListener('fetch', (event) => {
     event.respondWith(
         fetch(event.request).catch(() => {
+            // Aganal)
             return caches.match(event.request);
         })
     );

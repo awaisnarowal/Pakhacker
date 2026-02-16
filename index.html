@@ -38,9 +38,9 @@
             cursor: pointer; background: linear-gradient(135deg, #00ff7f, #008040); color: #020617;
         }
 
-        /* Smart Install Button */
+        /* Install Button - Default Hidden */
         #install-btn {
-            display: none; /* Default Hidden */
+            display: none; 
             width: 100%;
             background: #ffffff;
             color: #000;
@@ -77,98 +77,65 @@
                 <button class="btn" onclick="startSearch(1)">SERVER 1</button>
                 <button class="btn" onclick="startSearch(2)">SERVER 2</button>
             </div>
-            
             <button id="install-btn" class="btn">📲 INSTALL APK NOW</button>
         </div>
 
         <div id="loader" class="spinner"></div>
-
-        <div id="result-box">
-            <iframe id="frame"></iframe>
-        </div>
+        <div id="result-box"><iframe id="frame"></iframe></div>
     </div>
 
     <script>
-        // 1. Service Worker Registration
+        // Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                .then(reg => {
-                    reg.onupdatefound = () => {
-                        const installingWorker = reg.installing;
-                        installingWorker.onstatechange = () => {
-                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                window.location.reload();
-                            }
-                        };
-                    };
-                });
+                navigator.serviceWorker.register('sw.js');
             });
         }
 
-        // 2. Smart Install Prompt Logic
-        let deferredPrompt;
+        // Check if already in App Mode
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
         const installBtn = document.getElementById('install-btn');
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            // Button dikhao agar app install nahi hai
-            installBtn.style.display = 'block';
+        if (!isStandalone) {
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                if(installBtn) installBtn.style.display = 'block';
 
-            installBtn.addEventListener('click', () => {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        installBtn.style.display = 'none';
-                    }
-                    deferredPrompt = null;
+                installBtn.addEventListener('click', () => {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choice) => {
+                        if (choice.outcome === 'accepted') installBtn.style.display = 'none';
+                        deferredPrompt = null;
+                    });
                 });
             });
-        });
-
-        // Agar app pehle se installed hai toh button mat dikhao
-        window.addEventListener('appinstalled', () => {
-            installBtn.style.display = 'none';
-        });
-
-        // Security logic check for standalone mode
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            installBtn.style.display = 'none';
+        } else {
+            // APK ke andar button bilkul khatam kar do
+            if(installBtn) installBtn.remove();
         }
     </script>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init();
-
         function checkLimit(input) {
             let val = input.value;
             let info = document.getElementById('limit-info');
             if (val.length > 0) {
                 let limit = (val.startsWith('0')) ? 11 : 13;
-                info.innerText = "Target Length: " + limit + " (Current: " + val.length + ")";
-                if (val.length >= limit) {
-                    input.value = val.substring(0, limit);
-                    input.blur();
-                }
-            } else {
-                info.innerText = "System: Ready";
+                info.innerText = "Target Length: " + limit;
+                if (val.length >= limit) { input.value = val.substring(0, limit); input.blur(); }
             }
         }
-
         function startSearch(sid) {
             const num = document.getElementById('target').value;
-            if (num.length < 10) { alert("Number dalo!"); return; }
-
+            if (num.length < 10) { alert("Sahi number dalo!"); return; }
             document.getElementById('loader').style.display = "block";
-            document.getElementById('result-box').style.display = "none";
-
             const api = (sid === 1) ? "https://elookup.xyz/rana/lookup.php?num=" : "https://teeveeltd.site/api.php?number=";
-            const frame = document.getElementById('frame');
-            frame.src = api + num;
-
-            frame.onload = function() {
+            document.getElementById('frame').src = api + num;
+            document.getElementById('frame').onload = () => {
                 document.getElementById('loader').style.display = "none";
                 document.getElementById('result-box').style.display = "block";
             };
