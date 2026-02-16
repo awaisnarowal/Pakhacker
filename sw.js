@@ -1,26 +1,24 @@
-const CACHE_NAME = 'pak-hacker-pro-v3.0.4'; // Version updated for fresh refresh
-const assets = [
-  './',
-  './index.html',
-  './offer.html',
-  './ap.html',
-  './manifest.json',
-  './icons/icon-192x192.png',
-  './icons/icon-512x512.png'
-];
+const CACHE_NAME = 'php-no-cache-v1';
 
-self.addEventListener('install', e => {
-    e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(assets)));
-    self.skipWaiting();
+self.addEventListener('install', (event) => {
+  self.skipWaiting();
 });
 
-self.addEventListener('activate', e => {
-    e.waitUntil(caches.keys().then(keys => Promise.all(
-        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-    )));
-    self.clients.claim();
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(keys.map(key => caches.delete(key)));
+    })
+  );
+  self.clients.claim();
 });
 
-self.addEventListener('fetch', e => {
-    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    fetch(event.request).catch(() => {
+      
+      return null;
+    })
+  );
 });
