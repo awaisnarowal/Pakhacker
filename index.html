@@ -30,19 +30,32 @@
         }
         #limit-info { font-size: 0.75rem; color: #888; margin-bottom: 20px; min-height: 15px; }
 
-        .btn-group { display: flex; gap: 15px; flex-wrap: wrap; }
+        .btn-group { 
+            display: flex; 
+            flex-direction: column; /* Buttons ko ooper niche karne ke liye */
+            gap: 15px; 
+            align-items: center;
+        }
+        .server-btns {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+        }
         .btn {
             flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold;
             cursor: pointer; background: linear-gradient(135deg, #00ff7f, #008040); color: #020617;
+            transition: 0.3s;
         }
+        .btn:active { transform: scale(0.95); }
 
-        /* Install Button Style */
+        /* Install Button Design */
         #install-btn {
-            display: none; /* Shuru mein hide rahega */
-            margin-top: 20px;
-            background: #ffffff;
-            color: #020617;
+            display: none; /* Initially Hidden */
             width: 100%;
+            background: #ffffff;
+            color: #000;
+            border: 2px solid #00ff7f;
+            box-shadow: 0 0 15px rgba(0, 255, 127, 0.3);
         }
 
         .spinner {
@@ -70,10 +83,12 @@
         <div id="limit-info">System: Ready</div>
 
         <div class="btn-group">
-            <button class="btn" onclick="startSearch(1)">SERVER 1</button>
-            <button class="btn" onclick="startSearch(2)">SERVER 2</button>
+            <div class="server-btns">
+                <button class="btn" onclick="startSearch(1)">SERVER 1</button>
+                <button class="btn" onclick="startSearch(2)">SERVER 2</button>
+            </div>
             
-            <button id="install-btn" class="btn">⬇️ INSTALL APP (APK)</button>
+            <button id="install-btn" class="btn">📲 INSTALL APK NOW</button>
         </div>
 
         <div id="loader" class="spinner"></div>
@@ -84,66 +99,55 @@
     </div>
 
     <script>
-        // 1. Service Worker Registration
+        // Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').then(reg => {
-                    reg.onupdatefound = () => {
-                        const installingWorker = reg.installing;
-                        installingWorker.onstatechange = () => {
-                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                window.location.reload();
-                            }
-                        };
-                    };
-                });
+                navigator.serviceWorker.register('sw.js');
             });
         }
 
-        // 2. Install Prompt Logic
+        // Install Button Logic
         let deferredPrompt;
         const installBtn = document.getElementById('install-btn');
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Browser ka default prompt roko
             e.preventDefault();
-            // Event save karlo
             deferredPrompt = e;
-            // Hamara apna button show karo
+            // Button tabhi dikhayega jab app install nahi hogi
             installBtn.style.display = 'block';
 
             installBtn.addEventListener('click', () => {
-                // Prompt dikhao
                 deferredPrompt.prompt();
-                // User ka response check karo
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the install prompt');
+                        installBtn.style.display = 'none';
                     }
-                    installBtn.style.display = 'none';
                     deferredPrompt = null;
                 });
             });
         });
 
-        // Agar app pehle se installed hai toh button hide rakho
+        // Agar install ho jaye to button foran gayab ho jaye
         window.addEventListener('appinstalled', () => {
             installBtn.style.display = 'none';
-            deferredPrompt = null;
         });
+
+        // Agar pehle se installed hai (Standalone mode) toh button mat dikhao
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            installBtn.style.display = 'none';
+        }
     </script>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init();
-        // Baki aapka purana logic (checkLimit, startSearch, etc.) yahan aayega
+
         function checkLimit(input) {
             let val = input.value;
             let info = document.getElementById('limit-info');
             if (val.length > 0) {
                 let limit = (val.startsWith('0')) ? 11 : 13;
                 info.innerText = "Target Length: " + limit + " (Current: " + val.length + ")";
-                info.style.color = "#00ff7f";
                 if (val.length >= limit) {
                     input.value = val.substring(0, limit);
                     input.blur();
@@ -151,7 +155,6 @@
                 }
             } else {
                 info.innerText = "System: Ready";
-                info.style.color = "#888";
             }
         }
 
