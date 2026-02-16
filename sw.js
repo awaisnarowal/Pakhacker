@@ -1,9 +1,8 @@
-const CACHE_NAME = 'php-no-cache-v2';
+const CACHE_NAME = 'php-no-cache-v2.1';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
-
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
@@ -14,11 +13,9 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// Network Only Strategy - No Offline Storage
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    fetch(event.request).catch(() => {
-      
-      return null;
-    })
+    fetch(event.request).catch(() => null)
   );
 });

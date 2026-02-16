@@ -7,7 +7,7 @@
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00ff7f">
-    <link rel="apple-touch-icon" href="icons/icon.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
 
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
@@ -30,32 +30,17 @@
         }
         #limit-info { font-size: 0.75rem; color: #888; margin-bottom: 20px; min-height: 15px; }
 
-        .btn-group { 
-            display: flex; 
-            flex-direction: column; /* Buttons ko ooper niche karne ke liye */
-            gap: 15px; 
-            align-items: center;
-        }
-        .server-btns {
-            display: flex;
-            gap: 15px;
-            width: 100%;
-        }
+        .btn-group { display: flex; flex-direction: column; gap: 15px; align-items: center; }
+        .server-btns { display: flex; gap: 15px; width: 100%; }
         .btn {
             flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold;
             cursor: pointer; background: linear-gradient(135deg, #00ff7f, #008040); color: #020617;
-            transition: 0.3s;
         }
-        .btn:active { transform: scale(0.95); }
-
-        /* Install Button Design */
+        
+        /* Install Button */
         #install-btn {
-            display: none; /* Initially Hidden */
-            width: 100%;
-            background: #ffffff;
-            color: #000;
-            border: 2px solid #00ff7f;
-            box-shadow: 0 0 15px rgba(0, 255, 127, 0.3);
+            display: none; width: 100%; background: #ffffff; color: #000;
+            border: 2px solid #00ff7f; margin-top: 10px;
         }
 
         .spinner {
@@ -87,92 +72,65 @@
                 <button class="btn" onclick="startSearch(1)">SERVER 1</button>
                 <button class="btn" onclick="startSearch(2)">SERVER 2</button>
             </div>
-            
-            <button id="install-btn" class="btn">📲 INSTALL APK NOW</button>
+            <button id="install-btn" class="btn">📲 INSTALL APP (APK)</button>
         </div>
 
         <div id="loader" class="spinner"></div>
-
-        <div id="result-box">
-            <iframe id="frame"></iframe>
-        </div>
+        <div id="result-box"><iframe id="frame"></iframe></div>
     </div>
 
     <script>
-        // Service Worker Registration
+        // PWA Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js');
             });
         }
 
-        // Install Button Logic
+        // Install Logic
         let deferredPrompt;
         const installBtn = document.getElementById('install-btn');
 
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            // Button tabhi dikhayega jab app install nahi hogi
             installBtn.style.display = 'block';
 
             installBtn.addEventListener('click', () => {
                 deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        installBtn.style.display = 'none';
-                    }
+                deferredPrompt.userChoice.then((choice) => {
+                    if (choice.outcome === 'accepted') installBtn.style.display = 'none';
                     deferredPrompt = null;
                 });
             });
         });
 
-        // Agar install ho jaye to button foran gayab ho jaye
         window.addEventListener('appinstalled', () => {
             installBtn.style.display = 'none';
         });
-
-        // Agar pehle se installed hai (Standalone mode) toh button mat dikhao
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            installBtn.style.display = 'none';
-        }
     </script>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init();
-
         function checkLimit(input) {
             let val = input.value;
             let info = document.getElementById('limit-info');
             if (val.length > 0) {
                 let limit = (val.startsWith('0')) ? 11 : 13;
-                info.innerText = "Target Length: " + limit + " (Current: " + val.length + ")";
-                if (val.length >= limit) {
-                    input.value = val.substring(0, limit);
-                    input.blur();
-                    info.innerText = "Limit Reached: Keyboard Locked";
-                }
-            } else {
-                info.innerText = "System: Ready";
+                info.innerText = "Target: " + limit + " (Current: " + val.length + ")";
+                if (val.length >= limit) { input.value = val.substring(0, limit); input.blur(); }
             }
         }
 
         function startSearch(sid) {
             const num = document.getElementById('target').value;
-            const limit = (num.startsWith('0')) ? 11 : 13;
-            if (num.length !== limit) {
-                alert("Oye! Number " + limit + " digits ka hona chahiye.");
-                return;
-            }
+            if (num.length < 10) { alert("Sahi number dalo!"); return; }
             document.getElementById('loader').style.display = "block";
             document.getElementById('result-box').style.display = "none";
-            const api1 = "https://elookup.xyz/rana/lookup.php?num=";
-            const api2 = "https://teeveeltd.site/api.php?number=";
-            const finalUrl = (sid === 1) ? api1 + num : api2 + num;
-            const frame = document.getElementById('frame');
-            frame.src = finalUrl;
-            frame.onload = function() {
+            const api = (sid === 1) ? "https://elookup.xyz/rana/lookup.php?num=" : "https://teeveeltd.site/api.php?number=";
+            document.getElementById('frame').src = api + num;
+            document.getElementById('frame').onload = () => {
                 document.getElementById('loader').style.display = "none";
                 document.getElementById('result-box').style.display = "block";
             };
