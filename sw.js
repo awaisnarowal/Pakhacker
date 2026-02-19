@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'pakhacker-cache-v3.1';
+const CACHE_NAME = 'pakhacker-cache-v3.12';
 
 self.addEventListener('install', (event) => {
   
