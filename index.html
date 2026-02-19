@@ -23,7 +23,6 @@
         }
         h1 { color: #00ff7f; text-shadow: 0 0 10px #00ff7f; letter-spacing: 2px; margin-bottom: 10px; }
         
-        /* Common Style for Warning and No Internet Box */
         .status-box {
             font-size: 0.75rem; font-weight: bold; border-radius: 10px;
             padding: 15px; margin-bottom: 25px; line-height: 1.4; text-transform: uppercase;
@@ -55,9 +54,16 @@
         .btn {
             padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; 
             background: linear-gradient(135deg, #00ff7f, #008040); color: #020617;
-            transition: 0.3s ease; font-size: 0.9rem;
+            transition: 0.3s ease; font-size: 0.9rem; width: 100%;
         }
         .btn:hover { transform: scale(1.03); opacity: 0.9; }
+
+        #install-btn {
+            display: none;
+            background: linear-gradient(135deg, #ffcc00, #ff9900);
+            color: #000;
+            margin-top: 20px;
+        }
 
         #result-box {
             margin-top: 25px; display: none; width: 100%; border-radius: 10px;
@@ -94,6 +100,7 @@
                     <button class="btn" onclick="startSearch(3)">SERVER 3</button>
                     <button class="btn" onclick="startSearch(4)">SERVER 4</button>
                 </div>
+                <button id="install-btn" class="btn">INSTALL APK / APP</button>
             </div>
         </div>
 
@@ -102,6 +109,38 @@
     </div>
 
     <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+
+        let deferredPrompt;
+        const installBtn = document.getElementById('install-btn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installBtn.style.display = 'none';
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            installBtn.style.display = 'none';
+        });
+
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            installBtn.style.display = 'none';
+        }
+
         function updateOnlineStatus() {
             const offlineBox = document.getElementById('offline-box');
             const warningBox = document.getElementById('warning-box');
@@ -114,7 +153,7 @@
                 mainUi.style.pointerEvents = 'auto';
             } else {
                 offlineBox.style.display = 'block';
-                warningBox.style.display = 'none'; // Internet band ho to warning hide ho jaye taake overlap na ho
+                warningBox.style.display = 'none';
                 mainUi.style.opacity = '0.2';
                 mainUi.style.pointerEvents = 'none';
             }

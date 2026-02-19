@@ -1,7 +1,9 @@
 {
   "name": "Pak Hacker Pro",
   "short_name": "Pak Hacker Pro",
+  "id": "/pak-hacker-pro/",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#020617",
   "theme_color": "#00ff7f",
