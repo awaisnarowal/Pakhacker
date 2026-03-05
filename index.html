@@ -15,13 +15,15 @@
             margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif;
             background: radial-gradient(circle, #0f172a, #020617); color: white;
             display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            overflow-x: hidden;
         }
         .container {
             text-align: center; background: rgba(255, 255, 255, 0.05);
             padding: 40px; border-radius: 20px; backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1); width: 90%; max-width: 500px; margin-top: 50px;
+            box-shadow: 0 0 30px rgba(0, 255, 127, 0.1);
         }
-        h1 { color: #00ff7f; text-shadow: 0 0 10px #00ff7f; letter-spacing: 2px; margin-bottom: 10px; }
+        h1 { color: #00ff7f; text-shadow: 0 0 15px #00ff7f; letter-spacing: 2px; margin-bottom: 10px; }
         
         .status-box {
             font-size: 0.75rem; font-weight: bold; border-radius: 10px;
@@ -42,65 +44,115 @@
         }
 
         input {
-            width: 85%; padding: 15px; background: rgba(0,0,0,0.5); border: 1px solid #00ff7f;
-            color: #00ff7f; border-radius: 10px; text-align: center; margin-bottom: 5px; outline: none;
-            font-size: 1.3rem;
+            width: 85%; padding: 15px; background: rgba(0,0,0,0.6); border: 2px solid rgba(0, 255, 127, 0.3);
+            color: #00ff7f; border-radius: 12px; text-align: center; margin-bottom: 5px; outline: none;
+            font-size: 1.3rem; transition: 0.3s; box-shadow: inset 0 0 10px rgba(0,255,127,0.1);
         }
+        input:focus { border-color: #00ff7f; box-shadow: 0 0 15px rgba(0, 255, 127, 0.4); }
+
         #limit-info { font-size: 0.75rem; color: #888; margin-bottom: 20px; min-height: 15px; }
 
         .btn-group { display: flex; flex-direction: column; gap: 15px; align-items: center; width: 100%; }
-        .server-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+        .server-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
         
         .btn {
-            padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; 
-            background: linear-gradient(135deg, #00ff7f, #008040); color: #020617;
-            transition: 0.3s ease; font-size: 0.9rem; width: 100%;
+            position: relative;
+            padding: 14px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; 
+            background: linear-gradient(135deg, #00ff7f, #00a352); color: #020617;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            font-size: 0.85rem; width: 100%; overflow: hidden;
+            text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 255, 127, 0.2);
         }
-        .btn:hover { transform: scale(1.03); opacity: 0.9; }
+
+        .btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover::before { left: 100%; }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 255, 127, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .btn:active { transform: scale(0.95); }
 
         #install-btn {
             display: none;
-            background: linear-gradient(135deg, #ffcc00, #ff9900);
+            background: linear-gradient(135deg, #ffcc00, #ff8800);
             color: #000;
             margin-top: 20px;
+            animation: pulse-gold 2s infinite;
+        }
+
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 204, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0); }
         }
 
         #result-box {
-            margin-top: 25px; display: none; width: 100%; border-radius: 10px;
-            border: 1px solid #00ff7f; overflow: hidden; background: white;
+            margin-top: 25px; display: none; width: 100%; border-radius: 15px;
+            border: 2px solid #00ff7f; overflow: hidden; background: white;
+            animation: slideUp 0.5s ease-out;
         }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         iframe { width: 100%; height: 450px; border: none; }
-        .spinner { display: none; width: 40px; height: 40px; border: 4px solid rgba(0,255,127,0.1); border-left-color: #00ff7f; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
+        
+        .spinner { 
+            display: none; width: 50px; height: 50px; 
+            border: 5px solid rgba(0,255,127,0.1); border-left-color: #00ff7f; 
+            border-radius: 50%; animation: spin 0.8s linear infinite; 
+            margin: 20px auto; 
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        .brand-title { position: relative; display: inline-block; }
+        .sub-text {
+            font-size: 0.6rem; position: absolute;
+            top: -12px; right: 0; letter-spacing: 1px;
+            color: #00ff7f; text-shadow: none;
+        }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
     <div class="container" data-aos="zoom-in">
-        <h1>PAK HACKER PRO</h1>
+        <h1>
+            PAK HACKER <span class="brand-title">PRO<span class="sub-text">NarowaliyaModz</span></span>
+        </h1>    
         
         <div id="offline-box" class="status-box">
             ⚠️ CONNECTION ERROR:<br>
-            Internet is disconnected. Please check your data or Wi-Fi to use the terminal.
+            Internet is disconnected. Please check your data or Wi-Fi.
         </div>
 
         <div id="warning-box" class="status-box strong-warning">
             ⚠️ LEGAL DISCLAIMER:<br>
-            This tool is for educational purposes only. Developers are NOT responsible for any misuse. Use at your own risk.
+            This tool is for educational purposes only. Developers are NOT responsible for any misuse. USE AT YOUR OWN RISK. Accessing private data without permission is illegal.
         </div>
 
         <div id="main-ui">
-            <input type="tel" id="target" placeholder="Enter Number" inputmode="numeric" oninput="checkLimit(this)">
-            <div id="limit-info">System: Ready</div>
+            <input type="tel" id="target" placeholder="03XXXXXXXXX" inputmode="numeric" oninput="checkLimit(this)">
+            <div id="limit-info">System: Encrypted</div>
 
             <div class="btn-group">
                 <div class="server-btns">
-                    <button class="btn" onclick="startSearch(1)">SERVER 1</button>
-                    <button class="btn" onclick="startSearch(2)">SERVER 2</button>
-                    <button class="btn" onclick="startSearch(3)">SERVER 3</button>
-                    <button class="btn" onclick="startSearch(4)">SERVER 4</button>
+                    <button class="btn" onclick="startSearch(1)" data-aos="fade-right">SERVER 1</button>
+                    <button class="btn" onclick="startSearch(2)" data-aos="fade-left">SERVER 2</button>
+                    <button class="btn" onclick="startSearch(3)" data-aos="fade-right">SERVER 3</button>
+                    <button class="btn" onclick="startSearch(4)" data-aos="fade-left">SERVER 4</button>
                 </div>
-                <button id="install-btn" class="btn">INSTALL APK / APP</button>
+                <button id="install-btn" class="btn">INSTALL Application</button>
             </div>
         </div>
 
@@ -126,20 +178,10 @@
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    installBtn.style.display = 'none';
-                }
+                if (outcome === 'accepted') { installBtn.style.display = 'none'; }
                 deferredPrompt = null;
             }
         });
-
-        window.addEventListener('appinstalled', () => {
-            installBtn.style.display = 'none';
-        });
-
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            installBtn.style.display = 'none';
-        }
 
         function updateOnlineStatus() {
             const offlineBox = document.getElementById('offline-box');
@@ -176,7 +218,10 @@
         function startSearch(sid) {
             if (!navigator.onLine) return;
             const num = document.getElementById('target').value;
-            if (num.length < 10) { alert("Sahi number dalo!"); return; }
+            if (num.length < 10) { 
+                alert("Invalid Number Format!"); 
+                return; 
+            }
             
             document.getElementById('loader').style.display = "block";
             document.getElementById('result-box').style.display = "none";
@@ -197,6 +242,6 @@
         }
     </script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>AOS.init();</script>
+    <script>AOS.init({ duration: 800, once: true });</script>
 </body>
 </html>
