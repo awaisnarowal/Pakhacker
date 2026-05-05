@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PAK HACKER PRO | Smart Logic</title>
+    <title>PAK HACKER PRO | NarowaliyaModz</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#34d399">
@@ -17,7 +17,6 @@
             --bg-dark: #0f1115;
             --surface: rgba(255, 255, 255, 0.04);
             --card-border: rgba(255, 255, 255, 0.08);
-            --error-red: #ff4d4d;
         }
 
         body {
@@ -34,34 +33,19 @@
         }
 
         h1 { font-family: 'Montserrat', sans-serif; color: var(--primary-accent); font-size: 1.8rem; letter-spacing: -1px; margin-bottom: 5px; }
-        
         .brand-title { position: relative; display: inline-block; }
-        .sub-text {
-            font-size: 0.65rem; position: absolute; top: -10px; right: -45px; 
-            font-weight: 500; color: var(--primary-accent); text-transform: uppercase; opacity: 0.9;
-        }
+        .sub-text { font-size: 0.65rem; position: absolute; top: -10px; right: -45px; font-weight: 500; color: var(--primary-accent); text-transform: uppercase; }
 
-        /* Internet Error Box */
-        #offline-box {
-            display: none; background: rgba(255, 77, 77, 0.2); color: #fca5a5;
-            border: 1px solid #ef4444; border-radius: 18px; padding: 15px; margin-bottom: 20px;
-            font-weight: 600; animation: blink 1.5s infinite;
-        }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        /* Urdu Disclaimer Box */
+        /* Urdu Disclaimer */
         .disclaimer-box {
-            font-family: 'Noto Sans Arabic', sans-serif;
-            direction: rtl; font-size: 0.9rem; border-radius: 18px; padding: 15px; margin-bottom: 25px;
-            background: rgba(255, 77, 77, 0.08); color: #ff9999;
-            border: 1px solid rgba(255, 77, 77, 0.2); line-height: 1.8; text-align: center;
+            font-family: 'Noto Sans Arabic', sans-serif; direction: rtl; font-size: 0.85rem; 
+            border-radius: 18px; padding: 15px; margin-bottom: 25px;
+            background: rgba(255, 77, 77, 0.08); color: #ff9999; border: 1px solid rgba(255, 77, 77, 0.2); line-height: 1.6;
         }
-        .disclaimer-title { font-weight: 800; display: block; margin-bottom: 5px; text-decoration: underline; }
 
         input {
             width: 85%; padding: 18px; background: rgba(0, 0, 0, 0.4); border: 1.5px solid var(--card-border);
-            color: var(--primary-accent); border-radius: 22px; text-align: center; margin-bottom: 8px; outline: none; 
-            font-size: 1.6rem; font-weight: 500;
+            color: var(--primary-accent); border-radius: 22px; text-align: center; margin-bottom: 8px; outline: none; font-size: 1.6rem;
         }
 
         .server-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
@@ -69,45 +53,41 @@
         .btn {
             padding: 16px; border: none; border-radius: 20px; font-weight: 700; cursor: pointer; 
             background: rgba(255, 255, 255, 0.05); color: var(--primary-accent);
-            border: 1px solid rgba(52, 211, 153, 0.15); transition: all 0.3s; font-size: 0.8rem;
+            border: 1px solid rgba(52, 211, 153, 0.15); transition: 0.3s; font-size: 0.8rem;
         }
 
-        .btn.active {
-            background: var(--primary-accent) !important; color: #064e3b !important;
-            box-shadow: 0 5px 20px rgba(52, 211, 153, 0.4);
+        .btn.active { background: var(--primary-accent) !important; color: #064e3b !important; }
+
+        /* Install Button - Default Hidden */
+        #install-btn {
+            display: none; background: #fbbf24; color: #000; border: none; margin-top: 20px; width: 100%;
         }
 
-        #result-box {
-            margin-top: 25px; display: none; width: 100%; border-radius: 28px;
-            border: 1.5px solid rgba(52, 211, 153, 0.3); overflow: hidden; background: #0f1115;
-        }
-
-        iframe { 
-            width: 100%; height: 480px; border: none;
-            filter: invert(0.92) hue-rotate(150deg) brightness(1.1) contrast(1.1);
-        }
-        
+        /* Responsive Iframe */
+        #result-box { margin-top: 25px; display: none; width: 100%; border-radius: 28px; border: 1.5px solid rgba(52, 211, 153, 0.3); overflow: hidden; background: #0f1115; }
+        iframe { width: 100%; height: 480px; border: none; filter: invert(0.92) hue-rotate(150deg) brightness(1.1) contrast(1.1); }
         .spinner { display: none; width: 40px; height: 40px; border: 4px solid rgba(52, 211, 153, 0.1); border-left-color: var(--primary-accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 25px auto; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* APK/Standalone mode mein button ko sakhti se hide karne ke liye */
+        @media (display-mode: standalone) {
+            #install-btn { display: none !important; }
+        }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
     <div class="container" data-aos="fade-up">
-        <h1>
-            PAK HACKER <span class="brand-title">PRO<span class="sub-text">NarowaliyaModz</span></span>
-        </h1>    
+        <h1>PAK HACKER <span class="brand-title">PRO<span class="sub-text">NarowaliyaModz</span></span></h1>    
         
-        <div id="offline-box">⚠️ انٹرنیٹ بند ہے۔ براہ کرم کنکشن چیک کریں۔</div>
-
-        <div class="disclaimer-box" id="warning-box">
-            <span class="disclaimer-title">ضروری انتباہ</span>
-            اس ٹول کا غلط استعمال غیر قانونی ہے۔ کسی بھی قسم کی غیر قانونی سرگرمی کی صورت میں <b style="color:white;">صارف خود ذمہ دار ہوگا</b>۔ انتظامیہ کسی بھی قسم کے نقصان کی ذمہ دار نہیں ہوگی۔
+        <div class="disclaimer-box">
+            <span style="font-weight:bold; display:block;">ضروری انتباہ</span>
+            اس ٹول کا غلط استعمال غیر قانونی ہے۔ کسی بھی غلط سرگرمی کی صورت میں صارف خود ذمہ دار ہوگا۔
         </div>
 
         <div id="main-ui">
             <input type="tel" id="target" placeholder="03XXXXXXXXX" inputmode="numeric" oninput="checkLimit(this)">
-            <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 25px;" id="limit-info">Status: Ready</div>
+            <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 20px;" id="limit-info">Ready</div>
 
             <div class="server-btns">
                 <button class="btn" id="srv1" onclick="startSearch(1)">SERVER 1</button>
@@ -115,31 +95,46 @@
                 <button class="btn" id="srv3" onclick="startSearch(3)">SERVER 3</button>
                 <button class="btn" id="srv4" onclick="startSearch(4)">SERVER 4</button>
             </div>
+
+            <button id="install-btn" class="btn">INSTALL APP (CHROME)</button>
         </div>
 
         <div id="loader" class="spinner"></div>
-        <div id="result-box"><iframe id="frame"></iframe></div>
+        <div id="result-box"><iframe id="frame" id="frame"></iframe></div>
     </div>
 
     <script>
-        // Check Internet Connection
-        function updateConnectionStatus() {
-            const offlineBox = document.getElementById('offline-box');
-            const mainUi = document.getElementById('main-ui');
-            if (navigator.onLine) {
-                offlineBox.style.display = 'none';
-                mainUi.style.opacity = '1';
-                mainUi.style.pointerEvents = 'auto';
-            } else {
-                offlineBox.style.display = 'block';
-                mainUi.style.opacity = '0.3';
-                mainUi.style.pointerEvents = 'none';
-            }
+        // 1. Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
         }
-        window.addEventListener('online', updateConnectionStatus);
-        window.addEventListener('offline', updateConnectionStatus);
-        window.onload = updateConnectionStatus;
 
+        // 2. Install Button Logic (Only for Browser)
+        let deferredPrompt;
+        const installBtn = document.getElementById('install-btn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Check agar app already installed nahi hai
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                return; 
+            }
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installBtn.style.display = 'none';
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        // 3. Search Logic
         function checkLimit(input) {
             let val = input.value;
             let limit = (val.startsWith('0')) ? 11 : 13;
@@ -148,9 +143,8 @@
         }
 
         function startSearch(sid) {
-            if (!navigator.onLine) return;
             const num = document.getElementById('target').value.trim();
-            if (num.length < 10) { alert("نمبر درست درج کریں!"); return; }
+            if (num.length < 10) { alert("Number correct enter karein!"); return; }
 
             document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('srv' + sid).classList.add('active');
