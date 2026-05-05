@@ -2,157 +2,118 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pak Hacker Pro | Smart Logic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PAK HACKER PRO | Smart Logic</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#00ff7f">
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <meta name="theme-color" content="#34d399">
 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&family=Montserrat:wght@800&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
     <style>
+        :root {
+            --primary-accent: #34d399;
+            --bg-dark: #0f1115;
+            --surface: rgba(255, 255, 255, 0.04);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --error-red: #ff4d4d;
+        }
+
         body {
-            margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif;
-            background: radial-gradient(circle, #0f172a, #020617); color: white;
-            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-            overflow-x: hidden;
+            margin: 0; padding: 0; font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1a2e26, #0f1115); 
+            color: #e2e8f0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
+
         .container {
-            text-align: center; background: rgba(255, 255, 255, 0.05);
-            padding: 40px; border-radius: 20px; backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1); width: 90%; max-width: 500px; margin-top: 50px;
-            box-shadow: 0 0 30px rgba(0, 255, 127, 0.1);
+            text-align: center; background: var(--surface); padding: 40px 20px; 
+            border-radius: 32px; backdrop-filter: blur(24px); border: 1px solid var(--card-border); 
+            width: 90%; max-width: 480px; margin-top: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            margin-bottom: 50px;
         }
-        h1 { color: #00ff7f; text-shadow: 0 0 15px #00ff7f; letter-spacing: 2px; margin-bottom: 10px; }
+
+        h1 { font-family: 'Montserrat', sans-serif; color: var(--primary-accent); font-size: 1.8rem; letter-spacing: -1px; margin-bottom: 5px; }
         
-        .status-box {
-            font-size: 0.75rem; font-weight: bold; border-radius: 10px;
-            padding: 15px; margin-bottom: 25px; line-height: 1.4; text-transform: uppercase;
+        .brand-title { position: relative; display: inline-block; }
+        .sub-text {
+            font-size: 0.65rem; position: absolute; top: -10px; right: -45px; 
+            font-weight: 500; color: var(--primary-accent); text-transform: uppercase; opacity: 0.9;
         }
 
-        .strong-warning {
-            background: rgba(255, 0, 0, 0.1); color: #ff4d4d; border: 1px solid #ff4d4d;
-        }
-
+        /* Internet Error Box */
         #offline-box {
-            display: none; background: rgba(255, 77, 77, 0.2); color: #ff4d4d;
-            border: 1px solid #ff4d4d; animation: blink 1.5s infinite;
+            display: none; background: rgba(255, 77, 77, 0.2); color: #fca5a5;
+            border: 1px solid #ef4444; border-radius: 18px; padding: 15px; margin-bottom: 20px;
+            font-weight: 600; animation: blink 1.5s infinite;
         }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        @keyframes blink {
-            0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; }
+        /* Urdu Disclaimer Box */
+        .disclaimer-box {
+            font-family: 'Noto Sans Arabic', sans-serif;
+            direction: rtl; font-size: 0.9rem; border-radius: 18px; padding: 15px; margin-bottom: 25px;
+            background: rgba(255, 77, 77, 0.08); color: #ff9999;
+            border: 1px solid rgba(255, 77, 77, 0.2); line-height: 1.8; text-align: center;
         }
+        .disclaimer-title { font-weight: 800; display: block; margin-bottom: 5px; text-decoration: underline; }
 
         input {
-            width: 85%; padding: 15px; background: rgba(0,0,0,0.6); border: 2px solid rgba(0, 255, 127, 0.3);
-            color: #00ff7f; border-radius: 12px; text-align: center; margin-bottom: 5px; outline: none;
-            font-size: 1.3rem; transition: 0.3s; box-shadow: inset 0 0 10px rgba(0,255,127,0.1);
+            width: 85%; padding: 18px; background: rgba(0, 0, 0, 0.4); border: 1.5px solid var(--card-border);
+            color: var(--primary-accent); border-radius: 22px; text-align: center; margin-bottom: 8px; outline: none; 
+            font-size: 1.6rem; font-weight: 500;
         }
-        input:focus { border-color: #00ff7f; box-shadow: 0 0 15px rgba(0, 255, 127, 0.4); }
 
-        #limit-info { font-size: 0.75rem; color: #888; margin-bottom: 20px; min-height: 15px; }
-
-        .btn-group { display: flex; flex-direction: column; gap: 15px; align-items: center; width: 100%; }
         .server-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
         
         .btn {
-            position: relative;
-            padding: 14px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; 
-            background: linear-gradient(135deg, #00ff7f, #00a352); color: #020617;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            font-size: 0.85rem; width: 100%; overflow: hidden;
-            text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(0, 255, 127, 0.2);
+            padding: 16px; border: none; border-radius: 20px; font-weight: 700; cursor: pointer; 
+            background: rgba(255, 255, 255, 0.05); color: var(--primary-accent);
+            border: 1px solid rgba(52, 211, 153, 0.15); transition: all 0.3s; font-size: 0.8rem;
         }
 
-        .btn::before {
-            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: 0.5s;
-        }
-
-        .btn:hover::before { left: 100%; }
-
-        .btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 255, 127, 0.4);
-            filter: brightness(1.1);
-        }
-
-        .btn:active { transform: scale(0.95); }
-
-        #install-btn {
-            display: none;
-            background: linear-gradient(135deg, #ffcc00, #ff8800);
-            color: #000;
-            margin-top: 20px;
-            animation: pulse-gold 2s infinite;
-        }
-
-        @keyframes pulse-gold {
-            0% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(255, 204, 0, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0); }
+        .btn.active {
+            background: var(--primary-accent) !important; color: #064e3b !important;
+            box-shadow: 0 5px 20px rgba(52, 211, 153, 0.4);
         }
 
         #result-box {
-            margin-top: 25px; display: none; width: 100%; border-radius: 15px;
-            border: 2px solid #00ff7f; overflow: hidden; background: white;
-            animation: slideUp 0.5s ease-out;
+            margin-top: 25px; display: none; width: 100%; border-radius: 28px;
+            border: 1.5px solid rgba(52, 211, 153, 0.3); overflow: hidden; background: #0f1115;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        iframe { 
+            width: 100%; height: 480px; border: none;
+            filter: invert(0.92) hue-rotate(150deg) brightness(1.1) contrast(1.1);
         }
-
-        iframe { width: 100%; height: 450px; border: none; }
         
-        .spinner { 
-            display: none; width: 50px; height: 50px; 
-            border: 5px solid rgba(0,255,127,0.1); border-left-color: #00ff7f; 
-            border-radius: 50%; animation: spin 0.8s linear infinite; 
-            margin: 20px auto; 
-        }
+        .spinner { display: none; width: 40px; height: 40px; border: 4px solid rgba(52, 211, 153, 0.1); border-left-color: var(--primary-accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 25px auto; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        .brand-title { position: relative; display: inline-block; }
-        .sub-text {
-            font-size: 0.6rem; position: absolute;
-            top: -12px; right: 0; letter-spacing: 1px;
-            color: #00ff7f; text-shadow: none;
-        }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <div class="container" data-aos="zoom-in">
+    <div class="container" data-aos="fade-up">
         <h1>
             PAK HACKER <span class="brand-title">PRO<span class="sub-text">NarowaliyaModz</span></span>
         </h1>    
         
-        <div id="offline-box" class="status-box">
-            ⚠️ CONNECTION ERROR:<br>
-            Internet is disconnected. Please check your data or Wi-Fi.
-        </div>
+        <div id="offline-box">⚠️ انٹرنیٹ بند ہے۔ براہ کرم کنکشن چیک کریں۔</div>
 
-        <div id="warning-box" class="status-box strong-warning">
-            ⚠️ LEGAL DISCLAIMER:<br>
-            This tool is for educational purposes only. Developers are NOT responsible for any misuse. USE AT YOUR OWN RISK. Accessing private data without permission is illegal.
+        <div class="disclaimer-box" id="warning-box">
+            <span class="disclaimer-title">ضروری انتباہ</span>
+            اس ٹول کا غلط استعمال غیر قانونی ہے۔ کسی بھی قسم کی غیر قانونی سرگرمی کی صورت میں <b style="color:white;">صارف خود ذمہ دار ہوگا</b>۔ انتظامیہ کسی بھی قسم کے نقصان کی ذمہ دار نہیں ہوگی۔
         </div>
 
         <div id="main-ui">
             <input type="tel" id="target" placeholder="03XXXXXXXXX" inputmode="numeric" oninput="checkLimit(this)">
-            <div id="limit-info">System: Encrypted</div>
+            <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 25px;" id="limit-info">Status: Ready</div>
 
-            <div class="btn-group">
-                <div class="server-btns">
-                    <button class="btn" onclick="startSearch(1)" data-aos="fade-right">SERVER 1</button>
-                    <button class="btn" onclick="startSearch(2)" data-aos="fade-left">SERVER 2</button>
-                    <button class="btn" onclick="startSearch(3)" data-aos="fade-right">SERVER 3</button>
-                    <button class="btn" onclick="startSearch(4)" data-aos="fade-left">SERVER 4</button>
-                </div>
-                <button id="install-btn" class="btn">INSTALL Application</button>
+            <div class="server-btns">
+                <button class="btn" id="srv1" onclick="startSearch(1)">SERVER 1</button>
+                <button class="btn" id="srv2" onclick="startSearch(2)">SERVER 2</button>
+                <button class="btn" id="srv3" onclick="startSearch(3)">SERVER 3</button>
+                <button class="btn" id="srv4" onclick="startSearch(4)">SERVER 4</button>
             </div>
         </div>
 
@@ -161,68 +122,39 @@
     </div>
 
     <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
-
-        let deferredPrompt;
-        const installBtn = document.getElementById('install-btn');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'block';
-        });
-
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') { installBtn.style.display = 'none'; }
-                deferredPrompt = null;
-            }
-        });
-
-        function updateOnlineStatus() {
+        // Check Internet Connection
+        function updateConnectionStatus() {
             const offlineBox = document.getElementById('offline-box');
-            const warningBox = document.getElementById('warning-box');
             const mainUi = document.getElementById('main-ui');
-            
             if (navigator.onLine) {
                 offlineBox.style.display = 'none';
-                warningBox.style.display = 'block';
                 mainUi.style.opacity = '1';
                 mainUi.style.pointerEvents = 'auto';
             } else {
                 offlineBox.style.display = 'block';
-                warningBox.style.display = 'none';
-                mainUi.style.opacity = '0.2';
+                mainUi.style.opacity = '0.3';
                 mainUi.style.pointerEvents = 'none';
             }
         }
-
-        window.addEventListener('online', updateOnlineStatus);
-        window.addEventListener('offline', updateOnlineStatus);
-        window.onload = updateOnlineStatus;
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+        window.onload = updateConnectionStatus;
 
         function checkLimit(input) {
             let val = input.value;
-            let info = document.getElementById('limit-info');
-            if (val.length > 0) {
-                let limit = (val.startsWith('0')) ? 11 : 13;
-                info.innerText = "Target Length: " + limit;
-                if (val.length >= limit) { input.value = val.substring(0, limit); input.blur(); }
-            }
+            let limit = (val.startsWith('0')) ? 11 : 13;
+            document.getElementById('limit-info').innerText = "Length: " + val.length + " / " + limit;
+            if (val.length >= limit) { input.value = val.substring(0, limit); input.blur(); }
         }
 
         function startSearch(sid) {
             if (!navigator.onLine) return;
-            const num = document.getElementById('target').value;
-            if (num.length < 10) { 
-                alert("Invalid Number Format!"); 
-                return; 
-            }
-            
+            const num = document.getElementById('target').value.trim();
+            if (num.length < 10) { alert("نمبر درست درج کریں!"); return; }
+
+            document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('srv' + sid).classList.add('active');
+
             document.getElementById('loader').style.display = "block";
             document.getElementById('result-box').style.display = "none";
             
@@ -242,6 +174,6 @@
         }
     </script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>AOS.init({ duration: 800, once: true });</script>
+    <script>AOS.init({ duration: 1000, once: true });</script>
 </body>
 </html>
