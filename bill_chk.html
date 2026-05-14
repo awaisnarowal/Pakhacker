@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* --- Sidebar & Navigation Styles (As per screenshot) --- */
+        /* --- Premium Sidebar Styles (As per your Screenshot) --- */
         :root {
             --primary-accent: #34d399;
             --bg-dark: #0f1115;
@@ -59,28 +59,34 @@
             padding: 18px !important; border-radius: 20px;
         }
 
-        /* --- Bill Page Styles --- */
+        /* --- Page Layout Styles --- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: linear-gradient(145deg, #e0eaf4 0%, #cfdef3 100%); min-height: 100vh; padding: 30px 20px; }
         .container { max-width: 1300px; margin: 0 auto; margin-top: 60px; }
-        .header-card { background: linear-gradient(135deg, #0b3b2f 0%, #1b5e3f 100%); border-radius: 40px; padding: 20px 30px; margin-bottom: 30px; box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.3); color: white; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; }
+        .header-card { background: linear-gradient(135deg, #0b3b2f 0%, #1b5e3f 100%); border-radius: 40px; padding: 20px 30px; margin-bottom: 30px; color: white; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; }
         .title-section h1 { font-size: 1.9rem; font-weight: 800; display: flex; align-items: center; gap: 12px; }
         .title-section h1 i { background: #ffc107; padding: 10px; border-radius: 50%; color: #0b3b2f; }
-        .search-panel { background: white; border-radius: 32px; padding: 20px 28px; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08); margin-bottom: 32px; }
-        .input-group { display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; }
-        .input-field { flex: 4; min-width: 240px; }
-        .input-field input { width: 100%; padding: 16px 20px; font-size: 1rem; border: 2px solid #e2e8f0; border-radius: 28px; outline: none; transition: 0.3s; }
-        .input-field input:focus { border-color: #1b5e3f; box-shadow: 0 0 0 4px rgba(27, 94, 63, 0.1); }
-        .btn-check { flex: 1; min-width: 150px; background: #0b3b2f; border: none; padding: 16px 20px; border-radius: 40px; font-weight: bold; color: white; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .btn-check:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .search-panel { background: white; border-radius: 32px; padding: 25px 28px; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08); margin-bottom: 32px; }
+        
+        .input-group { display: flex; flex-direction: column; gap: 15px; }
+        .input-field input { width: 100%; padding: 16px 20px; font-size: 1rem; border: 2px solid #e2e8f0; border-radius: 28px; outline: none; }
+        
+        /* Buttons Styling */
+        .btn-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+        .btn-check { 
+            background: #0b3b2f; border: none; padding: 16px; border-radius: 40px; 
+            font-weight: bold; color: white; cursor: pointer; transition: 0.3s; 
+            display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 0.9rem;
+        }
+        .btn-full-bill { background: #ffc107; color: #0b3b2f; }
+        .btn-check:hover { transform: translateY(-2px); opacity: 0.9; }
+
         .bill-card { background: white; border-radius: 36px; overflow: hidden; box-shadow: 0 20px 35px rgba(0,0,0,0.1); margin-top: 20px; }
-        .bill-header { background: #1e3a2f; padding: 18px 28px; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .bill-header { background: #1e3a2f; padding: 18px 28px; color: white; display: flex; justify-content: space-between; }
         .bill-body { padding: 24px 28px; }
         .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .info-item { background: #f8fafc; border-radius: 24px; padding: 15px 20px; border: 1px solid #e9edf2; }
-        .info-label { font-size: 0.75rem; font-weight: 800; color: #4b6a8b; text-transform: uppercase; }
-        .info-value { font-size: 1.2rem; font-weight: 700; color: #0f2c3d; margin-top: 5px; }
-        .red-code-badge { background: #dc2626; color: white; padding: 15px; border-radius: 20px; text-align: center; margin-top: 25px; font-weight: bold; border: 1px solid #ff6b6b; line-height: 1.6; }
+        .red-code-badge { background: #dc2626; color: white; padding: 15px; border-radius: 20px; text-align: center; margin-top: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -92,7 +98,7 @@
     <nav class="menu-links">
         <a href="index.html"><i class="fas fa-folder"></i> Sim Database</a>
         <a href="https://cnic.sims.pk/" target="_blank"><i class="fas fa-search"></i> Check Sim</a>
-        <a href="bill_chk.html" style="background:rgba(52, 211, 153, 0.1); color:var(--primary-accent); border-color:var(--primary-accent);"><i class="fas fa-bolt"></i> Electric Bill CHK</a>
+        <a href="bill_chk.html" style="background:rgba(52, 211, 153, 0.1); color:var(--primary-accent);"><i class="fas fa-bolt"></i> Electric Bill CHK</a>
         <a href="https://wa.me/923000000000" target="_blank"><i class="fas fa-phone-alt"></i> Contact Dev</a>
         <a href="javascript:void(0)" class="close-btn" onclick="toggleMenu()"><i class="fas fa-times"></i> CLOSE MENU</a>
     </nav>
@@ -104,7 +110,7 @@
             <h1><i class="fas fa-bolt"></i> GEPCO Bill</h1>
             <p>Check your electricity bill instantly</p>
         </div>
-        <div class="badge">Official Data Source</div>
+        <div class="badge">Official Data</div>
     </div>
 
     <div class="search-panel">
@@ -113,16 +119,21 @@
                 <label style="font-weight:700; color:#1e4663; display:block; margin-bottom:10px; font-size:0.8rem;">REFERENCE NUMBER</label>
                 <input type="tel" id="refInput" placeholder="Enter 14-digit reference number">
             </div>
-            <button class="btn-check" id="fetchBtn"><i class="fas fa-search"></i> FETCH BILL</button>
+            
+            <div class="btn-container">
+                <button class="btn-check" id="fetchBtn">
+                    <i class="fas fa-search"></i> FETCH BILL
+                </button>
+                <button class="btn-check btn-full-bill" onclick="checkFullBill()">
+                    <i class="fas fa-file-pdf"></i> CHECK FULL BILL
+                </button>
+            </div>
         </div>
     </div>
 
     <div id="resultArea">
-        <div id="welcomeMsg" style="text-align:center; padding:60px 20px;">
-            <i class="fas fa-file-invoice" style="font-size:4rem; color:#1b5e3f; opacity:0.3; margin-bottom:20px;"></i>
-            <h3 style="color:#1b5e3f;">Enter Reference Number</h3>
-        </div>
-        <div id="loading" style="display:none; text-align:center; padding:40px;"><i class="fas fa-circle-notch fa-spin fa-3x" style="color:#1b5e3f;"></i></div>
+        <div id="welcomeMsg" style="text-align:center; padding:40px;"><i class="fas fa-file-invoice" style="font-size:3rem; color:#1b5e3f; opacity:0.2;"></i></div>
+        <div id="loading" style="display:none; text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin fa-2x" style="color:#1b5e3f;"></i></div>
         <div id="billContent"></div>
     </div>
 </div>
@@ -136,19 +147,28 @@
         setTimeout(() => overlay.style.opacity = isActive ? '1' : '0', 10);
     }
 
+    // Function for Full Bill PDF
+    function checkFullBill() {
+        const ref = document.getElementById('refInput').value.trim().replace(/\s/g, '');
+        if(ref.length < 10) { alert("Pehle Reference Number enter karein!"); return; }
+        
+        // redirect to PITC PDF API
+        const pdfUrl = `https://bill.pitc.com.pk/pitc/route_access/${ref}`;
+        window.open(pdfUrl, '_blank');
+    }
+
+    // Original Fetch Logic
     const API_BASE = "https://ccms.pitc.com.pk/api/details/bill?reference=";
     const fetchBtn = document.getElementById('fetchBtn');
     const refInput = document.getElementById('refInput');
     const billContentDiv = document.getElementById('billContent');
-    const welcomeMsg = document.getElementById('welcomeMsg');
     const loading = document.getElementById('loading');
 
     async function fetchBill() {
         const ref = refInput.value.trim().replace(/\s/g, '');
-        if(ref.length < 10) { alert("Reference number theek se likhein!"); return; }
+        if(ref.length < 10) { alert("Reference number valid nahi hai!"); return; }
 
         loading.style.display = 'block';
-        welcomeMsg.style.display = 'none';
         billContentDiv.innerHTML = '';
 
         try {
@@ -160,27 +180,23 @@
                 billContentDiv.innerHTML = `
                     <div class="bill-card">
                         <div class="bill-header">
-                            <div style="font-weight:bold; font-family:monospace; font-size:1.2rem;">REF: ${b.refNo}</div>
-                            <div style="background:#ffc107; color:#000; padding:4px 12px; border-radius:20px; font-weight:bold; font-size:0.8rem;">${b.billMonth}</div>
+                            <div style="font-weight:bold;">REF: ${b.refNo}</div>
+                            <div>${b.billMonth}</div>
                         </div>
                         <div class="bill-body">
                             <div class="info-grid">
                                 <div class="info-item"><div class="info-label">Name</div><div class="info-value">${b.consumerName}</div></div>
-                                <div class="info-item" style="background:#eef7e6; border-color:#2e7d32;"><div class="info-label">Amount Payable</div><div class="info-value" style="color:#2e7d32;">Rs. ${b.currAmntDue}</div></div>
-                                <div class="info-item" style="background:#fff4e5; border-color:#e67e22;"><div class="info-label">Due Date</div><div class="info-value" style="color:#d35400;">${b.billDueDate}</div></div>
-                                <div class="info-item"><div class="info-label">Address</div><div class="info-value">${b.consumerAddress1 || 'N/A'}</div></div>
+                                <div class="info-item" style="background:#eef7e6;"><div class="info-label">Payable</div><div class="info-value" style="color:#2e7d32;">Rs. ${b.currAmntDue}</div></div>
+                                <div class="info-item" style="background:#fff4e5;"><div class="info-label">Due Date</div><div class="info-value" style="color:#d35400;">${b.billDueDate}</div></div>
                             </div>
-                            <div class="red-code-badge">
-                                یہ بل اصلی بل کی کاپی ہے۔ تصدیق کے لیے آفیشل ویب سائٹ چیک کریں۔<br>
-                                Power By Awais Narowaliya
-                            </div>
+                            <div class="red-code-badge">Power By Awais Narowaliya</div>
                         </div>
                     </div>`;
             } else {
-                billContentDiv.innerHTML = `<p style="text-align:center; color:red; font-weight:bold;">Bill data nahi mila. Reference check karein.</p>`;
+                billContentDiv.innerHTML = `<p style="text-align:center; color:red; margin-top:20px;">Data not found.</p>`;
             }
         } catch (e) {
-            billContentDiv.innerHTML = `<p style="text-align:center; color:red;">Server error! Baad mein koshish karein.</p>`;
+            billContentDiv.innerHTML = `<p style="text-align:center; color:red;">Server error.</p>`;
         } finally {
             loading.style.display = 'none';
         }
@@ -188,6 +204,5 @@
 
     fetchBtn.addEventListener('click', fetchBill);
 </script>
-
 </body>
 </html>
