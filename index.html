@@ -7,9 +7,7 @@
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#34d399">
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&family=Montserrat:wght@800&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <style>
         :root {
@@ -22,152 +20,152 @@
         body {
             margin: 0; padding: 0; font-family: 'Inter', sans-serif;
             background: radial-gradient(circle at top right, #1a2e26, #0f1115); 
-            color: #e2e8f0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            color: #e2e8f0; min-height: 100vh; overflow: hidden;
         }
+
+        /* Floating Menu Button - Always on Top */
+        #menuToggle {
+            position: fixed; top: 20px; left: 20px; width: 50px; height: 50px;
+            background: var(--surface); border: 1px solid var(--card-border);
+            border-radius: 15px; cursor: pointer; backdrop-filter: blur(15px);
+            display: flex; align-items: center; justify-content: center; z-index: 10000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+        #menuToggle span { width: 20px; height: 2px; background: var(--primary-accent); position: relative; }
+        #menuToggle span::before, #menuToggle span::after {
+            content: ''; position: absolute; width: 100%; height: 2px; background: var(--primary-accent); left: 0;
+        }
+        #menuToggle span::before { top: -6px; }
+        #menuToggle span::after { bottom: -6px; }
+
+        /* Sidebar Navigation */
+        #sideMenu {
+            position: fixed; top: 0; left: -280px; width: 260px; height: 100%;
+            background: rgba(15, 17, 21, 0.98); backdrop-filter: blur(25px);
+            border-right: 1px solid var(--card-border); z-index: 9999;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding-top: 90px;
+        }
+        #sideMenu.active { left: 0; }
+        
+        .menu-links a {
+            display: flex; align-items: center; padding: 18px 25px; color: #cbd5e1; 
+            text-decoration: none; font-size: 0.95rem; border-bottom: 1px solid rgba(255,255,255,0.03);
+            cursor: pointer; transition: 0.3s;
+        }
+        .menu-links a:hover { background: rgba(52, 211, 153, 0.1); color: var(--primary-accent); }
+
+        /* Content Layout */
+        .main-wrapper { display: flex; flex-direction: column; align-items: center; width: 100%; height: 100vh; padding-top: 80px; box-sizing: border-box; }
 
         .container {
-            text-align: center; background: var(--surface); padding: 40px 20px; 
+            text-align: center; background: var(--surface); padding: 30px 20px; 
             border-radius: 32px; backdrop-filter: blur(24px); border: 1px solid var(--card-border); 
-            width: 90%; max-width: 480px; margin-top: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            margin-bottom: 50px;
+            width: 90%; max-width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
         }
 
-        h1 { font-family: 'Montserrat', sans-serif; color: var(--primary-accent); font-size: 1.8rem; letter-spacing: -1px; margin-bottom: 5px; }
-        .brand-title { position: relative; display: inline-block; }
-        .sub-text { font-size: 0.65rem; position: absolute; top: -10px; right: -45px; font-weight: 500; color: var(--primary-accent); text-transform: uppercase; }
-
-        /* Urdu Disclaimer */
-        .disclaimer-box {
-            font-family: 'Noto Sans Arabic', sans-serif; direction: rtl; font-size: 0.85rem; 
-            border-radius: 18px; padding: 15px; margin-bottom: 25px;
-            background: rgba(255, 77, 77, 0.08); color: #ff9999; border: 1px solid rgba(255, 77, 77, 0.2); line-height: 1.6;
-        }
+        h1 { font-family: 'Montserrat', sans-serif; color: var(--primary-accent); font-size: 1.6rem; margin: 0; }
+        .sub-text { font-size: 0.65rem; color: var(--primary-accent); font-weight: 600; text-transform: uppercase; margin-bottom: 15px; display: block; }
 
         input {
-            width: 85%; padding: 18px; background: rgba(0, 0, 0, 0.4); border: 1.5px solid var(--card-border);
-            color: var(--primary-accent); border-radius: 22px; text-align: center; margin-bottom: 8px; outline: none; font-size: 1.6rem;
+            width: 85%; padding: 15px; background: rgba(0, 0, 0, 0.4); border: 1.5px solid var(--card-border);
+            color: var(--primary-accent); border-radius: 20px; text-align: center; font-size: 1.4rem; outline: none;
         }
 
-        .server-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
-        
+        .server-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 15px; }
         .btn {
-            padding: 16px; border: none; border-radius: 20px; font-weight: 700; cursor: pointer; 
+            padding: 14px; border: none; border-radius: 15px; font-weight: 700; cursor: pointer; 
             background: rgba(255, 255, 255, 0.05); color: var(--primary-accent);
-            border: 1px solid rgba(52, 211, 153, 0.15); transition: 0.3s; font-size: 0.8rem;
+            border: 1px solid rgba(52, 211, 153, 0.15); transition: 0.3s; font-size: 0.75rem;
         }
-
         .btn.active { background: var(--primary-accent) !important; color: #064e3b !important; }
 
-        /* Install Button - Default Hidden */
-        #install-btn {
-            display: none; background: #fbbf24; color: #000; border: none; margin-top: 20px; width: 100%;
+        /* Persistent Frame Area */
+        #result-box {
+            width: 100%; flex-grow: 1; display: none; background: #000; border-top: 1px solid var(--card-border);
         }
+        iframe { width: 100%; height: 100%; border: none; background: white; }
 
-        /* Responsive Iframe */
-        #result-box { margin-top: 25px; display: none; width: 100%; border-radius: 28px; border: 1.5px solid rgba(52, 211, 153, 0.3); overflow: hidden; background: #0f1115; }
-        iframe { width: 100%; height: 480px; border: none; filter: invert(0.92) hue-rotate(150deg) brightness(1.1) contrast(1.1); }
-        .spinner { display: none; width: 40px; height: 40px; border: 4px solid rgba(52, 211, 153, 0.1); border-left-color: var(--primary-accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 25px auto; }
+        .spinner { display: none; width: 30px; height: 30px; border: 3px solid rgba(52, 211, 153, 0.1); border-left-color: var(--primary-accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 15px auto; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* APK/Standalone mode mein button ko sakhti se hide karne ke liye */
-        @media (display-mode: standalone) {
-            #install-btn { display: none !important; }
-        }
     </style>
 </head>
 <body>
 
-    <div class="container" data-aos="fade-up">
-        <h1>PAK HACKER <span class="brand-title">PRO<span class="sub-text">NarowaliyaModz</span></span></h1>    
-        
-        <div class="disclaimer-box">
-            <span style="font-weight:bold; display:block;">ضروری انتباہ</span>
-            اس ٹول کا غلط استعمال غیر قانونی ہے۔ کسی بھی غلط سرگرمی کی صورت میں صارف خود ذمہ دار ہوگا۔
-        </div>
+    <div id="menuToggle" onclick="toggleMenu()"><span></span></div>
 
-        <div id="main-ui">
+    <aside id="sideMenu">
+        <nav class="menu-links">
+            <a onclick="loadHome()">📱 Sim Database</a>
+            <a onclick="loadExternal('https://cnic.sims.pk/')">🔍 Check Sims</a>
+            <a onclick="loadExternal('bill_chk.html')">🧾 Check Bill</a>
+            <a href="https://wa.me/923066474260" target="_blank">👨‍💻 Contact Dev</a>
+            <a onclick="toggleMenu()" style="color: #ff7171; margin-top: 20px;">❌ Close Menu</a>
+        </nav>
+    </aside>
+
+    <div class="main-wrapper">
+        <div id="main-content" class="container">
+            <h1>PAK HACKER PRO</h1>
+            <span class="sub-text">v16.0 | NarowaliyaModz</span>
+            
             <input type="tel" id="target" placeholder="03XXXXXXXXX" inputmode="numeric" oninput="checkLimit(this)">
-            <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 20px;" id="limit-info">Ready</div>
-
+            
             <div class="server-btns">
                 <button class="btn" id="srv1" onclick="startSearch(1)">SERVER 1</button>
                 <button class="btn" id="srv2" onclick="startSearch(2)">SERVER 2</button>
                 <button class="btn" id="srv3" onclick="startSearch(3)">SERVER 3</button>
                 <button class="btn" id="srv4" onclick="startSearch(4)">SERVER 4</button>
             </div>
-
-            <button id="install-btn" class="btn">INSTALL APP (CHROME)</button>
         </div>
 
         <div id="loader" class="spinner"></div>
-        <div id="result-box"><iframe id="frame" id="frame"></iframe></div>
+        <div id="result-box"><iframe id="content-frame"></iframe></div>
     </div>
 
     <script>
-        // 1. Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+        function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); }
+
+        function loadHome() {
+            document.getElementById('main-content').style.display = 'block';
+            document.getElementById('result-box').style.display = 'none';
+            toggleMenu();
         }
 
-        // 2. Install Button Logic (Only for Browser)
-        let deferredPrompt;
-        const installBtn = document.getElementById('install-btn');
+        function loadExternal(url) {
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('loader').style.display = 'block';
+            const frame = document.getElementById('content-frame');
+            frame.src = url;
+            frame.style.filter = "none";
+            frame.onload = () => {
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('result-box').style.display = 'block';
+            };
+            toggleMenu();
+        }
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-            // Check agar app already installed nahi hai
-            if (window.matchMedia('(display-mode: standalone)').matches) {
-                return; 
-            }
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'block';
-        });
-
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    installBtn.style.display = 'none';
-                }
-                deferredPrompt = null;
-            }
-        });
-
-        // 3. Search Logic
         function checkLimit(input) {
-            let val = input.value;
-            let limit = (val.startsWith('0')) ? 11 : 13;
-            document.getElementById('limit-info').innerText = "Length: " + val.length + " / " + limit;
-            if (val.length >= limit) { input.value = val.substring(0, limit); input.blur(); }
+            let limit = (input.value.startsWith('0')) ? 11 : 13;
+            if (input.value.length >= limit) { input.value = input.value.substring(0, limit); input.blur(); }
         }
 
         function startSearch(sid) {
             const num = document.getElementById('target').value.trim();
-            if (num.length < 10) { alert("Number correct enter karein!"); return; }
-
-            document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('srv' + sid).classList.add('active');
-
-            document.getElementById('loader').style.display = "block";
-            document.getElementById('result-box').style.display = "none";
+            if (num.length < 10) return alert("Valid number enter karein!");
             
-            let api = "";
-            switch(sid) {
-                case 1: api = "https://elookup.xyz/rana/lookup.php?num="; break;
-                case 2: api = "https://teeveeltd.site/api.php?number="; break;
-                case 3: api = "https://app.findpakjobs.pk/api.php?number="; break;
-                case 4: api = "https://omrsite.com/api2.php?password=3518&number="; break;
-            }
+            document.getElementById('loader').style.display = "block";
+            let api = ["https://elookup.xyz/rana/lookup.php?num=", "https://teeveeltd.site/api.php?number=", "https://app.findpakjobs.pk/api.php?number=", "https://omrsite.com/api.php?number="][sid-1];
 
-            document.getElementById('frame').src = api + num;
-            document.getElementById('frame').onload = () => {
+            const frame = document.getElementById('content-frame');
+            frame.src = api + num;
+            frame.style.filter = "invert(0.9) hue-rotate(160deg)";
+            frame.onload = () => {
                 document.getElementById('loader').style.display = "none";
                 document.getElementById('result-box').style.display = "block";
+                document.getElementById('main-content').style.display = 'none';
             };
         }
     </script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>AOS.init({ duration: 1000, once: true });</script>
 </body>
 </html>
