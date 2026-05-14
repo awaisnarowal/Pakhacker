@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pakhacker-cache-v4.21';
+const CACHE_NAME = 'pakhacker-cache-v4.23';
 
 self.addEventListener('install', (event) => {
     self.skipWaiting();
