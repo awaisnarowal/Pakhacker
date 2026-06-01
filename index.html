@@ -32,23 +32,23 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.5s ease-out, visibility 0.5s;
+            transition: opacity 0.4s ease-out, visibility 0.4s;
         }
 
         @keyframes logoEntrance {
-            0% { transform: translateY(50px) scale(0.8); opacity: 0; filter: drop-shadow(0 0 0 rgba(16, 185, 129, 0)); }
-            50% { filter: drop-shadow(0 0 30px rgba(16, 185, 129, 0.6)); }
+            0% { transform: translateY(40px) scale(0.85); opacity: 0; filter: drop-shadow(0 0 0 rgba(16, 185, 129, 0)); }
+            50% { filter: drop-shadow(0 0 25px rgba(16, 185, 129, 0.5)); }
             100% { transform: translateY(0) scale(1); opacity: 1; filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.2)); }
         }
 
         .splash-logo {
-            animation: logoEntrance 1.8s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+            animation: logoEntrance 1.2s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
         }
 
         @keyframes lightGlowUp {
             0% { transform: translateY(100vh) scaleX(0.5); opacity: 0; filter: blur(20px); }
             30% { opacity: 0.8; filter: blur(15px); }
-            100% { transform: translateY(-100vh) scaleX(1.5); opacity: 0; filter: blur(40px); }
+            100% { transform: translateY(-100vh) scaleX(1.3); opacity: 0; filter: blur(35px); }
         }
 
         .lighting-effect {
@@ -57,7 +57,7 @@
             width: 100%;
             height: 300px;
             background: radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, rgba(59, 130, 246, 0.1) 50%, transparent 100%);
-            animation: lightGlowUp 2.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            animation: lightGlowUp 1.4s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
             pointer-events: none;
         }
 
@@ -137,16 +137,44 @@
             70% { transform: scale(1.08); box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
         }
+
+        @keyframes toastIn {
+            0% { transform: translateY(-40px) scale(0.9); opacity: 0; }
+            70% { transform: translateY(6px) scale(1.02); }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .toast-active {
+            animation: toastIn 0.3s cubic-bezier(0.1, 0.9, 0.2, 1) forwards, shake 0.4s linear 0.3s;
+        }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 font-sans text-white antialiased relative">
 
+    <div id="toast-container" class="fixed top-6 left-4 right-4 z-[10000] flex justify-center pointer-events-none hidden">
+        <div id="toast-box" class="w-full max-w-sm bg-red-950/80 backdrop-blur-xl border border-red-500/40 p-4 rounded-xl shadow-[0_20px_40px_rgba(0,0,0,0.7)] flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center text-red-400 border border-red-500/20 shrink-0">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <div class="flex-1">
+                <h4 class="text-xs font-bold text-red-400 tracking-wider uppercase">Authentication Failed</h4>
+                <p id="toast-msg" class="text-[11px] text-white/70 mt-0.5 leading-snug"></p>
+            </div>
+        </div>
+    </div>
+
     <div id="splash-screen">
         <div class="lighting-effect"></div>
         <div class="text-center z-10">
-            <img src="./icons/icon-512x512.png" alt="Logo" class="w-28 h-28 mx-auto mb-4 rounded-2xl splash-logo border border-white/10">
-            <h1 class="text-2xl font-bold tracking-widest text-emerald-400 opacity-0 animate-[fadeIn_1s_ease-in_0.5s_forwards]">PAK HACKER PRO</h1>
-            <p class="text-xs text-white/40 mt-2 tracking-wider opacity-0 animate-[fadeIn_1s_ease-in_0.9s_forwards]">Securing Your Premium Session</p>
+            <img src="./icons/icon-512x512.png" alt="Logo" class="w-24 h-24 mx-auto mb-4 rounded-2xl splash-logo border border-white/10">
+            <h1 class="text-xl font-bold tracking-widest text-emerald-400 opacity-0 animate-[fadeIn_0.8s_ease-in_0.3s_forwards]">PAK HACKER PRO</h1>
+            <p class="text-[10px] text-white/40 mt-1 tracking-wider opacity-0 animate-[fadeIn_0.8s_ease-in_0.6s_forwards]">Securing Your Premium Session</p>
         </div>
     </div>
 
@@ -196,7 +224,16 @@
 
             <div class="space-y-2">
                 <input type="email" id="email" placeholder="Email Address" class="w-full bg-white/5 border border-white/10 rounded p-2 text-sm text-white outline-none focus:border-emerald-500 transition-colors">
-                <input type="password" id="password" placeholder="Password" class="w-full bg-white/5 border border-white/10 rounded p-2 text-sm text-white outline-none focus:border-emerald-500 transition-colors">
+                
+                <div class="relative w-full">
+                    <input type="password" id="password" placeholder="Password" class="w-full bg-white/5 border border-white/10 rounded p-2 pr-10 text-sm text-white outline-none focus:border-emerald-500 transition-colors">
+                    <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 focus:outline-none cursor-pointer">
+                        <svg id="eye-icon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                    </button>
+                </div>
                 
                 <div class="flex items-center justify-between pl-0.5 pt-1 pb-2">
                     <label class="flex items-center gap-2 text-xs text-white/60 cursor-pointer select-none">
@@ -240,6 +277,39 @@
         const database = firebase.database();
         const googleProvider = new firebase.auth.GoogleAuthProvider();
 
+        function showPremiumToast(message) {
+            const container = document.getElementById('toast-container');
+            const box = document.getElementById('toast-box');
+            const msgObj = document.getElementById('toast-msg');
+            
+            msgObj.innerText = message;
+            container.classList.remove('hidden');
+            box.classList.add('toast-active');
+            
+            setTimeout(() => {
+                box.classList.remove('toast-active');
+                container.classList.add('hidden');
+            }, 4000);
+        }
+
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                `;
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                `;
+            }
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             const savedEmail = localStorage.getItem('php_email');
             const savedPass = localStorage.getItem('php_pass');
@@ -258,7 +328,7 @@
                 
                 mainCard.style.transition = 'opacity 0.6s ease-out';
                 mainCard.style.opacity = '1';
-            }, 2500);
+            }, 1500);
         });
 
         auth.onAuthStateChanged((user) => {
@@ -280,7 +350,7 @@
                 }
                 setTimeout(() => {
                     window.location.href = "home.html";
-                }, 2500);
+                }, 1500);
             } else { 
                 showView('login-view'); 
             }
@@ -296,7 +366,7 @@
                 database.ref('users/' + user.uid).set({
                     uid: user.uid, name: user.displayName, email: user.email, photo: user.photoURL, lastLogin: firebase.database.ServerValue.TIMESTAMP
                 }).then(() => { window.location.href = "home.html"; }).catch(() => { window.location.href = "home.html"; });
-            }).catch((error) => { showView('login-view'); alert("Google Sign-In Failed: " + error.message); });
+            }).catch((error) => { showView('login-view'); showPremiumToast(error.message); });
         }
 
         function loginWithEmail() {
@@ -305,7 +375,7 @@
             const password = document.getElementById('password').value.trim();
             const rememberMe = document.getElementById('rememberMe').checked;
 
-            if (!email || !password) { alert("Please enter credentials."); return; }
+            if (!email || !password) { showPremiumToast("Please fill in both email and password fields."); return; }
             showView('loading-view');
 
             auth.signInWithEmailAndPassword(email, password).then((userCredential) => {
@@ -321,11 +391,18 @@
                         window.location.href = "home.html"; 
                     } else { 
                         auth.signOut(); 
-                        alert("Access Denied: Not a Premium User."); 
+                        showPremiumToast("Access Denied: Your account is not authorized as a Premium User."); 
                         showView('login-view'); 
                     }
                 }).catch(() => { auth.signOut(); showView('login-view'); });
-            }).catch((error) => { showView('login-view'); alert("Authentication Failed: " + error.message); });
+            }).catch((error) => { 
+                showView('login-view'); 
+                if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                    showPremiumToast("The supplied auth credential is incorrect, malformed or has expired.");
+                } else {
+                    showPremiumToast(error.message);
+                }
+            });
         }
 
         function showView(viewId) {
@@ -372,7 +449,7 @@
                 if (outcome === 'accepted') { installBtn.classList.add('hidden'); }
                 deferredPrompt = null;
             } else {
-                alert("Application is setting up or already installed on this device.");
+                showPremiumToast("Application is setting up or already installed on this device.");
             }
         });
 
