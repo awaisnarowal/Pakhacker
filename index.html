@@ -313,10 +313,27 @@
         window.addEventListener('DOMContentLoaded', () => {
             const savedEmail = localStorage.getItem('php_email');
             const savedPass = localStorage.getItem('php_pass');
+            
             if (savedEmail && savedPass) {
                 document.getElementById('email').value = savedEmail;
                 document.getElementById('password').value = savedPass;
                 document.getElementById('rememberMe').checked = true;
+                
+                showView('loading-view');
+                auth.setPersistence(firebase.auth.Auth.None).then(() => {
+                    return auth.signInWithEmailAndPassword(savedEmail, savedPass);
+                }).then((userCredential) => {
+                    database.ref('premium_users/' + userCredential.user.uid).once('value').then((snapshot) => {
+                        if (snapshot.exists()) {
+                            window.location.href = "home.html";
+                        } else {
+                            auth.signOut();
+                            showView('login-view');
+                        }
+                    }).catch(() => { auth.signOut(); showView('login-view'); });
+                }).catch(() => {
+                    showView('login-view');
+                });
             }
 
             setTimeout(() => {
@@ -348,11 +365,8 @@
                             return;
                         }
                     }
+                    setTimeout(() => { window.location.href = "home.html"; }, 1500);
                 }
-                
-                setTimeout(() => {
-                    window.location.href = "home.html";
-                }, 1500);
             } else { 
                 showView('login-view'); 
             }
@@ -380,9 +394,7 @@
             if (!email || !password) { showPremiumToast("Please fill in both email and password fields."); return; }
             showView('loading-view');
 
-            const persistenceType = rememberMe ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION;
-
-            auth.setPersistence(persistenceType).then(() => {
+            auth.setPersistence(firebase.auth.Auth.Persistence.NONE).then(() => {
                 return auth.signInWithEmailAndPassword(email, password);
             }).then((userCredential) => {
                 database.ref('premium_users/' + userCredential.user.uid).once('value').then((snapshot) => {
