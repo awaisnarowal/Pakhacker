@@ -238,13 +238,6 @@
                         </svg>
                     </button>
                 </div>
-                
-                <div class="flex items-center justify-between pl-0.5 pt-1 pb-2">
-                    <label class="flex items-center gap-2 text-xs text-white/60 cursor-pointer select-none">
-                        <input type="checkbox" id="rememberMe" class="w-4 h-4 rounded bg-white/5 border-white/20 text-emerald-500 focus:ring-0 cursor-pointer accent-emerald-500">
-                        Remember Login Credentials
-                    </label>
-                </div>
 
                 <button onclick="loginWithEmail()" class="win-btn w-full py-2.5 rounded font-medium text-sm text-emerald-400 cursor-pointer">
                     Login (Only Premium User)
@@ -316,7 +309,7 @@
             }
         }
 
-        // ---------- EMAIL LOGIN (with Remember Me handling) ----------
+        // ---------- EMAIL LOGIN (Always permanent - LOCAL persistence) ----------
         async function loginWithEmail() {
             if (!navigator.onLine) {
                 showPremiumToast("No internet connection. Please connect and try again.");
@@ -324,7 +317,6 @@
             }
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
-            const rememberMe = document.getElementById('rememberMe').checked;
             if (!email || !password) {
                 showPremiumToast("Please fill in both email and password fields.");
                 return;
@@ -334,17 +326,16 @@
             // Clear any previous Google timestamp to avoid conflict
             localStorage.removeItem('google_login_time');
             
-            // Set Firebase persistence based on "Remember Me"
-            const persistence = rememberMe ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION;
+            // Always use LOCAL persistence (permanent login even after browser restart)
             try {
-                await auth.setPersistence(persistence);
+                await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 
                 // Verify premium user
                 const snapshot = await database.ref('premium_users/' + user.uid).once('value');
                 if (snapshot.exists()) {
-                    // Success - redirect to home
+                    // Success - permanent session, redirect to home
                     window.location.href = "home.html";
                 } else {
                     await auth.signOut();
@@ -402,7 +393,7 @@
         }
 
         // ---------- GLOBAL AUTH STATE HANDLER ----------
-        // This handles: Google 24h expiry, premium validation, and auto-redirect if already logged in.
+        // Handles Google 24h expiry, premium validation, and auto-redirect for both login types
         auth.onAuthStateChanged(async (user) => {
             if (!user) {
                 // No user: just ensure login view is shown
@@ -410,7 +401,6 @@
                 return;
             }
             
-            // User exists: check provider
             const providerId = user.providerData[0]?.providerId;
             
             // GOOGLE: 24h expiry check
@@ -418,14 +408,12 @@
                 const loginTime = localStorage.getItem('google_login_time');
                 const oneDayMs = 24 * 60 * 60 * 1000;
                 if (!loginTime || (Date.now() - parseInt(loginTime)) > oneDayMs) {
-                    // Expired: sign out and clear timestamp
                     await auth.signOut();
                     localStorage.removeItem('google_login_time');
                     showView('login-view');
                     showPremiumToast("Google session expired (24h). Please sign in again.");
                     return;
                 }
-                // Still valid: verify premium (in case account was removed from premium list)
                 try {
                     const snap = await database.ref('premium_users/' + user.uid).once('value');
                     if (!snap.exists()) {
@@ -435,7 +423,6 @@
                         showPremiumToast("Your premium access has been revoked. Please contact support.");
                         return;
                     }
-                    // Valid premium, redirect to home
                     window.location.href = "home.html";
                 } catch (err) {
                     await auth.signOut();
@@ -445,7 +432,7 @@
                 return;
             }
             
-            // EMAIL (password) provider: check premium
+            // EMAIL (password) provider: check premium, no expiry
             if (providerId === 'password') {
                 try {
                     const snap = await database.ref('premium_users/' + user.uid).once('value');
@@ -510,7 +497,6 @@
 
         // ---------- SPLASH SCREEN AND INITIAL LOAD ----------
         window.addEventListener('DOMContentLoaded', () => {
-            // Do NOT clear any storage here; auth state will handle redirection.
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 const mainCard = document.getElementById('main-app-card');
