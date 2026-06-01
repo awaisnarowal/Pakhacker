@@ -1,12 +1,24 @@
 {
   "name": "Pak Hacker Pro",
   "short_name": "PakHackerPro",
+  "description": "Pak Hacker Pro - Official Google & Premium Login System",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#1c1c1c",
   "theme_color": "#202020",
+  "orientation": "portrait-primary",
   "icons": [
-    { "src": "icon/icon-192x192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon/icon-512x512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }
