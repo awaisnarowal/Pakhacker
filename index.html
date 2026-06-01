@@ -259,7 +259,7 @@
 
     </div>
 
-    <!-- Updated WhatsApp Floating Button with Custom Image -->
+    <!-- Custom WhatsApp Help Button Image -->
     <a href="https://wa.me/923070378723?text=Hi%20Awais%21%20I%20need%20help%20with%20Pak%20Hacker%20Pro%20login." target="_blank" class="whatsapp-float" title="Contact Support">
         <img src="icons/WhatsApp.png" alt="Support" class="w-8 h-8 object-contain">
     </a>
@@ -313,10 +313,12 @@
             }
         }
 
+        // DOM Load event triggers auto-login verification if rememberMe was active
         window.addEventListener('DOMContentLoaded', () => {
             const savedEmail = localStorage.getItem('php_email');
             const savedPass = localStorage.getItem('php_pass');
             
+            // Checking and setting saved data on fields automatically
             if (savedEmail && savedPass) {
                 document.getElementById('email').value = savedEmail;
                 document.getElementById('password').value = savedPass;
@@ -351,6 +353,7 @@
             }, 1500);
         });
 
+        // Track and process session controls for user states
         auth.onAuthStateChanged((user) => {
             if (user && navigator.onLine) {
                 const loginProvider = user.providerData[0]?.providerId;
@@ -359,7 +362,7 @@
                     const loginTimestamp = localStorage.getItem('google_login_time');
                     if (loginTimestamp) {
                         const currentTime = Date.now();
-                        const oneDayInMs = 1 * 24 * 60 * 60 * 1000; // Exact 24 Hours Verification
+                        const oneDayInMs = 1 * 24 * 60 * 60 * 1000; // Strict 1 Day Expiration Enforcement
                         
                         if (currentTime - parseInt(loginTimestamp) > oneDayInMs) {
                             localStorage.removeItem('google_login_time');
@@ -403,6 +406,7 @@
             }).then((userCredential) => {
                 database.ref('premium_users/' + userCredential.user.uid).once('value').then((snapshot) => {
                     if (snapshot.exists()) {
+                        // Remember Login Credentials logic verification
                         if (rememberMe) {
                             localStorage.setItem('php_email', email);
                             localStorage.setItem('php_pass', password);
