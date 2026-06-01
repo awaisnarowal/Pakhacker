@@ -259,7 +259,6 @@
 
     </div>
 
-    <!-- Custom WhatsApp Help Button Image -->
     <a href="https://wa.me/923070378723?text=Hi%20Awais%21%20I%20need%20help%20with%20Pak%20Hacker%20Pro%20login." target="_blank" class="whatsapp-float" title="Contact Support">
         <img src="icons/WhatsApp.png" alt="Support" class="w-8 h-8 object-contain">
     </a>
@@ -313,12 +312,14 @@
             }
         }
 
-        // DOM Load event triggers auto-login verification if rememberMe was active
+        // DOM Loaded handles automatic loading checks
         window.addEventListener('DOMContentLoaded', () => {
             const savedEmail = localStorage.getItem('php_email');
             const savedPass = localStorage.getItem('php_pass');
-            
-            // Checking and setting saved data on fields automatically
+            const isSessionActive = sessionStorage.getItem('php_aarzi_session');
+            const googleLoginTime = localStorage.getItem('google_login_time');
+
+            // 1. Permanent Login Check (Remember Me was Checked)
             if (savedEmail && savedPass) {
                 document.getElementById('email').value = savedEmail;
                 document.getElementById('password').value = savedPass;
@@ -336,33 +337,44 @@
                             showView('login-view');
                         }
                     }).catch(() => { auth.signOut(); showView('login-view'); });
-                }).catch(() => {
-                    showView('login-view');
-                });
+                }).catch(() => { showView('login-view'); });
+            }
+            // 2. Temporary/Aarzi Check (Remember Me Unchecked -> Session Storage base)
+            else if (isSessionActive) {
+                // Agar session active hai lekin page just refresh hua hai, to redirect directly
+                window.location.href = "home.html";
+            }
+            // 3. Fallback: If Google Token is still active in Firebase auth cache but 24 hours checked
+            else if (googleLoginTime) {
+                const currentTime = Date.now();
+                const oneDayInMs = 24 * 60 * 60 * 1000;
+                if (currentTime - parseInt(googleLoginTime) > oneDayInMs) {
+                    localStorage.removeItem('google_login_time');
+                    auth.signOut();
+                }
             }
 
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 const mainCard = document.getElementById('main-app-card');
-                
                 splash.style.opacity = '0';
                 splash.style.visibility = 'hidden';
-                
                 mainCard.style.transition = 'opacity 0.6s ease-out';
                 mainCard.style.opacity = '1';
             }, 1500);
         });
 
-        // Track and process session controls for user states
+        // Track and process session controls securely
         auth.onAuthStateChanged((user) => {
             if (user && navigator.onLine) {
                 const loginProvider = user.providerData[0]?.providerId;
                 
                 if (loginProvider === 'google.com') {
                     const loginTimestamp = localStorage.getItem('google_login_time');
+                    
                     if (loginTimestamp) {
                         const currentTime = Date.now();
-                        const oneDayInMs = 1 * 24 * 60 * 60 * 1000; // Strict 1 Day Expiration Enforcement
+                        const oneDayInMs = 24 * 60 * 60 * 1000; // Strict 24 Hours Control
                         
                         if (currentTime - parseInt(loginTimestamp) > oneDayInMs) {
                             localStorage.removeItem('google_login_time');
@@ -371,17 +383,29 @@
                             showView('login-view');
                             return;
                         }
+                    } else {
+                        localStorage.setItem('google_login_time', Date.now().toString());
                     }
-                    setTimeout(() => { window.location.href = "home.html"; }, 1500);
+                    
+                    setTimeout(() => { window.location.href = "home.html"; }, 1000);
                 }
             } else { 
-                showView('login-view'); 
+                // Agar koi session saved nahi hai email ka, to default view dikhao
+                if (!localStorage.getItem('php_email') && !sessionStorage.getItem('php_aarzi_session')) {
+                    showView('login-view'); 
+                }
             }
         });
 
         function loginWithGoogle() {
             if(!navigator.onLine) { return; } 
             showView('loading-view');
+            
+            // Sabhi puraane Email sessions clear karein taaki Google override ho sake
+            localStorage.removeItem('php_email');
+            localStorage.removeItem('php_pass');
+            sessionStorage.removeItem('php_aarzi_session');
+
             auth.signInWithPopup(googleProvider).then((result) => {
                 const user = result.user;
                 localStorage.setItem('google_login_time', Date.now().toString());
@@ -401,19 +425,27 @@
             if (!email || !password) { showPremiumToast("Please fill in both email and password fields."); return; }
             showView('loading-view');
 
+            // Google login time clear karein jab email use ho raha ho
+            localStorage.removeItem('google_login_time');
+
             auth.setPersistence(firebase.auth.Auth.Persistence.NONE).then(() => {
                 return auth.signInWithEmailAndPassword(email, password);
             }).then((userCredential) => {
                 database.ref('premium_users/' + userCredential.user.uid).once('value').then((snapshot) => {
                     if (snapshot.exists()) {
-                        // Remember Login Credentials logic verification
+                        
                         if (rememberMe) {
+                            // CASE 1: Permanent Login (Credentials stored in LocalStorage)
                             localStorage.setItem('php_email', email);
                             localStorage.setItem('php_pass', password);
+                            sessionStorage.removeItem('php_aarzi_session');
                         } else {
+                            // CASE 2: Temporary/Aarzi Login (Stored only in SessionStorage, clears on refresh)
                             localStorage.removeItem('php_email');
                             localStorage.removeItem('php_pass');
+                            sessionStorage.setItem('php_aarzi_session', 'true');
                         }
+                        
                         window.location.href = "home.html"; 
                     } else { 
                         auth.signOut(); 
