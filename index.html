@@ -163,7 +163,7 @@
                 </svg>
             </div>
             <div class="flex-1">
-                <h4 class="text-xs font-bold text-red-400 tracking-wider uppercase">Authentication Failed</h4>
+                <h4 class="text-xs font-bold text-red-400 tracking-wider uppercase">System Notification</h4>
                 <p id="toast-msg" class="text-[11px] text-white/70 mt-0.5 leading-snug"></p>
             </div>
         </div>
@@ -206,7 +206,7 @@
         <div class="text-center mb-6">
             <img src="./icons/icon-512x512.png" alt="Pak Hacker Pro Logo" class="w-16 h-16 mx-auto mb-4 rounded-xl shadow-lg object-contain border border-white/10">
             <h2 class="text-xl font-semibold tracking-wide text-white/90">Pak Hacker Pro</h2>
-            <p class="text-xs text-white/40 mt-1">Sign in with your Google account</p>
+            <p class="text-xs text-white/40 mt-1">Sign in to unlock professional tools</p>
         </div>
 
         <div id="login-view" class="space-y-4 block">
@@ -216,6 +216,10 @@
                 </svg>
                 Sign in with Google
             </button>
+            
+            <p class="text-[10px] text-center text-yellow-500/90 -mt-2 font-medium tracking-wide leading-relaxed px-1">
+                Note: Google login will expire automatically after 3 days for security. For a better experience, just join our premium subscription to open all options!
+            </p>
             
             <div class="relative py-1">
                 <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-white/10"></div></div>
@@ -320,7 +324,7 @@
                 document.getElementById('rememberMe').checked = true;
                 
                 showView('loading-view');
-                auth.setPersistence(firebase.auth.Auth.None).then(() => {
+                auth.setPersistence(firebase.auth.Auth.Persistence.NONE).then(() => {
                     return auth.signInWithEmailAndPassword(savedEmail, savedPass);
                 }).then((userCredential) => {
                     database.ref('premium_users/' + userCredential.user.uid).once('value').then((snapshot) => {
@@ -356,11 +360,12 @@
                     const loginTimestamp = localStorage.getItem('google_login_time');
                     if (loginTimestamp) {
                         const currentTime = Date.now();
-                        const fiveDaysInMs = 1 * 60 * 1000; // Testing ke liye sirf 1 minute
+                        const threeDaysInMs = 3 * 24 * 60 * 60 * 1000;
                         
-                        if (currentTime - parseInt(loginTimestamp) > fiveDaysInMs) {
+                        if (currentTime - parseInt(loginTimestamp) > threeDaysInMs) {
                             localStorage.removeItem('google_login_time');
                             auth.signOut();
+                            showPremiumToast("Session Expired! Please sign in again.");
                             showView('login-view');
                             return;
                         }
@@ -459,7 +464,7 @@
                 const { outcome } = await deferredPrompt.userChoice;
                 deferredPrompt = null;
             } else {
-                showPremiumToast("Click the 3 dots menu on top right of your browser and select 'Install app' or 'Add to Home screen'.");
+                showPremiumToast("Application already installed. If you face any problem, please check your home screen.");
             }
         });
 
