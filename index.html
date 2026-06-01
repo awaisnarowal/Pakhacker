@@ -283,11 +283,9 @@
             const container = document.getElementById('toast-container');
             const box = document.getElementById('toast-box');
             const msgObj = document.getElementById('toast-msg');
-            
             msgObj.innerText = message;
             container.classList.remove('hidden');
             box.classList.add('toast-active');
-            
             setTimeout(() => {
                 box.classList.remove('toast-active');
                 container.classList.add('hidden');
@@ -297,170 +295,13 @@
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('password');
             const eyeIcon = document.getElementById('eye-icon');
-            
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
-                eyeIcon.innerHTML = `
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                `;
+                eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />`;
             } else {
                 passwordInput.type = 'password';
-                eyeIcon.innerHTML = `
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                `;
+                eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
             }
-        }
-
-        // DOM Loaded handles automatic loading checks
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedEmail = localStorage.getItem('php_email');
-            const savedPass = localStorage.getItem('php_pass');
-            const isSessionActive = sessionStorage.getItem('php_aarzi_session');
-            const googleLoginTime = localStorage.getItem('google_login_time');
-
-            // 1. Permanent Login Check (Remember Me was Checked)
-            if (savedEmail && savedPass) {
-                document.getElementById('email').value = savedEmail;
-                document.getElementById('password').value = savedPass;
-                document.getElementById('rememberMe').checked = true;
-                
-                showView('loading-view');
-                auth.setPersistence(firebase.auth.Auth.Persistence.NONE).then(() => {
-                    return auth.signInWithEmailAndPassword(savedEmail, savedPass);
-                }).then((userCredential) => {
-                    database.ref('premium_users/' + userCredential.user.uid).once('value').then((snapshot) => {
-                        if (snapshot.exists()) {
-                            window.location.href = "home.html";
-                        } else {
-                            auth.signOut();
-                            showView('login-view');
-                        }
-                    }).catch(() => { auth.signOut(); showView('login-view'); });
-                }).catch(() => { showView('login-view'); });
-            }
-            // 2. Temporary/Aarzi Check (Remember Me Unchecked -> Session Storage base)
-            else if (isSessionActive) {
-                // Agar session active hai lekin page just refresh hua hai, to redirect directly
-                window.location.href = "home.html";
-            }
-            // 3. Fallback: If Google Token is still active in Firebase auth cache but 24 hours checked
-            else if (googleLoginTime) {
-                const currentTime = Date.now();
-                const oneDayInMs = 24 * 60 * 60 * 1000;
-                if (currentTime - parseInt(googleLoginTime) > oneDayInMs) {
-                    localStorage.removeItem('google_login_time');
-                    auth.signOut();
-                }
-            }
-
-            setTimeout(() => {
-                const splash = document.getElementById('splash-screen');
-                const mainCard = document.getElementById('main-app-card');
-                splash.style.opacity = '0';
-                splash.style.visibility = 'hidden';
-                mainCard.style.transition = 'opacity 0.6s ease-out';
-                mainCard.style.opacity = '1';
-            }, 1500);
-        });
-
-        // Track and process session controls securely
-        auth.onAuthStateChanged((user) => {
-            if (user && navigator.onLine) {
-                const loginProvider = user.providerData[0]?.providerId;
-                
-                if (loginProvider === 'google.com') {
-                    const loginTimestamp = localStorage.getItem('google_login_time');
-                    
-                    if (loginTimestamp) {
-                        const currentTime = Date.now();
-                        const oneDayInMs = 24 * 60 * 60 * 1000; // Strict 24 Hours Control
-                        
-                        if (currentTime - parseInt(loginTimestamp) > oneDayInMs) {
-                            localStorage.removeItem('google_login_time');
-                            auth.signOut();
-                            showPremiumToast("Session Expired! Please sign in again.");
-                            showView('login-view');
-                            return;
-                        }
-                    } else {
-                        localStorage.setItem('google_login_time', Date.now().toString());
-                    }
-                    
-                    setTimeout(() => { window.location.href = "home.html"; }, 1000);
-                }
-            } else { 
-                // Agar koi session saved nahi hai email ka, to default view dikhao
-                if (!localStorage.getItem('php_email') && !sessionStorage.getItem('php_aarzi_session')) {
-                    showView('login-view'); 
-                }
-            }
-        });
-
-        function loginWithGoogle() {
-            if(!navigator.onLine) { return; } 
-            showView('loading-view');
-            
-            // Sabhi puraane Email sessions clear karein taaki Google override ho sake
-            localStorage.removeItem('php_email');
-            localStorage.removeItem('php_pass');
-            sessionStorage.removeItem('php_aarzi_session');
-
-            auth.signInWithPopup(googleProvider).then((result) => {
-                const user = result.user;
-                localStorage.setItem('google_login_time', Date.now().toString());
-
-                database.ref('users/' + user.uid).set({
-                    uid: user.uid, name: user.displayName, email: user.email, photo: user.photoURL, lastLogin: firebase.database.ServerValue.TIMESTAMP
-                }).then(() => { window.location.href = "home.html"; }).catch(() => { window.location.href = "home.html"; });
-            }).catch((error) => { showView('login-view'); showPremiumToast(error.message); });
-        }
-
-        function loginWithEmail() {
-            if(!navigator.onLine) { return; }
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const rememberMe = document.getElementById('rememberMe').checked;
-
-            if (!email || !password) { showPremiumToast("Please fill in both email and password fields."); return; }
-            showView('loading-view');
-
-            // Google login time clear karein jab email use ho raha ho
-            localStorage.removeItem('google_login_time');
-
-            auth.setPersistence(firebase.auth.Auth.Persistence.NONE).then(() => {
-                return auth.signInWithEmailAndPassword(email, password);
-            }).then((userCredential) => {
-                database.ref('premium_users/' + userCredential.user.uid).once('value').then((snapshot) => {
-                    if (snapshot.exists()) {
-                        
-                        if (rememberMe) {
-                            // CASE 1: Permanent Login (Credentials stored in LocalStorage)
-                            localStorage.setItem('php_email', email);
-                            localStorage.setItem('php_pass', password);
-                            sessionStorage.removeItem('php_aarzi_session');
-                        } else {
-                            // CASE 2: Temporary/Aarzi Login (Stored only in SessionStorage, clears on refresh)
-                            localStorage.removeItem('php_email');
-                            localStorage.removeItem('php_pass');
-                            sessionStorage.setItem('php_aarzi_session', 'true');
-                        }
-                        
-                        window.location.href = "home.html"; 
-                    } else { 
-                        auth.signOut(); 
-                        showPremiumToast("Access Denied: Your account is not authorized as a Premium User."); 
-                        showView('login-view'); 
-                    }
-                }).catch(() => { auth.signOut(); showView('login-view'); });
-            }).catch((error) => { 
-                showView('login-view'); 
-                if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-                    showPremiumToast("The supplied auth credential is incorrect, malformed or has expired.");
-                } else {
-                    showPremiumToast(error.message);
-                }
-            });
         }
 
         function showView(viewId) {
@@ -473,36 +314,211 @@
             }
         }
 
+        // Helper: verify premium status and sign out if not premium
+        async function validatePremiumAndRedirect(user, providerId) {
+            try {
+                const snapshot = await database.ref('premium_users/' + user.uid).once('value');
+                if (snapshot.exists()) {
+                    window.location.href = "home.html";
+                } else {
+                    await auth.signOut();
+                    clearSessionFlags();
+                    showView('login-view');
+                    showPremiumToast("Access Denied: Your account is not authorized as a Premium User.");
+                }
+            } catch (err) {
+                await auth.signOut();
+                clearSessionFlags();
+                showView('login-view');
+                showPremiumToast("Error verifying premium status. Please try again.");
+            }
+        }
+
+        function clearSessionFlags() {
+            localStorage.removeItem('google_login_time');
+            localStorage.removeItem('php_email');
+            localStorage.removeItem('php_pass');
+            sessionStorage.removeItem('php_aarzi_session');
+        }
+
+        // Global auth state handler: handle auto redirect, Google 24h expiry, premium enforcement
+        auth.onAuthStateChanged(async (user) => {
+            // splash + card transition already handled by DOMContentLoaded, but we wait for main card to appear
+            if (!user) {
+                // No user: ensure login view is shown and clear any stale flags
+                clearSessionFlags();
+                showView('login-view');
+                return;
+            }
+
+            // user exists: determine provider
+            const providerId = user.providerData[0]?.providerId;
+            
+            // GOOGLE Login: 24h expiration check + premium validation
+            if (providerId === 'google.com') {
+                const loginTime = localStorage.getItem('google_login_time');
+                const oneDayMs = 24 * 60 * 60 * 1000;
+                if (!loginTime || (Date.now() - parseInt(loginTime)) > oneDayMs) {
+                    await auth.signOut();
+                    localStorage.removeItem('google_login_time');
+                    showView('login-view');
+                    showPremiumToast("Google session expired (24h). Please sign in again.");
+                    return;
+                }
+                // check premium
+                const snap = await database.ref('premium_users/' + user.uid).once('value');
+                if (!snap.exists()) {
+                    await auth.signOut();
+                    clearSessionFlags();
+                    showView('login-view');
+                    showPremiumToast("Access Denied: Your Google account is not a premium user.");
+                    return;
+                }
+                // all good: redirect to home
+                window.location.href = "home.html";
+                return;
+            }
+            
+            // EMAIL (password) provider: must be premium
+            if (providerId === 'password') {
+                const snap = await database.ref('premium_users/' + user.uid).once('value');
+                if (!snap.exists()) {
+                    await auth.signOut();
+                    clearSessionFlags();
+                    showView('login-view');
+                    showPremiumToast("Access Denied: Your email account is not a premium user.");
+                    return;
+                }
+                window.location.href = "home.html";
+                return;
+            }
+            
+            // fallback: unknown provider, sign out
+            await auth.signOut();
+            clearSessionFlags();
+            showView('login-view');
+        });
+
+        // EMAIL LOGIN with proper persistence (LOCAL for permanent, SESSION for temporary)
+        async function loginWithEmail() {
+            if (!navigator.onLine) { showPremiumToast("No internet connection. Please connect and try again."); return; }
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            if (!email || !password) {
+                showPremiumToast("Please fill in both email and password fields.");
+                return;
+            }
+            
+            showView('loading-view');
+            
+            // determine persistence
+            const persistenceType = rememberMe ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION;
+            
+            try {
+                // Clear any conflicting google timestamp
+                localStorage.removeItem('google_login_time');
+                // set persistence then sign in
+                await auth.setPersistence(persistenceType);
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Verify premium user
+                const snapshot = await database.ref('premium_users/' + user.uid).once('value');
+                if (snapshot.exists()) {
+                    // If rememberMe unchecked, we rely on SESSION persistence (no extra flag needed)
+                    // If rememberMe checked, LOCAL persists across browser restarts
+                    window.location.href = "home.html";
+                } else {
+                    await auth.signOut();
+                    clearSessionFlags();
+                    showView('login-view');
+                    showPremiumToast("Access Denied: Your account is not authorized as a Premium User.");
+                }
+            } catch (error) {
+                showView('login-view');
+                let msg = "Authentication failed. Please check your credentials.";
+                if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found')
+                    msg = "Invalid email or password. Please try again.";
+                else msg = error.message;
+                showPremiumToast(msg);
+            }
+        }
+        
+        // GOOGLE LOGIN with 24h timer and premium check
+        async function loginWithGoogle() {
+            if (!navigator.onLine) { showPremiumToast("No internet connection. Please connect and try again."); return; }
+            showView('loading-view');
+            
+            // Clear any leftover email temp flags
+            localStorage.removeItem('php_email');
+            localStorage.removeItem('php_pass');
+            sessionStorage.removeItem('php_aarzi_session');
+            
+            try {
+                const result = await auth.signInWithPopup(googleProvider);
+                const user = result.user;
+                
+                // Verify premium user first (prevent non-premium access)
+                const premiumSnap = await database.ref('premium_users/' + user.uid).once('value');
+                if (!premiumSnap.exists()) {
+                    await auth.signOut();
+                    showView('login-view');
+                    showPremiumToast("Access Denied: Your Google account is not linked to a premium subscription.");
+                    return;
+                }
+                
+                // Set timestamp for 24h expiration
+                localStorage.setItem('google_login_time', Date.now().toString());
+                
+                // Optional: store/update user info in 'users' node (non-critical)
+                await database.ref('users/' + user.uid).set({
+                    uid: user.uid,
+                    name: user.displayName,
+                    email: user.email,
+                    photo: user.photoURL,
+                    lastLogin: firebase.database.ServerValue.TIMESTAMP
+                }).catch(() => {});
+                
+                window.location.href = "home.html";
+            } catch (error) {
+                showView('login-view');
+                showPremiumToast(error.message);
+            }
+        }
+
+        // Network status handler
         function updateNetworkStatus() {
             const offlineOverlay = document.getElementById('offline-overlay');
             if (navigator.onLine) {
-                offlineOverlay.classList.replace('flex', 'hidden'); 
+                offlineOverlay.classList.replace('flex', 'hidden');
             } else {
-                offlineOverlay.classList.replace('hidden', 'flex'); 
+                offlineOverlay.classList.replace('hidden', 'flex');
             }
         }
         window.addEventListener('online', updateNetworkStatus);
         window.addEventListener('offline', updateNetworkStatus);
-        updateNetworkStatus(); 
-
+        updateNetworkStatus();
+        
+        // PWA installation
         let deferredPrompt;
         const installBtn = document.getElementById('custom-install-btn');
-
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
         });
-
         installBtn.addEventListener('click', async () => {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
                 deferredPrompt = null;
             } else {
-                showPremiumToast("Application already installed. If you face any problem, please check your home screen.");
+                showPremiumToast("Application already installed or not supported. Check your home screen.");
             }
         });
-
+        
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then((reg) => {
@@ -510,13 +526,30 @@
                         const newWorker = reg.installing;
                         newWorker.addEventListener('statechange', () => {
                             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                window.location.reload(); 
+                                window.location.reload();
                             }
                         });
                     });
-                }).catch(err => console.log("SW Sync Failed:", err));
+                }).catch(err => console.log("SW registration:", err));
             });
         }
+
+        // Splash screen + card reveal (no auto-login via old storage method anymore, auth observer handles it)
+        window.addEventListener('DOMContentLoaded', () => {
+            // Clear legacy flags that might conflict with new logic (clean slate)
+            localStorage.removeItem('php_email');
+            localStorage.removeItem('php_pass');
+            sessionStorage.removeItem('php_aarzi_session');
+            
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                const mainCard = document.getElementById('main-app-card');
+                splash.style.opacity = '0';
+                splash.style.visibility = 'hidden';
+                mainCard.style.transition = 'opacity 0.6s ease-out';
+                mainCard.style.opacity = '1';
+            }, 1500);
+        });
     </script>
 </body>
 </html>
