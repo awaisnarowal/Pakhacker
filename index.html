@@ -334,13 +334,14 @@
         auth.onAuthStateChanged((user) => {
             if (user && navigator.onLine) {
                 const loginProvider = user.providerData[0]?.providerId;
+                
                 if (loginProvider === 'google.com') {
                     const loginTimestamp = localStorage.getItem('google_login_time');
                     if (loginTimestamp) {
                         const currentTime = Date.now();
-                        const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
+                        const fiveDaysInMs = 5 * 24 * 60 * 60 * 1000;
                         
-                        if (currentTime - parseInt(loginTimestamp) > sevenDaysInMs) {
+                        if (currentTime - parseInt(loginTimestamp) > fiveDaysInMs) {
                             localStorage.removeItem('google_login_time');
                             auth.signOut();
                             showView('login-view');
@@ -348,6 +349,7 @@
                         }
                     }
                 }
+                
                 setTimeout(() => {
                     window.location.href = "home.html";
                 }, 1500);
@@ -378,7 +380,11 @@
             if (!email || !password) { showPremiumToast("Please fill in both email and password fields."); return; }
             showView('loading-view');
 
-            auth.signInWithEmailAndPassword(email, password).then((userCredential) => {
+            const persistenceType = rememberMe ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION;
+
+            auth.setPersistence(persistenceType).then(() => {
+                return auth.signInWithEmailAndPassword(email, password);
+            }).then((userCredential) => {
                 database.ref('premium_users/' + userCredential.user.uid).once('value').then((snapshot) => {
                     if (snapshot.exists()) {
                         if (rememberMe) {
@@ -397,7 +403,6 @@
                 }).catch(() => { auth.signOut(); showView('login-view'); });
             }).catch((error) => { 
                 showView('login-view'); 
-                console.log("Firebase Auth Error Details:", error);
                 if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
                     showPremiumToast("The supplied auth credential is incorrect, malformed or has expired.");
                 } else {
