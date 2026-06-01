@@ -356,7 +356,7 @@
                     const loginTimestamp = localStorage.getItem('google_login_time');
                     if (loginTimestamp) {
                         const currentTime = Date.now();
-                        const fiveDaysInMs = 5 * 24 * 60 * 60 * 1000;
+                        const fiveDaysInMs = 1 * 60 * 1000; // Testing ke liye sirf 1 minute
                         
                         if (currentTime - parseInt(loginTimestamp) > fiveDaysInMs) {
                             localStorage.removeItem('google_login_time');
