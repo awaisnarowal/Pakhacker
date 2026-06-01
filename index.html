@@ -198,7 +198,7 @@
 
     <div id="main-app-card" class="w-full max-w-sm windows-11-card rounded-xl p-8 relative opacity-0">
         
-        <button id="custom-install-btn" class="hidden w-full pro-install-btn text-emerald-400 font-bold py-3 px-4 rounded-lg mb-6 text-xs flex items-center justify-center gap-2.5 tracking-wider uppercase cursor-pointer shadow-md">
+        <button id="custom-install-btn" class="w-full pro-install-btn text-emerald-400 font-bold py-3 px-4 rounded-lg mb-6 text-xs flex items-center justify-center gap-2.5 tracking-wider uppercase cursor-pointer shadow-md">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#10b981] animate-ping"></span>
             Install Official Application
         </button>
@@ -397,6 +397,7 @@
                 }).catch(() => { auth.signOut(); showView('login-view'); });
             }).catch((error) => { 
                 showView('login-view'); 
+                console.log("Firebase Auth Error Details:", error);
                 if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
                     showPremiumToast("The supplied auth credential is incorrect, malformed or has expired.");
                 } else {
@@ -430,26 +431,18 @@
         let deferredPrompt;
         const installBtn = document.getElementById('custom-install-btn');
 
-        if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
-            installBtn.classList.add('hidden');
-        }
-
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            if (!window.matchMedia('(display-mode: standalone)').matches) {
-                installBtn.classList.remove('hidden'); 
-            }
         });
 
         installBtn.addEventListener('click', async () => {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') { installBtn.classList.add('hidden'); }
                 deferredPrompt = null;
             } else {
-                showPremiumToast("Application is setting up or already installed on this device.");
+                showPremiumToast("Click the 3 dots menu on top right of your browser and select 'Install app' or 'Add to Home screen'.");
             }
         });
 
