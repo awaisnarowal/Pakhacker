@@ -2,235 +2,177 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PAK HACKER PRO | NarowaliyaModz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pak Hacker Pro - Login</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#34d399">
+    <meta name="theme-color" content="#202020">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&family=Montserrat:wght@800&family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
     <style>
-        :root {
-            --primary-accent: #34d399;
-            --bg-dark: #0f1115;
-            --surface: rgba(255, 255, 255, 0.04);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --danger-red: #ff4d4d;
-        }
-
+        /* Windows 11 Desktop Style Background Grid */
         body {
-            margin: 0; padding: 0; font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at top right, #1a2e26, #0f1115); 
-            color: #e2e8f0; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-            overflow-x: hidden; transition: 0.4s;
+            background-color: #1c1c1c;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(32, 50, 90, 0.5) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(20, 70, 50, 0.4) 0px, transparent 50%),
+                linear-gradient(135deg, #0f1011 0%, #18191a 100%);
         }
 
-        /* --- Updated Premium Sidebar & Overlay --- */
-        #overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
-            display: none; z-index: 998; opacity: 0; transition: 0.4s;
+        /* Windows 11 Acrylic/Mica Glass Effect */
+        .windows-11-card {
+            background: rgba(32, 32, 32, 0.65);
+            backdrop-filter: blur(30px) saturate(130%);
+            -webkit-backdrop-filter: blur(30px) saturate(130%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
         }
 
-        #menuToggle {
-            position: fixed; top: 20px; left: 20px; z-index: 1000;
-            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border);
-            color: var(--primary-accent); padding: 12px 15px; border-radius: 12px;
-            cursor: pointer; font-size: 1.3rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        /* Windows 11 Button Design */
+        .win-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
+        }
+        .win-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+        .win-btn:active {
+            transform: scale(0.98);
+            background: rgba(255, 255, 255, 0.05);
         }
 
-        #menu {
-            position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
-            background: #0f1115; border-right: 1px solid var(--card-border); z-index: 999;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            padding: 100px 20px 20px; box-sizing: border-box; display: flex; flex-direction: column;
+        /* Continuous Loading Ring for Windows 11 look */
+        .win-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #60cdff; /* Windows 11 Blue */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
-
-        #menu.active { left: 0; }
-
-        .menu-links { display: flex; flex-direction: column; gap: 15px; flex-grow: 1; }
-        
-        .menu-links a {
-            color: #e2e8f0; text-decoration: none; font-size: 1rem; font-weight: 500;
-            padding: 18px 20px; border-radius: 20px; transition: 0.3s;
-            display: flex; align-items: center; gap: 15px;
-            background: rgba(255, 255, 255, 0.03); border: 1px solid transparent;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
-
-        .menu-links a:hover { 
-            background: rgba(52, 211, 153, 0.1); 
-            border-color: var(--primary-accent);
-            color: var(--primary-accent);
-        }
-
-        .close-menu-btn {
-            background: rgba(255, 77, 77, 0.05) !important;
-            color: var(--danger-red) !important; border: 1px solid rgba(255, 77, 77, 0.1) !important;
-            justify-content: center; font-weight: 700; margin-top: auto;
-            padding: 18px !important; border-radius: 20px;
-        }
-
-        /* --- Container & UI --- */
-        .container {
-            text-align: center; background: var(--surface); padding: 40px 20px; 
-            border-radius: 32px; backdrop-filter: blur(24px); border: 1px solid var(--card-border); 
-            width: 90%; max-width: 480px; margin-top: 100px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            margin-bottom: 50px; position: relative;
-        }
-
-        h1 { font-family: 'Montserrat', sans-serif; color: var(--primary-accent); font-size: 1.8rem; margin-bottom: 5px; }
-        .brand-title { position: relative; display: inline-block; }
-        .sub-text { font-size: 0.65rem; position: absolute; top: -10px; right: -45px; font-weight: 500; color: var(--primary-accent); text-transform: uppercase; }
-
-        .disclaimer-box {
-            font-family: 'Noto Sans Arabic', sans-serif; direction: rtl; font-size: 0.85rem; 
-            border-radius: 18px; padding: 15px; margin-bottom: 25px;
-            background: rgba(255, 77, 77, 0.08); color: #ff9999; border: 1px solid rgba(255, 77, 77, 0.2); line-height: 1.6;
-        }
-
-        input {
-            width: 85%; padding: 18px; background: rgba(0, 0, 0, 0.4); border: 1.5px solid var(--card-border);
-            color: var(--primary-accent); border-radius: 22px; text-align: center; margin-bottom: 8px; outline: none; font-size: 1.6rem;
-        }
-
-        .server-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
-        
-        .btn {
-            padding: 16px; border: none; border-radius: 20px; font-weight: 700; cursor: pointer; 
-            background: rgba(255, 255, 255, 0.05); color: var(--primary-accent);
-            border: 1px solid rgba(52, 211, 153, 0.15); transition: 0.3s;
-        }
-
-        .btn.active { background: var(--primary-accent) !important; color: #064e3b !important; }
-
-        .progress-container {
-            display: none; width: 100%; height: 8px; background: rgba(255,255,255,0.1); 
-            border-radius: 10px; margin: 25px 0; overflow: hidden;
-        }
-        .progress-bar { width: 0%; height: 100%; background: var(--primary-accent); transition: width 0.4s ease; box-shadow: 0 0 15px var(--primary-accent); }
-
-        #result-box { margin-top: 25px; display: none; width: 100%; border-radius: 28px; border: 1.5px solid rgba(52, 211, 153, 0.3); overflow: hidden; background: #0f1115; }
-        iframe { width: 100%; height: 480px; border: none; filter: invert(0.92) hue-rotate(150deg) brightness(1.1) contrast(1.1); }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex items-center justify-center p-4 font-sans text-white antialiased">
 
-    <div id="overlay" onclick="toggleMenu()"></div>
-    <button id="menuToggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
-
-    <aside id="menu">
-        <nav class="menu-links">
-            <a href="javascript:void(0)" onclick="resetToMain()" style="background:rgba(52, 211, 153, 0.1); color:var(--primary-accent); border-color:var(--primary-accent);">
-                <i class="fas fa-folder"></i> Sim Database
-            </a>
-            <a href="https://cnic.sims.pk/" target="_blank"><i class="fas fa-search"></i> Check Sim</a>
-            <a href="bill_chk.html"><i class="fas fa-bolt"></i> Electric Bill CHK</a>
-            <a href="https://wa.me/923070378723" target="_blank"><i class="fas fa-phone-alt"></i> Contact Dev</a>
-            <a href="javascript:void(0)" class="close-menu-btn" onclick="toggleMenu()"><i class="fas fa-times"></i> CLOSE MENU</a>
-        </nav>
-    </aside>
-
-    <div class="container" data-aos="fade-up">
-        <h1>PAK HACKER <span class="brand-title">PRO<span class="sub-text">NarowaliyaModz</span></span></h1>    
+    <div class="w-full max-w-sm windows-11-card rounded-xl p-8 relative">
         
-        <div class="disclaimer-box">
-            <span style="font-weight:bold; display:block;">ضروری انتباہ</span>
-            اس ٹول کا غلط استعمال غیر قانونی ہے۔ کسی بھی غلط سرگرمی کی صورت میں صارف خود ذمہ دار ہوگا۔
+        <div class="text-center mb-8">
+            <div class="w-12 h-12 mx-auto mb-4 bg-gradient-to-tr from-emerald-500 to-blue-500 rounded-lg shadow-inner opacity-90 flex items-center justify-center font-bold text-xl tracking-tighter">
+                P
+            </div>
+            <h2 class="text-xl font-semibold tracking-wide text-white/90">Pak Hacker Pro</h2>
+            <p class="text-xs text-white/40 mt-1">Sign in with your Google account</p>
         </div>
 
-        <div id="main-ui">
-            <input type="tel" id="target" placeholder="03XXXXXXXXX" inputmode="numeric" oninput="checkLimit(this)">
-            <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 20px;" id="limit-info">Ready</div>
-
-            <div class="server-btns">
-                <button class="btn" id="srv1" onclick="startSearch(1)">SERVER 1</button>
-                <button class="btn" id="srv2" onclick="startSearch(2)">SERVER 2</button>
-                <button class="btn" id="srv3" onclick="startSearch(3)">SERVER 3</button>
-                <button class="btn" id="srv4" onclick="startSearch(4)">SERVER 4</button>
+        <div id="login-view" class="space-y-4 block">
+            <button onclick="loginWithGoogle()" class="win-btn w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-md font-medium text-sm cursor-pointer">
+                <svg class="w-4 h-4" viewBox="0 0 24 24">
+                    <path fill="#EA4335" d="M12.24 10.285V13.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.866-3.577-7.866-8s3.536-8 7.866-8c2.46 0 4.105 1.025 5.047 1.926l2.427-2.334C17.955 2.192 15.34 1 12.24 1 5.48 1 0 6.48 0 13.24s5.48 12.24 12.24 12.24c7.05 0 11.75-4.945 11.75-11.945 0-.805-.085-1.42-.19-1.96h-11.56z"/>
+                </svg>
+                Sign in with Google
+            </button>
+            
+            <div class="text-center">
+                <span class="text-[11px] text-white/30">Secure auto-login across all devices</span>
             </div>
         </div>
 
-        <div class="progress-container" id="prog-cont">
-            <div class="progress-bar" id="prog-bar"></div>
+        <div id="loading-view" class="hidden text-center py-6">
+            <div class="win-spinner h-8 w-8 mx-auto mb-4"></div>
+            <p class="text-xs text-white/60 tracking-wider font-normal">Please wait...</p>
         </div>
 
-        <div id="result-box"><iframe id="frame"></iframe></div>
     </div>
 
     <script>
-        function toggleMenu() {
-            const menu = document.getElementById('menu');
-            const overlay = document.getElementById('overlay');
-            const isOpen = menu.classList.toggle('active');
-            
-            if(isOpen) {
-                overlay.style.display = 'block';
-                setTimeout(() => { overlay.style.opacity = '1'; }, 10);
+        // 1. AAPKA PROVIDED FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyBsE6XjQZ7MdbvdPrAj6HR70g2Mi6Isx34",
+            authDomain: "pakhackerpro.firebaseapp.com",
+            databaseURL: "https://pakhackerpro-default-rtdb.firebaseio.com",
+            projectId: "pakhackerpro",
+            storageBucket: "pakhackerpro.firebasestorage.app",
+            messagingSenderId: "17345648769",
+            appId: "1:17345648769:web:f70f1bb04fae5626c69580"
+        };
+        
+        // Initialize Firebase (Compat Version)
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // Google Auth Provider Initialize
+        const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+        // 2. AUTH STATE OBSERVER (Auto Redirect Logic)
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // Agar user pehle se logged in hai to direct home.html par bhej do
+                window.location.href = "home.html";
             } else {
-                overlay.style.opacity = '0';
-                setTimeout(() => { overlay.style.display = 'none'; }, 400);
+                // Agar logged in nahi hai, to loading hatai aur login display karein
+                showView('login-view');
+            }
+        });
+
+        // 3. Google Login Function
+        function loginWithGoogle() {
+            showView('loading-view');
+
+            // Direct Pop-up box khulega Google Account authentication ke liye
+            auth.signInWithPopup(googleProvider)
+                .then((result) => {
+                    const user = result.user;
+                    
+                    // User ki details Realtime Database mein save/update hongi
+                    database.ref('users/' + user.uid).set({
+                        uid: user.uid,
+                        name: user.displayName,
+                        email: user.email,
+                        photo: user.photoURL,
+                        lastLogin: firebase.database.ServerValue.TIMESTAMP
+                    }).then(() => {
+                        // Data store hote hi direct home.html par bhej do
+                        window.location.href = "home.html";
+                    }).catch((dbErr) => {
+                        console.error("Database Error:", dbErr);
+                        // Agar DB rules block bhi karein tab bhi dashboard par bhej dega
+                        window.location.href = "home.html";
+                    });
+
+                }).catch((error) => {
+                    showView('login-view');
+                    console.error("Login Failed:", error.message);
+                    alert("Google Sign-In Failed: " + error.message);
+                });
+        }
+
+        // View Switcher Function
+        function showView(viewId) {
+            if(viewId === 'loading-view') {
+                document.getElementById('login-view').classList.replace('block', 'hidden');
+                document.getElementById('loading-view').classList.replace('hidden', 'block');
+            } else {
+                document.getElementById('loading-view').classList.replace('block', 'hidden');
+                document.getElementById('login-view').classList.replace('hidden', 'block');
             }
         }
 
-        function resetToMain() {
-            document.getElementById('result-box').style.display = "none";
-            document.getElementById('main-ui').style.display = "block";
-            document.getElementById('prog-cont').style.display = "none";
-            document.getElementById('target').value = "";
-            document.getElementById('limit-info').innerText = "Ready";
-            document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
-            toggleMenu();
-        }
-
-        function checkLimit(input) {
-            let val = input.value;
-            let limit = (val.startsWith('0')) ? 11 : 13;
-            document.getElementById('limit-info').innerText = "Length: " + val.length + " / " + limit;
-            if (val.length >= limit) { input.value = val.substring(0, limit); input.blur(); }
-        }
-
-        function startSearch(sid) {
-            const num = document.getElementById('target').value.trim();
-            if (num.length < 10) { alert("Number correct enter karein!"); return; }
-
-            document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('srv' + sid).classList.add('active');
-
-            const pCont = document.getElementById('prog-cont');
-            const pBar = document.getElementById('prog-bar');
-            pCont.style.display = "block";
-            document.getElementById('result-box').style.display = "none";
-            
-            let width = 0;
-            const interval = setInterval(() => {
-                if (width >= 90) clearInterval(interval);
-                else { width += 5; pBar.style.width = width + "%"; }
-            }, 100);
-
-            let api = "";
-            switch(sid) {
-                case 1: api = "https://elookup.xyz/Rana$333/lookup.php?num=03331234567&num="; break;
-                case 2: api = "https://omrsite.com/api.php?number="; break;
-                case 3: api = "https://app.mediamarketing.pk/api-fake.php?number=&number="; break;
-                case 4: api = "https://omrsite.com/api2.php?password=3518&number="; break;
-            }
-
-            const frame = document.getElementById('frame');
-            frame.src = api + num;
-            frame.onload = () => {
-                clearInterval(interval);
-                pBar.style.width = "100%";
-                setTimeout(() => {
-                    pCont.style.display = "none";
-                    document.getElementById('result-box').style.display = "block";
-                }, 300);
-            };
+        // PWA Service Worker Link
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.log(err));
+            });
         }
     </script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>AOS.init({ duration: 1000, once: true });</script>
 </body>
 </html>
