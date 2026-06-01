@@ -1,21 +1,12 @@
 {
+  "name": "Pak Hacker Pro",
   "short_name": "PakHackerPro",
-  "name": "PAK HACKER PRO",
-  "icons": [
-    {
-      "src": "icons/icon-192x192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "icons/icon-512x512.png",
-      "type": "image/png",
-      "sizes": "512x512"
-    }
-  ],
-  "start_url": "index.html",
-  "background_color": "#0f1115",
+  "start_url": "./index.html",
   "display": "standalone",
-  "scope": "/",
-  "theme_color": "#34d399"
+  "background_color": "#1c1c1c",
+  "theme_color": "#202020",
+  "icons": [
+    { "src": "icon/icon-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon/icon-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ]
 }
