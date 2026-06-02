@@ -353,7 +353,7 @@
             }
         }
 
-        // Global State Handler
+          // Global State Handler
         auth.onAuthStateChanged(async (user) => {
             if (!user) {
                 showView('login-view');
@@ -362,11 +362,22 @@
             
             const providerId = user.providerData[0]?.providerId;
             
-            // Google Login: Direct access
+            // GOOGLE LOGIN: 12 ghante (12 hours) expiry check
             if (providerId === 'google.com') {
+                const loginTime = localStorage.getItem('google_login_time');
+                const twelveHoursMs = 12 * 60 * 60 * 1000; // 12 hours
+                
+                // Check agar 12 ghante guzar gaye hain
+                if (!loginTime || (Date.now() - parseInt(loginTime)) > twelveHoursMs) {
+                    await auth.signOut();
+                    localStorage.removeItem('google_login_time');
+                    showView('login-view');
+                    showPremiumToast("Session expired (12h). Please sign in again.");
+                    return;
+                }
                 window.location.href = "home.html";
             } 
-            // Email Login: Premium check continue
+            // EMAIL LOGIN: Premium check continue rahega
             else if (providerId === 'password') {
                 const snap = await database.ref('premium_users/' + user.uid).once('value');
                 if (snap.exists()) {
@@ -377,6 +388,26 @@
                     showPremiumToast("Premium access required.");
                 }
             }
+        });
+
+        // Google Login function mein time record karna zaroori hai
+        async function loginWithGoogle() {
+            if (!navigator.onLine) {
+                showPremiumToast("No internet connection.");
+                return;
+            }
+            showView('loading-view');
+            try {
+                const result = await auth.signInWithPopup(googleProvider);
+                // Yahan time save ho raha hai taake 12 ghante ka check chal sake
+                localStorage.setItem('google_login_time', Date.now().toString());
+                window.location.href = "home.html";
+            } catch (error) {
+                showView('login-view');
+                showPremiumToast(error.message);
+            }
+        }
+
         });
 
         // Network and PWA Setup (Same as before)
