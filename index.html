@@ -325,7 +325,7 @@
                 const snapshot = await database.ref('premium_users/' + userCredential.user.uid).once('value');
                 
                 if (snapshot.exists()) {
-                    window.location.href = "home.html";
+                    window.location.href = "home_paid.html";
                 } else {
                     await auth.signOut();
                     showView('login-view');
@@ -347,7 +347,7 @@
             try {
                 await auth.signInWithPopup(googleProvider);
                 localStorage.setItem('googleLoginTime', Date.now());
-                window.location.href = "home.html";
+                window.location.href = "home_unpaid.html";
             } catch (error) {
                 showView('login-view');
                 showPremiumToast(error.message);
@@ -376,13 +376,13 @@
                     return;
                 }
 
-                window.location.href = "home.html";
+                window.location.href = "home_unpaid.html";
             } 
             // Email Login: Premium check continue
             else if (providerId === 'password') {
                 const snap = await database.ref('premium_users/' + user.uid).once('value');
                 if (snap.exists()) {
-                    window.location.href = "home.html";
+                    window.location.href = "home_paid.html";
                 } else {
                     await auth.signOut();
                     showView('login-view');
