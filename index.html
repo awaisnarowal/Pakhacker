@@ -256,7 +256,7 @@
         <img src="icons/WhatsApp.png" alt="Support" class="w-8 h-8 object-contain">
     </a>
 
-    <script>
+        <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBsE6XjQZ7MdbvdPrAj6HR70g2Mi6Isx34",
             authDomain: "pakhackerpro.firebaseapp.com",
@@ -309,82 +309,43 @@
             }
         }
 
-        // ---------- EMAIL LOGIN (Always permanent - LOCAL persistence) ----------
+        // Email Login: Premium check zaroori hai
         async function loginWithEmail() {
             if (!navigator.onLine) {
-                showPremiumToast("No internet connection. Please connect and try again.");
+                showPremiumToast("No internet connection.");
                 return;
             }
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
-            if (!email || !password) {
-                showPremiumToast("Please fill in both email and password fields.");
-                return;
-            }
             showView('loading-view');
             
-            // Clear any previous Google timestamp to avoid conflict
-            localStorage.removeItem('google_login_time');
-            
-            // Always use LOCAL persistence (permanent login even after browser restart)
             try {
                 await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
-                const user = userCredential.user;
+                const snapshot = await database.ref('premium_users/' + userCredential.user.uid).once('value');
                 
-                // Verify premium user
-                const snapshot = await database.ref('premium_users/' + user.uid).once('value');
                 if (snapshot.exists()) {
-                    // Success - permanent session, redirect to home
                     window.location.href = "home.html";
                 } else {
                     await auth.signOut();
                     showView('login-view');
-                    showPremiumToast("Access Denied: Your account is not authorized as a Premium User.");
+                    showPremiumToast("Unauthorized: Premium account required.");
                 }
             } catch (error) {
                 showView('login-view');
-                let msg = "Login failed. Please check your credentials.";
-                if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found')
-                    msg = "Invalid email or password.";
-                else msg = error.message;
-                showPremiumToast(msg);
+                showPremiumToast("Invalid credentials.");
             }
         }
 
-        // ---------- GOOGLE LOGIN (24h expiry + premium check) ----------
+        // Google Login: Premium check HATA DIYA (Direct Access)
         async function loginWithGoogle() {
             if (!navigator.onLine) {
-                showPremiumToast("No internet connection. Please connect and try again.");
+                showPremiumToast("No internet connection.");
                 return;
             }
             showView('loading-view');
-            
             try {
-                const result = await auth.signInWithPopup(googleProvider);
-                const user = result.user;
-                
-                // Check premium status first
-                const premiumSnap = await database.ref('premium_users/' + user.uid).once('value');
-                if (!premiumSnap.exists()) {
-                    await auth.signOut();
-                    showView('login-view');
-                    showPremiumToast("Access Denied: Your Google account is not linked to a premium subscription.");
-                    return;
-                }
-                
-                // Set timestamp for 24h expiry
-                localStorage.setItem('google_login_time', Date.now().toString());
-                
-                // Optional: store user info
-                await database.ref('users/' + user.uid).set({
-                    uid: user.uid,
-                    name: user.displayName,
-                    email: user.email,
-                    photo: user.photoURL,
-                    lastLogin: firebase.database.ServerValue.TIMESTAMP
-                }).catch(() => {});
-                
+                await auth.signInWithPopup(googleProvider);
                 window.location.href = "home.html";
             } catch (error) {
                 showView('login-view');
@@ -392,71 +353,33 @@
             }
         }
 
-        // ---------- GLOBAL AUTH STATE HANDLER ----------
-        // Handles Google 24h expiry, premium validation, and auto-redirect for both login types
+        // Global State Handler
         auth.onAuthStateChanged(async (user) => {
             if (!user) {
-                // No user: just ensure login view is shown
                 showView('login-view');
                 return;
             }
             
             const providerId = user.providerData[0]?.providerId;
             
-            // GOOGLE: 24h expiry check
+            // Google Login: Direct access
             if (providerId === 'google.com') {
-                const loginTime = localStorage.getItem('google_login_time');
-                const oneDayMs = 24 * 60 * 60 * 1000;
-                if (!loginTime || (Date.now() - parseInt(loginTime)) > oneDayMs) {
-                    await auth.signOut();
-                    localStorage.removeItem('google_login_time');
-                    showView('login-view');
-                    showPremiumToast("Google session expired (24h). Please sign in again.");
-                    return;
-                }
-                try {
-                    const snap = await database.ref('premium_users/' + user.uid).once('value');
-                    if (!snap.exists()) {
-                        await auth.signOut();
-                        localStorage.removeItem('google_login_time');
-                        showView('login-view');
-                        showPremiumToast("Your premium access has been revoked. Please contact support.");
-                        return;
-                    }
+                window.location.href = "home.html";
+            } 
+            // Email Login: Premium check continue
+            else if (providerId === 'password') {
+                const snap = await database.ref('premium_users/' + user.uid).once('value');
+                if (snap.exists()) {
                     window.location.href = "home.html";
-                } catch (err) {
+                } else {
                     await auth.signOut();
                     showView('login-view');
-                    showPremiumToast("Error verifying subscription. Please try again.");
+                    showPremiumToast("Premium access required.");
                 }
-                return;
             }
-            
-            // EMAIL (password) provider: check premium, no expiry
-            if (providerId === 'password') {
-                try {
-                    const snap = await database.ref('premium_users/' + user.uid).once('value');
-                    if (!snap.exists()) {
-                        await auth.signOut();
-                        showView('login-view');
-                        showPremiumToast("Your premium access has been revoked. Please contact support.");
-                        return;
-                    }
-                    window.location.href = "home.html";
-                } catch (err) {
-                    await auth.signOut();
-                    showView('login-view');
-                    showPremiumToast("Error verifying subscription. Please try again.");
-                }
-                return;
-            }
-            
-            // Unknown provider: sign out
-            await auth.signOut();
-            showView('login-view');
         });
 
-        // ---------- NETWORK STATUS ----------
+        // Network and PWA Setup (Same as before)
         function updateNetworkStatus() {
             const offlineOverlay = document.getElementById('offline-overlay');
             if (navigator.onLine) {
@@ -471,7 +394,6 @@
         window.addEventListener('offline', updateNetworkStatus);
         updateNetworkStatus();
 
-        // ---------- PWA INSTALL ----------
         let deferredPrompt;
         const installBtn = document.getElementById('custom-install-btn');
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -484,18 +406,16 @@
                 const { outcome } = await deferredPrompt.userChoice;
                 deferredPrompt = null;
             } else {
-                showPremiumToast("Application already installed or not supported.");
+                showPremiumToast("Application already installed.");
             }
         });
 
-        // ---------- SERVICE WORKER ----------
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').catch(err => console.log("SW error:", err));
             });
         }
 
-        // ---------- SPLASH SCREEN AND INITIAL LOAD ----------
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
@@ -507,5 +427,6 @@
             }, 1500);
         });
     </script>
+
 </body>
 </html>
