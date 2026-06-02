@@ -1,4 +1,4 @@
-const CACHE_NAME = "pakhackerpro-v5";
+const CACHE_NAME = "pakhackerpro-v5.1.1";
 const ASSETS = [
   "./",
   "./index.html",
