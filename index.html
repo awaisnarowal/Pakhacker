@@ -218,7 +218,7 @@
             </button>
             
             <p class="text-[10px] text-center text-yellow-500/90 -mt-2 font-medium tracking-wide leading-relaxed px-1">
-                Note: Google login will expire automatically after 1 day for security. For a better experience, just join our premium subscription to open all options!
+                Note: Google login will expire automatically after 10 minutes for security. For a better experience, just join our premium subscription to open all options!
             </p>
             
             <div class="relative py-1">
@@ -346,6 +346,7 @@
             showView('loading-view');
             try {
                 await auth.signInWithPopup(googleProvider);
+                localStorage.setItem('googleLoginTime', Date.now());
                 window.location.href = "home.html";
             } catch (error) {
                 showView('login-view');
@@ -353,7 +354,7 @@
             }
         }
 
-          // Global State Handler
+        // Global State Handler
         auth.onAuthStateChanged(async (user) => {
             if (!user) {
                 showView('login-view');
@@ -362,22 +363,22 @@
             
             const providerId = user.providerData[0]?.providerId;
             
-            // GOOGLE LOGIN: 12 ghante (12 hours) expiry check
+            // Google Login: Direct access
             if (providerId === 'google.com') {
-                const loginTime = localStorage.getItem('google_login_time');
-                const twelveHoursMs = 12 * 60 * 60 * 1000; // 12 hours
-                
-                // Check agar 12 ghante guzar gaye hain
-                if (!loginTime || (Date.now() - parseInt(loginTime)) > twelveHoursMs) {
+                const loginTime = localStorage.getItem('googleLoginTime');
+                const sessionTime = 10 * 60 * 1000;
+
+                if (loginTime && ((Date.now() - parseInt(loginTime)) > sessionTime)) {
                     await auth.signOut();
-                    localStorage.removeItem('google_login_time');
+                    localStorage.removeItem('googleLoginTime');
                     showView('login-view');
-                    showPremiumToast("Session expired (12h). Please sign in again.");
+                    showPremiumToast("Session expired. Please login again.");
                     return;
                 }
+
                 window.location.href = "home.html";
             } 
-            // EMAIL LOGIN: Premium check continue rahega
+            // Email Login: Premium check continue
             else if (providerId === 'password') {
                 const snap = await database.ref('premium_users/' + user.uid).once('value');
                 if (snap.exists()) {
@@ -388,26 +389,6 @@
                     showPremiumToast("Premium access required.");
                 }
             }
-        });
-
-        // Google Login function mein time record karna zaroori hai
-        async function loginWithGoogle() {
-            if (!navigator.onLine) {
-                showPremiumToast("No internet connection.");
-                return;
-            }
-            showView('loading-view');
-            try {
-                const result = await auth.signInWithPopup(googleProvider);
-                // Yahan time save ho raha hai taake 12 ghante ka check chal sake
-                localStorage.setItem('google_login_time', Date.now().toString());
-                window.location.href = "home.html";
-            } catch (error) {
-                showView('login-view');
-                showPremiumToast(error.message);
-            }
-        }
-
         });
 
         // Network and PWA Setup (Same as before)
